@@ -184,6 +184,47 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/manifest.webmanifest",
       },
     ],
+    // Sitewide Organization + WebSite JSON-LD. Carried on every page so
+    // search engines have a stable entity graph to attach per-page Service
+    // and FAQPage schemas to (each leaf @id-references #organization).
+    // hreflang per-page links live in each leaf route's head().links via
+    // `hreflangLinks()` because the canonical URL varies by route.
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${ORIGIN}/#organization`,
+              name: "Agente.Systems",
+              url: `${ORIGIN}/`,
+              logo: OG_DEFAULT,
+              sameAs: ["https://wa.me/17878100749"],
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: "+1-787-810-0749",
+                  contactType: "sales",
+                  email: "hello@agentesystems.com",
+                  availableLanguage: ["English", "Spanish"],
+                  areaServed: "US",
+                },
+              ],
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${ORIGIN}/#website`,
+              url: `${ORIGIN}/`,
+              name: "Agente.Systems",
+              inLanguage: ["en-US", "es-US"],
+              publisher: { "@id": `${ORIGIN}/#organization` },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

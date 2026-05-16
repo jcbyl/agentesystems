@@ -5,6 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import { demoUrl } from "@/lib/demo-link";
+import { hreflangLinks } from "@/lib/hreflang";
 import ogImageUrl from "@/assets/og-home.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
@@ -33,43 +34,9 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: OG_IMAGE },
       { name: "twitter:image:alt", content: "Agente.Systems — Bilingual EN/ES AI agents for real estate, construction, solar, and medical teams. WhatsApp-native, live in 24 hours." },
     ],
-    links: [{ rel: "canonical", href: `${ORIGIN}/` }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "Organization",
-              "@id": `${ORIGIN}/#organization`,
-              name: "Agente.Systems",
-              url: `${ORIGIN}/`,
-              logo: `${ORIGIN}${ogImageUrl}`,
-              sameAs: ["https://wa.me/17878100749"],
-              contactPoint: [
-                {
-                  "@type": "ContactPoint",
-                  telephone: "+1-787-810-0749",
-                  contactType: "sales",
-                  email: "hello@agentesystems.com",
-                  availableLanguage: ["English", "Spanish"],
-                  areaServed: "US",
-                },
-              ],
-            },
-            {
-              "@type": "WebSite",
-              "@id": `${ORIGIN}/#website`,
-              url: `${ORIGIN}/`,
-              name: "Agente.Systems",
-              description: DESC,
-              inLanguage: ["en-US", "es-US"],
-              publisher: { "@id": `${ORIGIN}/#organization` },
-            },
-          ],
-        }),
-      },
+    links: [
+      { rel: "canonical", href: `${ORIGIN}/` },
+      ...hreflangLinks(`${ORIGIN}/`),
     ],
   }),
   component: Home,
