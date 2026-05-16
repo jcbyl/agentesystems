@@ -4,8 +4,36 @@ import { useEffect, useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import ogImageUrl from "@/assets/og-home.jpg";
+
+const ORIGIN = "https://agentesystems.lovable.app";
+const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
+const TITLE = "Agente — Bilingual AI Agents for Real Estate, Construction, Solar & Medical";
+const DESC =
+  "The bilingual alternative to Lindy. Industry-expert AI agents for Latino-owned businesses. WhatsApp-native. EN/ES. Flat pricing. Live in 24 hours.";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESC },
+      { property: "og:url", content: `${ORIGIN}/` },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:secure_url", content: OG_IMAGE },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Agente.Systems — Bilingual AI agents · EN/ES · WhatsApp-native" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESC },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:image:alt", content: "Agente.Systems — Bilingual AI agents · EN/ES · WhatsApp-native" },
+    ],
+    links: [{ rel: "canonical", href: `${ORIGIN}/` }],
+  }),
   component: Home,
 });
 
