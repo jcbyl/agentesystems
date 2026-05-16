@@ -131,6 +131,23 @@ const linkObjects = linksMatch
   ? splitLinkObjects(linksMatch[1]).map(parseLinkObject)
   : [];
 
+const linkSignature = (link) =>
+  `${link.rel ?? ""}|${link.type ?? ""}|${link.sizes ?? ""}`;
+const requiredBySignature = new Map(
+  REQUIRED_LINKS.map((req) => [linkSignature(req), req]),
+);
+const iconLinkRels = new Set([
+  "icon",
+  "apple-touch-icon",
+  "apple-touch-icon-precomposed",
+]);
+
+function describeLink(link) {
+  return `<link rel="${link.rel ?? ""}"${link.type ? ` type="${link.type}"` : ""}${
+    link.sizes ? ` sizes="${link.sizes}"` : ""
+  } href=${link.hrefIdent ?? JSON.stringify(link.hrefLiteral ?? "")}>`;
+}
+
 // ---------------------------------------------------------------------------
 // 3. Verify every REQUIRED_LINKS entry is present, matches `sizes`, and
 //    points at the expected icon URL identifier.
@@ -169,6 +186,13 @@ for (const req of REQUIRED_LINKS) {
     );
     continue;
   }
+  if (matches.length > 1) {
+    warn(
+      `duplicate <link rel="${req.rel}"${
+        req.type ? ` type="${req.type}"` : ""
+      } sizes="${req.sizes}"> declarations in __root.tsx`,
+    );
+  }
   const expectedIdent = keyToLocalIdent.get(req.urlKey);
   if (!expectedIdent) {
     warn(
@@ -182,6 +206,29 @@ for (const req of REQUIRED_LINKS) {
       `<link rel="${req.rel}" sizes="${req.sizes}"> href must be \`${expectedIdent}\` (ICON_URLS.${req.urlKey}); got ${
         matches.map((m) => m.hrefIdent ?? `"${m.hrefLiteral}"`).join(", ")
       }`,
+    );
+  }
+}
+
+for (const link of linkObjects) {
+  if (!iconLinkRels.has(link.rel)) continue;
+
+  // The inline SVG icon is intentionally data-URL based; the PNG favicons and
+  // Apple touch icons must be fingerprinted Vite asset imports.
+  if (link.rel === "icon" && link.type !== "image/png") continue;
+
+  const req = requiredBySignature.get(linkSignature(link));
+  if (!req) {
+    warn(
+      `${describeLink(link)} is not one of the canonical icon declarations — every PNG icon/apple-touch link must have an expected rel/type/sizes tuple`,
+    );
+    continue;
+  }
+
+  const expectedIdent = keyToLocalIdent.get(req.urlKey);
+  if (expectedIdent && link.hrefIdent !== expectedIdent) {
+    warn(
+      `${describeLink(link)} href must be the fingerprinted ICON_URLS.${req.urlKey} import (${expectedIdent})`,
     );
   }
 }
