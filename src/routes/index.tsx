@@ -179,6 +179,7 @@ function Compare() {
     [t("Setup", "Configuración"), { icon: "warn", text: t("DIY — you build your own agents", "Lo haces tú — construyes tus propios agentes") }, { icon: "ok", text: t("Done for you — live in 24 hours", "Lo hacemos nosotros — en vivo en 24 horas") }],
     [t("Sales lifecycle", "Ciclo de ventas"), { icon: "x", text: t("Email + calendar only", "Solo correo y calendario") }, { icon: "ok", text: t("Qualify → book → follow-up → review → referral", "Califica → agenda → seguimiento → reseña → referido") }],
     [t("Latino/Hispanic market", "Mercado latino/hispano"), { icon: "x", text: t("Not designed for it", "No está diseñado para esto") }, { icon: "ok", text: t("Native bilingual — the whole point", "Bilingüe nativo — ese es el punto") }],
+    [t("Integrations", "Integraciones"), { icon: "warn", text: t("Email, calendar, basic webhooks", "Correo, calendario, webhooks básicos") }, { icon: "ok", text: t("WhatsApp · SMS · CRM · webhooks · portals", "WhatsApp · SMS · CRM · webhooks · portales") }],
   ];
 
   return (
