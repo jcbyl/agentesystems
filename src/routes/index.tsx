@@ -373,7 +373,7 @@ function Compare() {
                     target?.focus();
                   }
                 }}
-                className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ink)] focus-visible:text-[var(--coral)] focus-visible:border-[var(--coral)]"
+                className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navy)] focus-visible:text-[var(--coral)] focus-visible:border-[var(--coral)]"
                 style={{
                   borderColor: "var(--rule)",
                   color: "rgba(244,237,227,.6)",
