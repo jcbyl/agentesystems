@@ -6,9 +6,11 @@ Allow: /beauty
 Allow: /solar
 Allow: /real-estate
 Allow: /construction
+Allow: /demo
 
 # Internal / non-content endpoints — not useful in search results.
 Disallow: /api/
 Disallow: /lovable/
+Disallow: /debug/
 
 Sitemap: https://agentesystems.lovable.app/sitemap.xml
