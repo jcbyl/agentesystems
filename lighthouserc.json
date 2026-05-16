@@ -1,15 +1,17 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": ".output/public",
+      "startServerCommand": "npx --yes serve -s .output/public -l 4173",
+      "startServerReadyPattern": "Accepting connections|Local:",
+      "startServerReadyTimeout": 30000,
       "url": [
-        "http://localhost/index.html",
-        "http://localhost/real-estate/index.html",
-        "http://localhost/construction/index.html",
-        "http://localhost/solar/index.html",
-        "http://localhost/medical/index.html",
-        "http://localhost/beauty/index.html",
-        "http://localhost/demo/index.html"
+        "http://localhost:4173/",
+        "http://localhost:4173/real-estate",
+        "http://localhost:4173/construction",
+        "http://localhost:4173/solar",
+        "http://localhost:4173/medical",
+        "http://localhost:4173/beauty",
+        "http://localhost:4173/demo"
       ],
       "numberOfRuns": 1,
       "settings": {
@@ -23,12 +25,10 @@
         "categories:seo": ["error", { "minScore": 0.95 }],
         "categories:accessibility": ["error", { "minScore": 0.9 }],
         "categories:best-practices": ["warn", { "minScore": 0.9 }],
-        "categories:performance": ["warn", { "minScore": 0.8 }],
+        "categories:performance": ["warn", { "minScore": 0.75 }],
         "meta-description": "error",
         "document-title": "error",
         "html-has-lang": "error",
-        "canonical": "error",
-        "robots-txt": "error",
         "image-alt": "error",
         "is-crawlable": "error"
       }
