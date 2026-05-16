@@ -3,12 +3,12 @@
  * Static SEO sanity check — fails CI when critical SEO issues appear.
  *
  * Verifies, with zero network:
- *   - public/robots.txt exists and allows crawling + references sitemap
+ *   - public/robots.txt allows crawl + references the sitemap
  *   - public/llms.txt exists with H1
- *   - src/routes/sitemap[.]xml.ts exists
+ *   - src/routes/sitemap[.]xml.{ts,tsx} exists
  *   - every public route has a title ≤ 60 chars and description ≤ 160 chars
- *   - every public route declares a canonical link
- *   - every public route declares og:title, og:description, og:url, og:image
+ *   - every public route declares og:title, og:description, og:url,
+ *     og:image, and a canonical link
  *
  * Errors are emitted as GitHub workflow annotations so they show up
  * inline in the PR "Files changed" tab.
@@ -50,7 +50,7 @@ if (!existsSync(robots)) {
 } else {
   const txt = readFileSync(robots, "utf8");
   if (!/User-agent:\s*\*/i.test(txt)) fail("public/robots.txt", "missing 'User-agent: *' block");
-  if (/Disallow:\s*\/\s*$/m.test(txt)) fail("public/robots.txt", "blocks entire site with 'Disallow: /'");
+  if (/^Disallow:\s*\/\s*$/m.test(txt)) fail("public/robots.txt", "blocks entire site with 'Disallow: /'");
   if (!/Sitemap:\s*https?:\/\//i.test(txt)) fail("public/robots.txt", "missing 'Sitemap:' directive");
 }
 
@@ -62,20 +62,51 @@ if (!existsSync(llms)) {
   if (!/^#\s+\S/m.test(txt)) fail("public/llms.txt", "llms.txt missing H1 site name");
 }
 
-const sitemap = join(ROOT, "src/routes/sitemap[.]xml.ts");
-if (!existsSync(sitemap)) fail("src/routes/sitemap[.]xml.ts", "sitemap route is missing");
-
-// --- per-route checks ---
-function extractString(src, varName) {
-  const re = new RegExp(`(?:const|let)\\s+${varName}\\s*=\\s*\`([^\`]+)\`|(?:const|let)\\s+${varName}\\s*=\\s*"((?:[^"\\\\]|\\\\.)*)"`);
-  const m = src.match(re);
-  return m ? (m[1] ?? m[2]) : null;
+const sitemapTs = join(ROOT, "src/routes/sitemap[.]xml.ts");
+const sitemapTsx = join(ROOT, "src/routes/sitemap[.]xml.tsx");
+if (!existsSync(sitemapTs) && !existsSync(sitemapTsx)) {
+  fail("src/routes/sitemap[.]xml.tsx", "sitemap route is missing");
 }
 
-function hasMeta(src, key, value) {
-  // e.g. { property: "og:image" ...} or { name: "twitter:card" ...}
-  const re = new RegExp(`(?:property|name):\\s*"${key.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"`);
-  return re.test(src);
+// --- per-route checks ---
+function resolveConst(src, name) {
+  // Match: const NAME = "..."  |  `...`  |  resolves nested const references
+  const reStr = new RegExp(
+    `(?:const|let)\\s+${name}\\s*=\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|\`([^\`]*)\`)`
+  );
+  const m = src.match(reStr);
+  if (!m) return null;
+  return m[1] ?? m[2];
+}
+
+function extractMetaContent(src, key) {
+  // Find { property|name: "<key>", content: "..."|`...`|IDENT } even across newlines.
+  const escKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(
+    `\\{[^{}]*?(?:property|name):\\s*"${escKey}"[^{}]*?content:\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|\`([^\`]*)\`|([A-Za-z_$][A-Za-z0-9_$]*))[^{}]*?\\}`,
+    "s"
+  );
+  const m = src.match(re);
+  if (!m) return null;
+  if (m[1] != null) return m[1];
+  if (m[2] != null) return m[2];
+  if (m[3]) return resolveConst(src, m[3]);
+  return null;
+}
+
+function extractTitle(src) {
+  const re = /\{\s*title:\s*(?:"((?:[^"\\]|\\.)*)"|`([^`]*)`|([A-Za-z_$][A-Za-z0-9_$]*))\s*\}/;
+  const m = src.match(re);
+  if (!m) return null;
+  if (m[1] != null) return m[1];
+  if (m[2] != null) return m[2];
+  if (m[3]) return resolveConst(src, m[3]);
+  return null;
+}
+
+function hasMeta(src, key) {
+  const escKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?:property|name):\\s*"${escKey}"`).test(src);
 }
 
 function hasCanonical(src) {
@@ -91,14 +122,14 @@ for (const route of ROUTES) {
   const src = readFileSync(path, "utf8");
   const rel = `src/routes/${route.file}`;
 
-  const title = extractString(src, "TITLE_EN") || (src.match(/title:\s*"([^"]+)"/) || [])[1];
-  const desc = extractString(src, "DESC_EN") || extractString(src, "DESC");
+  const title = extractTitle(src);
+  const desc = extractMetaContent(src, "description");
 
   if (!title) fail(rel, `[${route.path}] missing page title`);
   else if (title.length > MAX_TITLE)
     fail(rel, `[${route.path}] title is ${title.length} chars (> ${MAX_TITLE}): "${title}"`);
 
-  if (!desc) fail(rel, `[${route.path}] missing description constant (DESC_EN/DESC)`);
+  if (!desc) fail(rel, `[${route.path}] missing meta description`);
   else if (desc.length > MAX_DESC)
     fail(rel, `[${route.path}] description is ${desc.length} chars (> ${MAX_DESC})`);
 
