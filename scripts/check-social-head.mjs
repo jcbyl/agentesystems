@@ -98,6 +98,53 @@ const REQUIRED_OG_IMAGE_WIDTH = "1200";
 const REQUIRED_OG_IMAGE_HEIGHT = "630";
 const ALLOWED_OG_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
+// EN/ES bilingual marker detection.
+//
+// A description satisfies the bilingual rule if ANY of these match. We
+// accept localized phrasings so a route can write its own copy without
+// being forced into the literal "EN/ES" shorthand.
+//
+//   1. Explicit code markers:        "EN/ES", "ES/EN", "EN | ES", "EN · ES"
+//   2. Word markers (either lang):   "bilingual", "bilingüe", "bilingue"
+//   3. Phrase markers (either lang): "English and Spanish",
+//                                    "Spanish and English",
+//                                    "inglés y español",
+//                                    "español e inglés",
+//                                    "en inglés y en español"
+//   4. Side-by-side prefix split:    "EN: … ES: …", "EN — … ES — …",
+//                                    "English: … Spanish: …"
+//   5. Heuristic split: description contains a "|" or "·" separator AND
+//      one side carries Spanish-only characters (á é í ó ú ñ ü ¿ ¡),
+//      which indicates the copy itself is written in both languages
+//      even if the route never uses the word "bilingual".
+const BILINGUAL_PATTERNS = [
+  /\bEN\s*[\/|·\-–]\s*ES\b/i,
+  /\bES\s*[\/|·\-–]\s*EN\b/i,
+  /\bbiling[uü]e?\b/i,
+  /\bbilingual\b/i,
+  /\bEnglish\s+(?:and|&|\+|y)\s+Spanish\b/i,
+  /\bSpanish\s+(?:and|&|\+|y)\s+English\b/i,
+  /\bingl[eé]s\s+(?:y|e|&|\+|and)\s+espa[nñ]ol\b/i,
+  /\bespa[nñ]ol\s+(?:y|e|&|\+|and)\s+ingl[eé]s\b/i,
+  /\ben\s+ingl[eé]s\s+y\s+(?:en\s+)?espa[nñ]ol\b/i,
+  /\bEN\s*[:\-–—]\s*.+?\bES\s*[:\-–—]/is,
+  /\bEnglish\s*[:\-–—]\s*.+?\bSpanish\s*[:\-–—]/is,
+];
+
+function hasBilingualMarker(desc) {
+  if (!desc) return false;
+  for (const re of BILINGUAL_PATTERNS) {
+    if (re.test(desc)) return true;
+  }
+  // Heuristic split: "|" or "·" separator AND Spanish-only characters
+  // somewhere in the text. Spanish-only chars do not appear in plain
+  // English copy, so their presence alongside a separator strongly
+  // implies a parallel-language description.
+  const hasSeparator = /\s[|·]\s/.test(desc);
+  const hasSpanishChars = /[áéíóúñü¿¡]/i.test(desc);
+  return hasSeparator && hasSpanishChars;
+}
+
 function validateImageTags(route, effective, { src, file } = {}) {
   const get = (k) => effective.get(k)?.content ?? null;
   const ogImage = get("property:og:image");
