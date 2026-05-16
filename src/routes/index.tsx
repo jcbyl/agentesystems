@@ -968,11 +968,6 @@ function HowItWorks() {
   );
 }
 
-/* ---------- FINAL CTA ---------- */
-function FinalCTA() {
-  return null; // placeholder marker for patch ordering; real fn below
-}
-
 /* ---------- CONTACT ---------- */
 function Contact() {
   const { t, lang } = useI18n();
@@ -1069,7 +1064,8 @@ function Contact() {
   );
 }
 
-function FinalCTAReal() {
+/* ---------- FINAL CTA ---------- */
+function FinalCTA() {
   const { t } = useI18n();
   return (
     <section className="relative overflow-hidden text-center" style={{ padding: "100px 28px" }}>
