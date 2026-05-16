@@ -4,7 +4,7 @@ import { z } from "zod";
 
 /**
  * Hidden head/meta inspector. Not linked from the UI; reach it via
- * /_debug/head?path=/demo. Renders the target route inside a same-origin
+ * /debug/head?path=/demo. Renders the target route inside a same-origin
  * iframe and reads its computed <head> after load, so you see exactly
  * the tags TanStack Router resolved (root + leaf merge, dynamic effects
  * like the i18n locale/alt rewrites in src/lib/i18n.tsx, anything
@@ -18,7 +18,7 @@ const Search = z.object({
   path: z.string().startsWith("/").default("/"),
 });
 
-export const Route = createFileRoute("/_debug/head")({
+export const Route = createFileRoute("/debug/head")({
   validateSearch: Search.parse,
   head: () => ({
     meta: [

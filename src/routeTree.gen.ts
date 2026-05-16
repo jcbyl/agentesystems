@@ -19,7 +19,7 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as BeautyRouteImport } from './routes/beauty'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DebugHeadRouteImport } from './routes/_debug.head'
+import { Route as DebugHeadRouteImport } from './routes/debug.head'
 import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fallback.$'
 
 const SolarRoute = SolarRouteImport.update({
@@ -73,8 +73,8 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DebugHeadRoute = DebugHeadRouteImport.update({
-  id: '/_debug/head',
-  path: '/head',
+  id: '/debug/head',
+  path: '/debug/head',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiIconFallbackSplatRoute = ApiIconFallbackSplatRouteImport.update({
@@ -94,7 +94,7 @@ export interface FileRoutesByFullPath {
   '/real-estate': typeof RealEstateRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
-  '/head': typeof DebugHeadRoute
+  '/debug/head': typeof DebugHeadRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesByTo {
@@ -108,7 +108,7 @@ export interface FileRoutesByTo {
   '/real-estate': typeof RealEstateRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
-  '/head': typeof DebugHeadRoute
+  '/debug/head': typeof DebugHeadRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesById {
@@ -123,7 +123,7 @@ export interface FileRoutesById {
   '/real-estate': typeof RealEstateRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
-  '/_debug/head': typeof DebugHeadRoute
+  '/debug/head': typeof DebugHeadRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRouteTypes {
@@ -139,7 +139,7 @@ export interface FileRouteTypes {
     | '/real-estate'
     | '/sitemap.xml'
     | '/solar'
-    | '/head'
+    | '/debug/head'
     | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -153,7 +153,7 @@ export interface FileRouteTypes {
     | '/real-estate'
     | '/sitemap.xml'
     | '/solar'
-    | '/head'
+    | '/debug/head'
     | '/api/icon-fallback/$'
   id:
     | '__root__'
@@ -167,7 +167,7 @@ export interface FileRouteTypes {
     | '/real-estate'
     | '/sitemap.xml'
     | '/solar'
-    | '/_debug/head'
+    | '/debug/head'
     | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
 }
@@ -258,10 +258,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_debug/head': {
-      id: '/_debug/head'
-      path: '/head'
-      fullPath: '/head'
+    '/debug/head': {
+      id: '/debug/head'
+      path: '/debug/head'
+      fullPath: '/debug/head'
       preLoaderRoute: typeof DebugHeadRouteImport
       parentRoute: typeof rootRouteImport
     }
