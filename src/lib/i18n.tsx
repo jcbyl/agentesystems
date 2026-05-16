@@ -1,31 +1,76 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 type Lang = "en" | "es";
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: <T,>(en: T, es: T) => T };
 
+const STORAGE_KEY = "agente-lang";
+const COOKIE_KEY = "agente-lang";
+const SYNC_EVENT = "agente-lang-change";
+
 const I18nCtx = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (en) => en });
 
+function readCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+function detectInitialLang(): Lang {
+  if (typeof window === "undefined") return "en"; // SSR — hydration will reconcile
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY) ?? readCookie(COOKIE_KEY);
+    if (stored === "en" || stored === "es") return stored;
+  } catch {}
+  const nav = (typeof navigator !== "undefined" ? navigator.language : "en").toLowerCase();
+  return nav.startsWith("es") ? "es" : "en";
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
+  // SSR-safe: server renders "en"; client immediately reconciles in the first effect
+  // without a hydration mismatch because state changes after mount.
   const [lang, setLangState] = useState<Lang>("en");
 
+  // Hydrate from storage/cookie/navigator on mount
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("agente-lang") : null;
-    if (stored === "en" || stored === "es") {
-      setLangState(stored);
-    } else if (typeof navigator !== "undefined") {
-      const nav = (navigator.language || "en").toLowerCase();
-      setLangState(nav.startsWith("es") ? "es" : "en");
-    }
+    const detected = detectInitialLang();
+    setLangState((prev) => (prev === detected ? prev : detected));
   }, []);
 
+  // Keep <html lang="…"> attribute in sync
   useEffect(() => {
     if (typeof document !== "undefined") document.documentElement.lang = lang;
   }, [lang]);
 
-  const setLang = (l: Lang) => {
+  // Cross-tab + same-tab sync. Other tabs fire `storage`; same-tab consumers
+  // (e.g., multiple providers) get a custom event so they update without reload.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY && (e.newValue === "en" || e.newValue === "es")) {
+        setLangState(e.newValue);
+      }
+    };
+    const onCustom = (e: Event) => {
+      const next = (e as CustomEvent<Lang>).detail;
+      if (next === "en" || next === "es") setLangState(next);
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(SYNC_EVENT, onCustom as EventListener);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(SYNC_EVENT, onCustom as EventListener);
+    };
+  }, []);
+
+  const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    try { localStorage.setItem("agente-lang", l); } catch {}
-  };
+    try {
+      localStorage.setItem(STORAGE_KEY, l);
+      // 1-year cookie so future SSR/middleware can read it if needed
+      document.cookie = `${COOKIE_KEY}=${l}; Path=/; Max-Age=31536000; SameSite=Lax`;
+      window.dispatchEvent(new CustomEvent<Lang>(SYNC_EVENT, { detail: l }));
+    } catch {}
+  }, []);
 
   const t = <T,>(en: T, es: T): T => (lang === "es" ? es : en);
 
