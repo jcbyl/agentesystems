@@ -227,8 +227,18 @@ function Compare() {
   ];
 
   const [flashSlug, setFlashSlug] = useState<string | null>(null);
+  // Remember the chip that initiated the jump so Escape / Shift+Tab can
+  // return focus to the chip group instead of stranding the user mid-table.
+  const [lastChipSlug, setLastChipSlug] = useState<string | null>(null);
 
-  const jumpTo = (slug: string) => {
+  const focusChip = (slug: string) => {
+    const chip = document.querySelector<HTMLAnchorElement>(
+      `a[aria-controls="row-${slug}"]`
+    );
+    chip?.focus();
+  };
+
+  const jumpTo = (slug: string, opts: { fromChip?: boolean } = {}) => {
     const el = document.getElementById(`row-${slug}`);
     if (!el) return;
     // Measure the sticky nav so the highlighted row never slips behind it.
@@ -246,6 +256,13 @@ function Compare() {
     try { history.replaceState(null, "", `#row-${slug}`); } catch {}
     setFlashSlug(slug);
     window.setTimeout(() => setFlashSlug((s) => (s === slug ? null : s)), 1600);
+    if (opts.fromChip) setLastChipSlug(slug);
+    // Move focus to the row so screen readers announce it and keyboard users
+    // are placed inside the table. preventScroll keeps our computed offset.
+    const focusDelay = reduceMotion ? 0 : 320;
+    window.setTimeout(() => {
+      el.focus({ preventScroll: true });
+    }, focusDelay);
   };
 
   useEffect(() => {
