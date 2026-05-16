@@ -3,22 +3,60 @@ import { VerticalStub } from "@/components/VerticalStub";
 import { verticalForPath } from "@/lib/verticals";
 
 const vertical = verticalForPath("/medical")!;
+const URL = "https://agentesystems.lovable.app/medical";
+const TITLE_EN = "Agente.Medical — Grace · Bilingual AI Agent for Medical Practices";
+const TITLE_ES = "Agente.Medical — Grace · Agente IA bilingüe para consultas médicas";
+const DESC_EN =
+  "Grace answers every call, text, and web inquiry in under a second — bilingual EN/ES/Spanglish. HIPAA-aware intake, insurance verification, appointment booking, and pre-visit instructions for US medical practices.";
+const DESC_ES =
+  "Grace responde cada llamada, mensaje y consulta web en menos de un segundo — bilingüe EN/ES/Spanglish. Intake con conciencia HIPAA, verificación de seguro, agenda de citas e instrucciones previas para consultas médicas en EE.UU.";
 
 export const Route = createFileRoute("/medical")({
   head: () => ({
     meta: [
-      { title: "Agente.Medical — Grace · AI Agent for Medical Practices" },
+      { title: TITLE_EN },
+      { name: "description", content: `${DESC_EN} | ${DESC_ES}` },
+      { name: "keywords", content: "bilingual medical AI, Spanish speaking medical receptionist, HIPAA AI agent, clinic intake automation, appointment booking, EN/ES, Spanglish, agente IA médico, recepcionista virtual bilingüe" },
+      { property: "og:site_name", content: "Agente.Systems" },
+      { property: "og:title", content: TITLE_EN },
+      { property: "og:description", content: DESC_EN },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: URL },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:locale:alternate", content: "es_US" },
+      { property: "og:image:alt", content: "Grace — bilingual AI agent for medical practices" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: TITLE_EN },
+      { name: "twitter:description", content: DESC_EN },
+      { name: "twitter:image:alt", content: "Grace — bilingual AI agent for medical practices" },
+    ],
+    links: [
+      { rel: "canonical", href: URL },
+    ],
+    scripts: [
       {
-        name: "description",
-        content:
-          "Grace is your bilingual AI agent for medical practices. Built for US clinics. EN / ES / Spanglish.",
-      },
-      { property: "og:title", content: "Agente.Medical — Grace" },
-      {
-        property: "og:description",
-        content: "Bilingual AI agent for medical practices. Talk to Grace today.",
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Agente.Medical — Grace",
+          serviceType: "Bilingual AI agent for medical practices",
+          provider: {
+            "@type": "Organization",
+            name: "Agente.Systems",
+            url: "https://agentesystems.lovable.app",
+          },
+          areaServed: "United States",
+          availableLanguage: ["en", "es"],
+          description: DESC_EN,
+          url: URL,
+        }),
       },
     ],
   }),
   component: () => <VerticalStub vertical={vertical} />,
 });
+
+// Surface ES metadata so it's discoverable in source even though OG locale
+// alternates carry the bilingual signal for crawlers.
+export const _ES_META = { title: TITLE_ES, description: DESC_ES };
