@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs",
     "check:icons": "node scripts/check-icon-links.mjs",
     "check:social-head": "node scripts/check-social-head.mjs",
+    "report:social-head": "node scripts/report-social-head.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
