@@ -11,7 +11,7 @@ const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 const TITLE_EN = "Agente.Medical — Grace · Bilingual Clinic AI Agent";
 const TITLE_ES = "Agente.Medical — Grace · Agente IA bilingüe para clínicas";
 const DESC_EN =
-  "Grace answers every call, text, and web inquiry in under a second — bilingual EN/ES. HIPAA-aware intake, insurance verification, and appointment booking for US clinics.";
+  "Grace answers calls, texts, and web inquiries in under a second — bilingual EN/ES. HIPAA-aware intake, insurance checks, and booking for US clinics.";
 const DESC_ES =
   "Grace responde cada llamada y mensaje en menos de un segundo — bilingüe EN/ES. Intake HIPAA, verificación de seguro y agenda de citas para clínicas en EE.UU.";
 
