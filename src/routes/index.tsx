@@ -202,7 +202,7 @@ function Compare() {
     [t("Latino/Hispanic market", "Mercado latino/hispano"), { icon: "x", text: t("Not designed for it", "No está diseñado para esto") }, { icon: "ok", text: t("Native bilingual — the whole point", "Bilingüe nativo — ese es el punto") }],
     [t("Integrations", "Integraciones"), { icon: "warn", text: t("Email, calendar, basic webhooks", "Correo, calendario, webhooks básicos") }, { icon: "ok", text: t("WhatsApp · SMS · CRM · webhooks · portals", "WhatsApp · SMS · CRM · webhooks · portales") }],
     [t("Compliance & privacy", "Cumplimiento y privacidad"), { icon: "x", text: t("No HIPAA, no BAA, generic privacy", "Sin HIPAA, sin BAA, privacidad genérica") }, { icon: "ok", text: t("HIPAA-ready (Grace), BAA available, data stays in-region", "Listo para HIPAA (Grace), BAA disponible, datos en tu región") }],
-    [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("<60 seconds, 24/7 — guaranteed in writing", "<60 segundos, 24/7 — garantizado por escrito") }],
+    [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("Under 60s response, 24/7 — guaranteed in writing", "Respuesta en menos de 60s, 24/7 — garantizado por escrito") }],
   ];
 
   // Stable slugs (EN-derived) for deep-linking — one per row, same order.
