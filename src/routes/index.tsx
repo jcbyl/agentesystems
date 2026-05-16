@@ -5,6 +5,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import { demoUrl } from "@/lib/demo-link";
+import { hreflangLinks } from "@/lib/hreflang";
 import ogImageUrl from "@/assets/og-home.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
