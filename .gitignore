@@ -34,3 +34,6 @@ dist-ssr
 # Playwright
 playwright-report/
 test-results/
+
+# Generated SEO/share-tag reports
+reports/
