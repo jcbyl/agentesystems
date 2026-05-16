@@ -59,73 +59,135 @@ function assertNoRuntimeErrors(
   ).toEqual([]);
 }
 
-test.describe("/real-estate smoke", () => {
-  test("renders #features, #lifecycle, #pricing with no runtime errors", async ({
-    page,
-  }) => {
-    const { pageErrors, consoleErrors } = attachErrorCollectors(page);
+/**
+ * Locale fixtures.
+ *
+ *   • `storageLang` is the value the app's i18n layer reads from localStorage
+ *     (`agente-lang`). Both routes use this key, so flipping it switches the
+ *     entire UI between English and Spanish copy.
+ *
+ *   • `acceptLanguage` is sent on every request so the server-rendered HTML
+ *     and any Accept-Language-keyed responses (e.g. the localized
+ *     /manifest.webmanifest) match the client locale on first paint —
+ *     otherwise the post-reload locale wouldn't be applied during SSR and
+ *     hydration could log warnings.
+ *
+ *   • `marker` is a copy fragment guaranteed to appear in the rendered DOM
+ *     for that locale. Asserting it proves the smoke test really exercised
+ *     the localized render path instead of silently falling back to English.
+ */
+const LOCALES = [
+  {
+    code: "en",
+    storageLang: "en",
+    acceptLanguage: "en-US,en;q=0.9",
+    home: { marker: /How it works/i },
+    realEstate: { marker: /How it works/i },
+  },
+  {
+    code: "es",
+    storageLang: "es",
+    acceptLanguage: "es-MX,es;q=0.9,en;q=0.5",
+    home: { marker: /Cómo funciona/i },
+    realEstate: { marker: /Cómo funciona/i },
+  },
+] as const;
 
-    const response = await page.goto("/real-estate", { waitUntil: "networkidle" });
-    expect(response?.status(), "GET /real-estate").toBe(200);
+for (const locale of LOCALES) {
+  test.describe(`/real-estate smoke [${locale.code}]`, () => {
+    test.use({ extraHTTPHeaders: { "Accept-Language": locale.acceptLanguage } });
 
-    // Force EN so any locale-conditional copy lookups don't throw.
-    await page.evaluate(() => {
-      try { localStorage.setItem("agente-lang", "en"); } catch {}
+    test(`renders #features, #lifecycle, #pricing with no runtime errors (${locale.code})`, async ({
+      page,
+    }) => {
+      const { pageErrors, consoleErrors } = attachErrorCollectors(page);
+
+      const response = await page.goto("/real-estate", { waitUntil: "networkidle" });
+      expect(response?.status(), "GET /real-estate").toBe(200);
+
+      await page.evaluate((lang) => {
+        try { localStorage.setItem("agente-lang", lang); } catch {}
+      }, locale.storageLang);
+      await page.reload({ waitUntil: "networkidle" });
+
+      for (const id of ["features", "lifecycle", "pricing"] as const) {
+        const section = page.locator(`section#${id}`);
+        await expect(section, `section#${id} should exist`).toHaveCount(1);
+        await section.scrollIntoViewIfNeeded();
+        await expect(section, `section#${id} should be visible`).toBeVisible();
+        const text = (await section.innerText()).trim();
+        expect(text.length, `section#${id} text length`).toBeGreaterThan(20);
+      }
+
+      // Prove the localized render path actually ran.
+      await expect(
+        page.locator("body").getByText(locale.realEstate.marker).first(),
+        `${locale.code} marker on /real-estate`,
+      ).toBeVisible();
+
+      // Document language attr should match the active locale.
+      const htmlLang = await page.locator("html").getAttribute("lang");
+      expect(htmlLang ?? "", `<html lang> on /real-estate`).toMatch(
+        new RegExp(`^${locale.storageLang}(\\b|-)`, "i"),
+      );
+
+      assertNoRuntimeErrors(pageErrors, consoleErrors, `/real-estate [${locale.code}]`);
     });
-    await page.reload({ waitUntil: "networkidle" });
-
-    for (const id of ["features", "lifecycle", "pricing"] as const) {
-      const section = page.locator(`section#${id}`);
-      await expect(section, `section#${id} should exist`).toHaveCount(1);
-      await section.scrollIntoViewIfNeeded();
-      await expect(section, `section#${id} should be visible`).toBeVisible();
-      // Sanity-check non-empty rendered text so an empty shell doesn't pass.
-      const text = (await section.innerText()).trim();
-      expect(text.length, `section#${id} text length`).toBeGreaterThan(20);
-    }
-
-    assertNoRuntimeErrors(pageErrors, consoleErrors, "/real-estate");
   });
-});
 
-test.describe("/ home smoke — VS Lindy table, How it works, Verticals grid", () => {
-  test("renders #compare, #how, #verticals with no runtime errors", async ({
-    page,
-  }) => {
-    const { pageErrors, consoleErrors } = attachErrorCollectors(page);
+  test.describe(`/ home smoke — VS Lindy + How it works + Verticals [${locale.code}]`, () => {
+    test.use({ extraHTTPHeaders: { "Accept-Language": locale.acceptLanguage } });
 
-    const response = await page.goto("/", { waitUntil: "networkidle" });
-    expect(response?.status(), "GET /").toBe(200);
+    test(`renders #compare, #how, #verticals with no runtime errors (${locale.code})`, async ({
+      page,
+    }) => {
+      const { pageErrors, consoleErrors } = attachErrorCollectors(page);
 
-    await page.evaluate(() => {
-      try { localStorage.setItem("agente-lang", "en"); } catch {}
-      try { localStorage.setItem("agente-compare-view", "lindy"); } catch {}
+      const response = await page.goto("/", { waitUntil: "networkidle" });
+      expect(response?.status(), "GET /").toBe(200);
+
+      await page.evaluate((lang) => {
+        try { localStorage.setItem("agente-lang", lang); } catch {}
+        try { localStorage.setItem("agente-compare-view", "lindy"); } catch {}
+      }, locale.storageLang);
+      await page.reload({ waitUntil: "networkidle" });
+
+      for (const id of ["compare", "how", "verticals"] as const) {
+        const section = page.locator(`section#${id}`);
+        await expect(section, `section#${id} should exist`).toHaveCount(1);
+        await section.scrollIntoViewIfNeeded();
+        await expect(section, `section#${id} should be visible`).toBeVisible();
+        const text = (await section.innerText()).trim();
+        expect(text.length, `section#${id} text length`).toBeGreaterThan(20);
+      }
+
+      // "Lindy" is a proper noun and stays untranslated across locales.
+      await expect(
+        page.locator("section#compare").getByText(/Lindy/).first(),
+        "VS Lindy table should mention Lindy",
+      ).toBeVisible();
+
+      // Verticals grid should expose multiple vertical cards.
+      const verticalsCards = page.locator(
+        "section#verticals a, section#verticals article, section#verticals [role='article']",
+      );
+      expect(
+        await verticalsCards.count(),
+        "verticals grid should render at least 3 cards",
+      ).toBeGreaterThanOrEqual(3);
+
+      // Locale marker — confirms the home page actually rendered in this language.
+      await expect(
+        page.locator("body").getByText(locale.home.marker).first(),
+        `${locale.code} marker on /`,
+      ).toBeVisible();
+
+      const htmlLang = await page.locator("html").getAttribute("lang");
+      expect(htmlLang ?? "", `<html lang> on /`).toMatch(
+        new RegExp(`^${locale.storageLang}(\\b|-)`, "i"),
+      );
+
+      assertNoRuntimeErrors(pageErrors, consoleErrors, `/ [${locale.code}]`);
     });
-    await page.reload({ waitUntil: "networkidle" });
-
-    for (const id of ["compare", "how", "verticals"] as const) {
-      const section = page.locator(`section#${id}`);
-      await expect(section, `section#${id} should exist`).toHaveCount(1);
-      await section.scrollIntoViewIfNeeded();
-      await expect(section, `section#${id} should be visible`).toBeVisible();
-      const text = (await section.innerText()).trim();
-      expect(text.length, `section#${id} text length`).toBeGreaterThan(20);
-    }
-
-    // VS Lindy table specifically should render a comparison row labeled "Lindy".
-    await expect(
-      page.locator("section#compare").getByText(/Lindy/).first(),
-      "VS Lindy table should mention Lindy",
-    ).toBeVisible();
-
-    // Verticals grid should expose multiple vertical cards (Real Estate, etc.).
-    const verticalsCards = page
-      .locator("section#verticals a, section#verticals article, section#verticals [role='article']");
-    expect(
-      await verticalsCards.count(),
-      "verticals grid should render at least 3 cards",
-    ).toBeGreaterThanOrEqual(3);
-
-    assertNoRuntimeErrors(pageErrors, consoleErrors, "/");
   });
-});
+}
