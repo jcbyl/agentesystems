@@ -475,6 +475,33 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
         actualPath,
         `${legacyPath} should redirect to ${expectedPath}, got ${actualPath}`,
       ).toBe(expectedPath);
+
+      // Redirect itself must be short-cached with revalidation so legacy
+      // aliases can be re-pointed without clients pinning a stale target.
+      const cacheControl = resp.headers()["cache-control"] ?? "";
+      expect(
+        cacheControl.toLowerCase().replace(/\s+/g, ""),
+        `${legacyPath} Cache-Control on 302`,
+      ).toBe("public,max-age=300,must-revalidate");
+
+      // Follow-up: the canonical target must serve a real PNG (200 + image/png).
+      const followUp = await request.get(`${baseURL}${actualPath}`, {
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(
+        followUp.status(),
+        `${legacyPath} → ${actualPath} follow-up status`,
+      ).toBe(200);
+      expect(
+        followUp.headers()["content-type"] ?? "",
+        `${legacyPath} → ${actualPath} content-type`,
+      ).toMatch(/image\/png/);
+      const followBody = await followUp.body();
+      expect(
+        followBody.byteLength,
+        `${legacyPath} → ${actualPath} body size`,
+      ).toBeGreaterThan(100);
     }
   });
 });
