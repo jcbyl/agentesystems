@@ -1,22 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
-import { demoUrl, demoUrlFromForm, type DemoFormPayload } from "@/lib/demo-link";
+import { demoUrl } from "@/lib/demo-link";
 import { ogFallbackPair } from "@/lib/og-fallback";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const URL = `${ORIGIN}/demo`;
 const TITLE_EN = "Book a Demo — Agente.Systems · Bilingual EN/ES AI Agents";
 const DESC_EN =
-  "See Agente live: bilingual EN/ES AI agents for real estate, construction, solar, and medical teams. WhatsApp-native, live in 24 hours. Pick a time or message us directly.";
+  "Try Agente live: bilingual EN/ES AI agents for real estate, construction, solar, and medical teams. WhatsApp-native, live in 24 hours. Start the demo in WhatsApp.";
 const DESC_ES =
-  "Mira Agente en vivo: agentes IA bilingües EN/ES para bienes raíces, construcción, solar y consultas médicas. Nativo en WhatsApp, en vivo en 24 horas. Agenda una hora o escríbenos.";
-// Seeded 1200×630 fallback rendered at build time by
-// scripts/gen-og-fallbacks.mjs (public/og-fallback/demo.png). Used so
-// /demo gets a unique share preview instead of inheriting the
-// sitewide og-default card.
+  "Prueba Agente en vivo: agentes IA bilingües EN/ES para bienes raíces, construcción, solar y consultas médicas. Nativo en WhatsApp, en vivo en 24 horas. Empieza la demo por WhatsApp.";
 const OG = ogFallbackPair("demo");
 
 export const Route = createFileRoute("/demo")({
@@ -47,235 +42,115 @@ export const Route = createFileRoute("/demo")({
   component: DemoPage,
 });
 
-const VERTICALS = [
-  { value: "real-estate", en: "Real estate", es: "Bienes raíces" },
-  { value: "construction", en: "Construction", es: "Construcción" },
-  { value: "solar", en: "Solar", es: "Solar" },
-  { value: "medical", en: "Medical", es: "Médica" },
-  { value: "beauty", en: "Beauty & wellness", es: "Belleza y bienestar" },
-  { value: "other", en: "Other", es: "Otro" },
-];
+function WhatsAppIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1s-.8.9-1 1.1c-.2.2-.4.2-.7.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.2-.5s0-.4-.1-.5c-.1-.1-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.5 1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4c1.4.8 3 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z" />
+    </svg>
+  );
+}
 
 function DemoPage() {
   const { t, lang } = useI18n();
-  const [form, setForm] = useState<DemoFormPayload>({
-    name: "",
-    company: "",
-    vertical: "",
-    email: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  function update<K extends keyof DemoFormPayload>(key: K, value: string) {
-    setForm((f) => ({ ...f, [key]: value }));
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.name?.trim()) return;
-    const url = demoUrlFromForm(lang, form);
-    setSubmitted(true);
-    // Open in a new tab so the user keeps the confirmation state on /demo.
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-
-  const labelCls = "block text-[12px] font-mono font-semibold tracking-[.14em] uppercase mb-2";
-  const inputCls =
-    "w-full px-4 py-3 rounded-lg bg-[rgba(244,237,227,.04)] border border-[var(--rule)] text-[var(--cream)] text-[15px] placeholder:text-[rgba(244,237,227,.35)] focus:outline-none focus:border-[var(--coral)] transition-colors";
+  const wa = demoUrl(lang);
 
   return (
     <div className="min-h-screen">
       <SiteNav />
-      <section className="px-7 py-[80px]">
-        <div className="max-w-[920px] mx-auto">
-          <div className="text-center mb-12">
-            <div className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
-              {t("Book a demo", "Reservar demo")}
-            </div>
-            <h1
-              className="font-extrabold text-[var(--cream)] mx-auto mb-4"
-              style={{ fontSize: "clamp(32px,5vw,56px)", lineHeight: 0.98, letterSpacing: "-.028em", maxWidth: "20ch" }}
+      <section className="px-7 py-[100px]" data-cta-location="demo-hero">
+        <div className="max-w-[820px] mx-auto text-center">
+          <div className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
+            {t("Book a demo", "Reservar demo")}
+          </div>
+          <h1
+            className="font-extrabold text-[var(--cream)] mx-auto mb-5"
+            style={{ fontSize: "clamp(32px,5vw,56px)", lineHeight: 0.98, letterSpacing: "-.028em", maxWidth: "20ch" }}
+          >
+            {t("See your bilingual agent in action.", "Mira a tu agente bilingüe en acción.")}
+          </h1>
+          <p className="text-[17px] leading-[1.55] mx-auto mb-9" style={{ color: "rgba(244,237,227,.7)", maxWidth: "58ch" }}>
+            {t(
+              "The demo lives where your customers already are: WhatsApp. Tap below to start a live conversation with Agente — ask anything, in English, Spanish, or Spanglish.",
+              "La demo vive donde tus clientes ya están: WhatsApp. Toca abajo para empezar una conversación en vivo con Agente — pregunta lo que sea, en inglés, español o Spanglish."
+            )}
+          </p>
+
+          <div className="flex gap-3 justify-center flex-wrap mb-6">
+            <a
+              href={wa}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-[17px] font-bold text-white transition-transform hover:-translate-y-px"
+              style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
             >
-              {t("See your bilingual agent in action.", "Mira a tu agente bilingüe en acción.")}
-            </h1>
-            <p className="text-[17px] leading-[1.55] mx-auto" style={{ color: "rgba(244,237,227,.7)", maxWidth: "56ch" }}>
-              {t(
-                "Tell us a bit about your business and we'll show you exactly how Agente would handle your leads — in English, Spanish, or Spanglish.",
-                "Cuéntanos un poco sobre tu negocio y te mostramos exactamente cómo Agente manejaría tus leads — en inglés, español o Spanglish."
-              )}
-            </p>
+              <WhatsAppIcon /> {t("Start demo on WhatsApp", "Empezar demo en WhatsApp")}
+            </a>
+            <a
+              href="tel:+17878100749"
+              className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-[17px] font-bold text-[var(--cream)] border border-[var(--rule)] transition-transform hover:-translate-y-px"
+              style={{ background: "rgba(244,237,227,.08)" }}
+            >
+              {t("Or call +1 787 810 0749", "O llama +1 787 810 0749")}
+            </a>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-[1.2fr_1fr]">
-            <form
-              onSubmit={handleSubmit}
-              className="p-7 rounded-2xl border border-[var(--rule)]"
-              style={{ background: "rgba(244,237,227,.03)" }}
-            >
-              <div className="grid gap-5">
-                <div>
-                  <label htmlFor="demo-name" className={labelCls} style={{ color: "var(--soft)" }}>
-                    {t("Your name", "Tu nombre")} *
-                  </label>
-                  <input
-                    id="demo-name"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    value={form.name}
-                    onChange={(e) => update("name", e.target.value)}
-                    className={inputCls}
-                    placeholder={t("Maria Rodriguez", "María Rodríguez")}
-                  />
+          <p className="font-mono text-[11px] tracking-[.06em]" style={{ color: "var(--softer)" }}>
+            {t(
+              "NO FORMS  ·  NO CALENDAR INVITE  ·  REAL CONVERSATION IN <2 MIN",
+              "SIN FORMULARIOS  ·  SIN INVITACIÓN DE CALENDARIO  ·  CONVERSACIÓN REAL EN <2 MIN"
+            )}
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2 mt-14 text-left">
+            {[
+              {
+                k: t("Why no form?", "¿Por qué sin formulario?"),
+                v: t(
+                  "Because Agente is the form. The same conversation that books your demo is the one your customers will have when they reach you.",
+                  "Porque Agente es el formulario. La misma conversación que reserva tu demo es la que tendrán tus clientes cuando te contacten."
+                ),
+              },
+              {
+                k: t("What we'll cover", "Qué cubrimos"),
+                v: t(
+                  "Your real lead flow, EN/ES handoff, after-hours coverage, and how Agente plugs into WhatsApp + your CRM. ~30 minutes, live.",
+                  "Tu flujo real de leads, traspaso EN/ES, cobertura fuera de horario, y cómo Agente se conecta a WhatsApp + tu CRM. ~30 minutos, en vivo."
+                ),
+              },
+              {
+                k: t("Mon–Fri · 9am–7pm AST", "Lun–Vie · 9am–7pm AST"),
+                v: t(
+                  "Outside hours, Agente itself replies and books the slot for you. Same number, same chat.",
+                  "Fuera de horario, Agente mismo responde y reserva el espacio. Mismo número, mismo chat."
+                ),
+              },
+              {
+                k: t("Prefer to read first?", "¿Prefieres leer primero?"),
+                v: (
+                  <>
+                    {t("Browse vertical pages: ", "Mira las páginas por industria: ")}
+                    <Link to="/real-estate" className="underline hover:text-[var(--cream)]">{t("Real estate", "Bienes raíces")}</Link>
+                    {" · "}
+                    <Link to="/construction" className="underline hover:text-[var(--cream)]">{t("Construction", "Construcción")}</Link>
+                    {" · "}
+                    <Link to="/solar" className="underline hover:text-[var(--cream)]">Solar</Link>
+                  </>
+                ),
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-5 rounded-2xl border border-[var(--rule)]"
+                style={{ background: "rgba(244,237,227,.03)" }}
+              >
+                <div className="font-mono text-[11px] font-semibold tracking-[.14em] uppercase mb-2" style={{ color: "var(--coral)" }}>
+                  {item.k}
                 </div>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="demo-company" className={labelCls} style={{ color: "var(--soft)" }}>
-                      {t("Company", "Empresa")}
-                    </label>
-                    <input
-                      id="demo-company"
-                      type="text"
-                      autoComplete="organization"
-                      value={form.company}
-                      onChange={(e) => update("company", e.target.value)}
-                      className={inputCls}
-                      placeholder={t("Acme Realty", "Acme Realty")}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="demo-email" className={labelCls} style={{ color: "var(--soft)" }}>
-                      {t("Email", "Correo")}
-                    </label>
-                    <input
-                      id="demo-email"
-                      type="email"
-                      autoComplete="email"
-                      value={form.email}
-                      onChange={(e) => update("email", e.target.value)}
-                      className={inputCls}
-                      placeholder="you@company.com"
-                    />
-                  </div>
+                <div className="text-[14px] leading-[1.55]" style={{ color: "rgba(244,237,227,.75)" }}>
+                  {item.v}
                 </div>
-
-                <div>
-                  <label htmlFor="demo-vertical" className={labelCls} style={{ color: "var(--soft)" }}>
-                    {t("Industry", "Industria")}
-                  </label>
-                  <select
-                    id="demo-vertical"
-                    value={form.vertical}
-                    onChange={(e) => update("vertical", e.target.value)}
-                    className={inputCls}
-                  >
-                    <option value="">{t("Choose one…", "Selecciona…")}</option>
-                    {VERTICALS.map((v) => (
-                      <option key={v.value} value={lang === "es" ? v.es : v.en}>
-                        {lang === "es" ? v.es : v.en}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="demo-message" className={labelCls} style={{ color: "var(--soft)" }}>
-                    {t("What would you like to see?", "¿Qué te gustaría ver?")}
-                  </label>
-                  <textarea
-                    id="demo-message"
-                    rows={4}
-                    value={form.message}
-                    onChange={(e) => update("message", e.target.value)}
-                    className={`${inputCls} resize-y`}
-                    placeholder={t(
-                      "e.g. bilingual lead qualification, after-hours coverage, WhatsApp follow-ups…",
-                      "ej. calificación de leads bilingüe, cobertura fuera de horario, seguimientos por WhatsApp…"
-                    )}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-[16px] font-bold text-white transition-transform hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
-                  disabled={!form.name?.trim()}
-                >
-                  {t("Open chat to schedule →", "Abrir chat para agendar →")}
-                </button>
-
-                {submitted && (
-                  <p className="text-[13px] text-center" style={{ color: "var(--softer)" }}>
-                    {t(
-                      "Chat opened in a new tab. If it didn't, ",
-                      "Chat abierto en una nueva pestaña. Si no se abrió, "
-                    )}
-                    <a
-                      href={demoUrlFromForm(lang, form)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline hover:text-[var(--cream)]"
-                    >
-                      {t("tap here", "toca aquí")}
-                    </a>
-                    .
-                  </p>
-                )}
-                <p className="text-[12px] text-center" style={{ color: "var(--softer)" }}>
-                  {t(
-                    "No spam. We use what you share only to prep your demo.",
-                    "Sin spam. Solo usamos lo que compartes para preparar tu demo."
-                  )}
-                </p>
               </div>
-            </form>
-
-            <aside className="flex flex-col gap-4">
-              <div className="p-6 rounded-2xl border border-[var(--rule)]" style={{ background: "rgba(244,237,227,.03)" }}>
-                <div className="font-mono text-[11px] font-semibold tracking-[.14em] uppercase mb-3" style={{ color: "var(--coral)" }}>
-                  {t("Skip the form", "Salta el formulario")}
-                </div>
-                <p className="text-[14px] leading-[1.55] mb-4" style={{ color: "rgba(244,237,227,.75)" }}>
-                  {t(
-                    "Prefer to just message us? Open WhatsApp with a prefilled intro and pick a time live.",
-                    "¿Prefieres escribirnos directo? Abre WhatsApp con un mensaje listo y agenda una hora en vivo."
-                  )}
-                </p>
-                <a
-                  href={demoUrl(lang)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl text-[15px] font-bold text-[var(--cream)] border border-[var(--rule)] transition-colors hover:bg-[rgba(244,237,227,.08)]"
-                >
-                  {t("Open WhatsApp", "Abrir WhatsApp")}
-                </a>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-[var(--rule)]" style={{ background: "rgba(244,237,227,.03)" }}>
-                <div className="font-mono text-[11px] font-semibold tracking-[.14em] uppercase mb-3" style={{ color: "var(--coral)" }}>
-                  {t("Or call", "O llama")}
-                </div>
-                <a
-                  href="tel:+17878100749"
-                  className="block text-[20px] font-extrabold text-[var(--cream)] hover:text-[var(--coral)] transition-colors"
-                  style={{ letterSpacing: "-.02em" }}
-                >
-                  +1 787 810 0749
-                </a>
-                <p className="text-[12px] mt-2" style={{ color: "var(--softer)" }}>
-                  {t("Mon–Fri · 9am–7pm AST", "Lun–Vie · 9am–7pm AST")}
-                </p>
-              </div>
-
-              <ul className="text-[13px] leading-[1.6] px-2" style={{ color: "rgba(244,237,227,.65)" }}>
-                <li>· {t("30-minute live walkthrough", "Recorrido en vivo de 30 minutos")}</li>
-                <li>· {t("Built on your real lead flow", "Basado en tu flujo de leads real")}</li>
-                <li>· {t("EN / ES / Spanglish demoed", "Demo en EN / ES / Spanglish")}</li>
-                <li>· {t("No commitment, no slides", "Sin compromiso, sin slides")}</li>
-              </ul>
-            </aside>
+            ))}
           </div>
         </div>
       </section>
