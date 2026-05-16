@@ -25,7 +25,8 @@ export const Route = createFileRoute("/solar")({
       { property: "og:image:type", content: "image/jpeg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary_large_image" }
+      { name: "twitter:description", content: "Sol qualifies every solar lead in under a second — bilingual EN/ES. Books site surveys and keeps deals warm through permit, install, and PTO." },
       { name: "twitter:title", content: "Agente.Solar — Sol" },
       { name: "twitter:image", content: OG_IMAGE },
     ],

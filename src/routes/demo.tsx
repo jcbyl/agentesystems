@@ -23,7 +23,8 @@ export const Route = createFileRoute("/demo")({
       { property: "og:image:type", content: OG.type },
       { property: "og:image:width", content: OG.width },
       { property: "og:image:height", content: OG.height },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary_large_image" }
+      { name: "twitter:description", content: "Talk to Carmen, Marco, Sol, Grace, or Bella live. Bilingual EN/ES AI agents for real estate, construction, solar, medical, and beauty." },
       { name: "twitter:title", content: "Live Demo — Agente.Systems" },
       { name: "twitter:image", content: OG.url },
     ],
