@@ -1,4 +1,5 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { type APIRequestContext } from "@playwright/test";
+import { test, expect } from "./_helpers/icon-diagnostics";
 
 /**
  * Icon-link redirect stability.
@@ -98,6 +99,7 @@ test.describe("icon links: redirect stability across reloads", () => {
     page,
     playwright,
     baseURL,
+    diag,
   }) => {
     expect(baseURL, "playwright baseURL must be set").toBeTruthy();
 
@@ -185,6 +187,25 @@ test.describe("icon links: redirect stability across reloads", () => {
       // If the first probe said "not a redirect", all subsequent probes
       // should agree. If they disagree, that itself is a regression.
       const redirectsObserved = resolutions.filter((r) => r !== null);
+
+      // Record one diagnostic row per candidate, capturing whatever we
+      // learned. Final URL / status come from the first redirect we
+      // observed; "—" means "no redirect" or "no consensus".
+      const firstRedirected = redirectsObserved[0];
+      diag.record({
+        href: url,
+        finalUrl: firstRedirected?.finalUrl,
+        status: firstRedirected?.status ?? (resolutions.length ? "no-redirect" : ""),
+        note:
+          redirectsObserved.length === 0
+            ? "direct (skipped)"
+            : redirectsObserved.length !== RELOAD_COUNT
+              ? `flaky: redirected ${redirectsObserved.length}/${RELOAD_COUNT}`
+              : Array.from(new Set(redirectsObserved.map((r) => r!.finalUrl))).length === 1
+                ? `stable across ${RELOAD_COUNT} reloads`
+                : `unstable: ${new Set(redirectsObserved.map((r) => r!.finalUrl)).size} targets`,
+      });
+
       if (redirectsObserved.length === 0) {
         directSkipped.push(url);
         continue;
