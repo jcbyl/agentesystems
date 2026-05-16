@@ -1,4 +1,4 @@
-import type { TestInfo } from "@playwright/test";
+import { test as base, expect, type TestInfo } from "@playwright/test";
 
 /**
  * Per-link diagnostic recorder shared by the icon test suites
@@ -119,3 +119,22 @@ export function createIconDiagnostics() {
 }
 
 export type IconDiagnostics = ReturnType<typeof createIconDiagnostics>;
+
+/**
+ * `test` variant that exposes a `diag` fixture. The fixture creates a
+ * recorder before the test, then on teardown calls `flush(testInfo)` —
+ * which prints + attaches the per-link table only when the test failed.
+ *
+ * Usage:
+ *   import { test, expect } from "./_helpers/icon-diagnostics";
+ *   test("...", async ({ page, diag }) => { diag.record({...}); ... });
+ */
+export const test = base.extend<{ diag: IconDiagnostics }>({
+  diag: async ({}, use, testInfo) => {
+    const d = createIconDiagnostics();
+    await use(d);
+    await d.flush(testInfo);
+  },
+});
+
+export { expect };
