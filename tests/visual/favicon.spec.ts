@@ -504,4 +504,95 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
       ).toBeGreaterThan(100);
     }
   });
+
+  /**
+   * Safari/iOS auto-probes legacy apple-touch-icon filenames
+   * (`/apple-touch-icon-152x152.png`, `/apple-touch-icon-180x180.png`,
+   * `/apple-touch-icon-precomposed.png`, etc.) ONLY when the document
+   * doesn't declare an explicit `<link rel="apple-touch-icon">` for the
+   * size it wants. We declared explicit entries for 152, 167, 180 and a
+   * `apple-touch-icon-precomposed` link in `__root.tsx` precisely so
+   * those probes never happen.
+   *
+   * This test enforces both halves of that contract:
+   *
+   *   1. **Declaration**: each size Safari probes (152, 167, 180) is
+   *      present in the SSR HTML as a fingerprinted, Vite-managed
+   *      `<link rel="apple-touch-icon">`, plus a
+   *      `<link rel="apple-touch-icon-precomposed">` for pre-iOS 7.
+   *      If a future edit drops one of these, Safari will resume
+   *      probing the matching legacy filename — fail loudly here.
+   *
+   *   2. **Observation**: across the full page load (including
+   *      `networkidle`), the browser never issues a request whose
+   *      pathname looks like a legacy apple-touch-icon probe
+   *      (`/apple-touch-icon*.png` or `/apple-touch-icon-precomposed*.png`).
+   *      The only acceptable apple-touch-icon requests are for the
+   *      canonical Vite-managed asset that our `<link>` tags actually
+   *      point at — never an unhashed root-level filename.
+   */
+  test("no Safari-style legacy apple-touch-icon probes occur on page load", async ({
+    page,
+  }) => {
+    // (2) Record every request before navigation so we don't miss the
+    // early head-resolved icon fetches.
+    const probeRequests: string[] = [];
+    const LEGACY_APPLE_PROBE_RE =
+      /^\/apple-touch-icon(?:-precomposed)?(?:-\d+x\d+)?\.png$/i;
+    page.on("request", (req) => {
+      const { pathname } = new URL(req.url());
+      if (LEGACY_APPLE_PROBE_RE.test(pathname)) {
+        probeRequests.push(pathname);
+      }
+    });
+
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    // (1) Declaration contract.
+    const declared = await page
+      .locator(
+        'link[rel="apple-touch-icon"], link[rel="apple-touch-icon-precomposed"]',
+      )
+      .evaluateAll((els) =>
+        els.map((el) => ({
+          rel: el.getAttribute("rel"),
+          sizes: el.getAttribute("sizes"),
+          href: el.getAttribute("href"),
+        })),
+      );
+
+    const hasRelSize = (rel: string, sizes: string | null) =>
+      declared.some(
+        (d) =>
+          d.rel === rel &&
+          (sizes === null ? true : d.sizes === sizes) &&
+          !!d.href &&
+          VITE_ASSET_RE.test(d.href),
+      );
+
+    expect(
+      hasRelSize("apple-touch-icon", "152x152"),
+      "missing fingerprinted apple-touch-icon 152x152 — Safari will probe /apple-touch-icon-152x152.png",
+    ).toBe(true);
+    expect(
+      hasRelSize("apple-touch-icon", "167x167"),
+      "missing fingerprinted apple-touch-icon 167x167 — Safari will probe /apple-touch-icon-167x167.png",
+    ).toBe(true);
+    expect(
+      hasRelSize("apple-touch-icon", "180x180"),
+      "missing fingerprinted apple-touch-icon 180x180 — Safari will probe /apple-touch-icon-180x180.png",
+    ).toBe(true);
+    expect(
+      hasRelSize("apple-touch-icon-precomposed", null),
+      "missing fingerprinted apple-touch-icon-precomposed — old Safari will probe /apple-touch-icon-precomposed.png",
+    ).toBe(true);
+
+    // (2) Observation contract — no legacy probe requests fired.
+    expect(
+      probeRequests,
+      `unexpected legacy apple-touch-icon probe requests: ${JSON.stringify(
+        probeRequests,
+      )}`,
+    ).toEqual([]);
+  });
 });
