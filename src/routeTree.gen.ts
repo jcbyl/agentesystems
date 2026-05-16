@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
+  id: '/manifest.webmanifest',
+  path: '/manifest.webmanifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConstructionRoute = ConstructionRouteImport.update({
   id: '/construction',
   path: '/construction',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/construction'
+  fullPaths: '/' | '/construction' | '/manifest.webmanifest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/construction'
-  id: '__root__' | '/' | '/construction'
+  to: '/' | '/construction' | '/manifest.webmanifest'
+  id: '__root__' | '/' | '/construction' | '/manifest.webmanifest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConstructionRoute: typeof ConstructionRoute
+  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/manifest.webmanifest': {
+      id: '/manifest.webmanifest'
+      path: '/manifest.webmanifest'
+      fullPath: '/manifest.webmanifest'
+      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/construction': {
       id: '/construction'
       path: '/construction'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConstructionRoute: ConstructionRoute,
+  ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
