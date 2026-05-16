@@ -5,7 +5,7 @@ import { VERTICALS } from "@/lib/verticals";
 export function SiteFooter() {
   const { t } = useI18n();
   return (
-    <footer className="border-t border-[var(--rule)] pt-12 pb-8">
+    <footer className="border-t border-[var(--rule)] pt-12 pb-8" data-cta-location="site-footer">
       <div className="max-w-[1100px] mx-auto px-7 flex flex-wrap justify-between gap-10">
         <div className="max-w-[30ch]">
           <div className="font-extrabold text-[19px] tracking-[-0.02em] text-[var(--cream)] mb-2.5">
