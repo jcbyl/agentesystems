@@ -139,6 +139,45 @@ function applyIconCacheHeaders(request: Request, response: Response): Response {
   });
 }
 
+// Cache-Control policy for HTML documents.
+//
+// SSR HTML is NOT content-addressed — the same URL (e.g. `/`, `/medical`)
+// returns different markup every deploy as we ship copy, layout, and CTA
+// updates (phone link, "Book a demo" button, etc.). If a browser or
+// intermediate cache serves a stale HTML document, the user sees the old
+// UI even though the underlying fingerprinted JS/CSS assets have changed.
+//
+// Force every HTML response to revalidate on each navigation:
+//
+//   • `no-cache` — the browser MAY keep a copy but MUST revalidate with
+//     the origin before reusing it (sends a conditional GET).
+//   • `no-store` — disables disk + memory cache entirely, defeats Back/
+//     Forward Cache (bfcache) resurrection of stale HTML.
+//   • `must-revalidate` — proxies/CDNs must honor the above instead of
+//     serving stale on error.
+//
+// Fingerprinted JS/CSS/image assets keep their long-lived immutable cache
+// from `applyIconCacheHeaders` / the Vite plugin defaults; only the HTML
+// shell is forced fresh.
+function applyHtmlCacheHeaders(response: Response): Response {
+  if (response.status >= 400) return response;
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().includes("text/html")) return response;
+  // Respect any explicit Cache-Control the app set on purpose (e.g. error
+  // pages, /api/* HTML). Only override the default-empty case.
+  if (response.headers.has("cache-control")) return response;
+
+  const headers = new Headers(response.headers);
+  headers.set("cache-control", "no-store, no-cache, must-revalidate, max-age=0");
+  headers.set("pragma", "no-cache");
+  headers.set("expires", "0");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
@@ -146,7 +185,8 @@ export default {
       const rewritten = rewriteLegacyIconRequest(request);
       const response = await handler.fetch(rewritten, env, ctx);
       const normalized = await normalizeCatastrophicSsrResponse(response);
-      return applyIconCacheHeaders(request, normalized);
+      const withIconHeaders = applyIconCacheHeaders(request, normalized);
+      return applyHtmlCacheHeaders(withIconHeaders);
     } catch (error) {
       console.error(error);
       return brandedErrorResponse();
