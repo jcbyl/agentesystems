@@ -471,6 +471,22 @@ function Compare() {
             "Las implementaciones listas para HIPAA (Grace / vertical médico) requieren un Acuerdo de Asociado Comercial (BAA) firmado antes del lanzamiento. La PHI se cifra en tránsito y en reposo, los datos permanecen en tu región (EE. UU. o la región que elijas), y nunca entrenamos modelos compartidos con tus conversaciones. Para los demás verticales aplican controles alineados con SOC 2. Las capacidades de competidores mostradas arriba reflejan planes públicamente documentados al 2026 y pueden cambiar."
           )}
         </motion.p>
+
+        {/* Response-time measurement footnote */}
+        <motion.p
+          {...fadeUp}
+          className="mt-3 text-[12px] leading-[1.55] font-mono"
+          style={{ color: "rgba(244,237,227,.45)", maxWidth: "72ch" }}
+          role="note"
+        >
+          <span className="text-[var(--coral)] font-semibold tracking-[.08em] uppercase">
+            {t("Response-time note", "Nota sobre tiempo de respuesta")} —{" "}
+          </span>
+          {t(
+            'Response-time SLA measures first agent response (the lead receives a personalized, on-brand reply), not full resolution. Measured from message receipt at our gateway to outbound delivery, 24/7, including weekends and holidays. Resolution time (booking, qualification, hand-off) depends on the conversation and is reported separately in your dashboard.',
+            'El SLA de tiempo de respuesta mide la primera respuesta del agente (el lead recibe una contestación personalizada y con tu marca), no la resolución total. Se mide desde la recepción del mensaje en nuestra pasarela hasta la entrega saliente, 24/7, incluidos fines de semana y feriados. El tiempo de resolución (agendar, calificar, transferir) depende de la conversación y se reporta por separado en tu panel.'
+          )}
+        </motion.p>
       </div>
     </section>
   );
