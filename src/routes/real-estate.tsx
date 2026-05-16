@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import { demoUrl } from "@/lib/demo-link";
 import ogImageUrl from "@/assets/og-real-estate.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
