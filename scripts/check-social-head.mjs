@@ -74,7 +74,28 @@ const REQUIRED_META = [
 ];
 
 const errors = [];
-const warn = (route, msg) => errors.push(`[${route}] ${msg}`);
+const warn = (route, msg, loc = {}) => {
+  errors.push({ route, msg, file: loc.file ?? null, line: loc.line ?? null });
+};
+
+// Best-effort: find the 1-based line number of the first occurrence of
+// `needle` (a tag string like "og:image:width") in `src`. Used to point
+// CI annotations at the offending meta entry, not just the file.
+function findLine(src, needle) {
+  if (!src || !needle) return null;
+  const idx = src.indexOf(needle);
+  if (idx === -1) return null;
+  return src.slice(0, idx).split("\n").length;
+}
+
+// Extract the tag name (e.g. "og:image:width") from a REQUIRED_META key
+// ("property:og:image:width") or a free-form message, for line lookup.
+function tagFromKey(key) {
+  if (!key) return null;
+  if (key === "title") return "title";
+  const [, ...rest] = key.split(":");
+  return rest.join(":");
+}
 
 // Exact dimensions every share image must declare. 1200x630 is the
 // canonical OG/Twitter summary_large_image size — Facebook, LinkedIn,
@@ -84,7 +105,7 @@ const REQUIRED_OG_IMAGE_WIDTH = "1200";
 const REQUIRED_OG_IMAGE_HEIGHT = "630";
 const ALLOWED_OG_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-function validateImageTags(route, effective) {
+function validateImageTags(route, effective, { src, file } = {}) {
   const get = (k) => effective.get(k)?.content ?? null;
   const ogImage = get("property:og:image");
   const ogSecure = get("property:og:image:secure_url");
@@ -92,29 +113,33 @@ function validateImageTags(route, effective) {
   const ogW = get("property:og:image:width");
   const ogH = get("property:og:image:height");
   const twImage = get("name:twitter:image");
+  const at = (tag) =>
+    file ? { file, line: findLine(src, tag) ?? 1 } : {};
 
   if (ogImage && !/^https:\/\//.test(ogImage)) {
-    warn(route, `og:image must be an absolute https:// URL; got "${ogImage}"`);
+    warn(route, `og:image must be an absolute https:// URL; got "${ogImage}"`, at("og:image"));
   }
   if (ogSecure && !/^https:\/\//.test(ogSecure)) {
-    warn(route, `og:image:secure_url must be https://; got "${ogSecure}"`);
+    warn(route, `og:image:secure_url must be https://; got "${ogSecure}"`, at("og:image:secure_url"));
   }
   if (ogImage && ogSecure && ogImage !== ogSecure) {
     warn(
       route,
       `og:image:secure_url must equal og:image (LinkedIn/Slack reject mismatched URLs); got og:image="${ogImage}" vs secure_url="${ogSecure}"`,
+      at("og:image:secure_url"),
     );
   }
   if (ogW && ogW !== REQUIRED_OG_IMAGE_WIDTH) {
-    warn(route, `og:image:width must be exactly "${REQUIRED_OG_IMAGE_WIDTH}"; got "${ogW}"`);
+    warn(route, `og:image:width must be exactly "${REQUIRED_OG_IMAGE_WIDTH}"; got "${ogW}"`, at("og:image:width"));
   }
   if (ogH && ogH !== REQUIRED_OG_IMAGE_HEIGHT) {
-    warn(route, `og:image:height must be exactly "${REQUIRED_OG_IMAGE_HEIGHT}"; got "${ogH}"`);
+    warn(route, `og:image:height must be exactly "${REQUIRED_OG_IMAGE_HEIGHT}"; got "${ogH}"`, at("og:image:height"));
   }
   if (ogType && !ALLOWED_OG_IMAGE_TYPES.has(ogType)) {
     warn(
       route,
       `og:image:type must be one of ${[...ALLOWED_OG_IMAGE_TYPES].join(", ")}; got "${ogType}"`,
+      at("og:image:type"),
     );
   }
   if (ogImage && ogType) {
@@ -127,6 +152,7 @@ function validateImageTags(route, effective) {
         warn(
           route,
           `og:image:type "${ogType}" does not match og:image extension ".${ext}" (expected "${expected}")`,
+          at("og:image:type"),
         );
       }
     }
@@ -135,10 +161,11 @@ function validateImageTags(route, effective) {
     warn(
       route,
       `twitter:image must equal og:image so X and OG previews stay in sync; got og:image="${ogImage}" vs twitter:image="${twImage}"`,
+      at("twitter:image"),
     );
   }
   if (twImage && !/^https:\/\//.test(twImage)) {
-    warn(route, `twitter:image must be an absolute https:// URL; got "${twImage}"`);
+    warn(route, `twitter:image must be an absolute https:// URL; got "${twImage}"`, at("twitter:image"));
   }
 }
 
@@ -264,11 +291,13 @@ const rootHead = parseHead(ROOT_TSX);
 
 for (const route of ROUTES) {
   const filePath = join(ROUTES_DIR, route.file);
+  const relFile = `src/routes/${route.file}`;
   if (!existsSync(filePath)) {
-    warn(route.path, `route file missing: src/routes/${route.file}`);
+    warn(route.path, `route file missing: ${relFile}`, { file: relFile, line: 1 });
     continue;
   }
-  const { meta, links } = parseHead(filePath);
+  const { meta, links, src: routeSrc } = parseHead(filePath);
+  const locFor = (tag) => ({ file: relFile, line: findLine(routeSrc, tag) ?? 1 });
 
   // Merge: root first, then route overrides (child wins, matching the
   // way TanStack Router dedupes by property/name).
@@ -276,7 +305,7 @@ for (const route of ROUTES) {
 
   for (const required of REQUIRED_META) {
     if (!effective.has(required)) {
-      warn(route.path, `missing required head tag: ${required}`);
+      warn(route.path, `missing required head tag: ${required}`, { file: relFile, line: 1 });
     }
   }
 
@@ -287,19 +316,20 @@ for (const route of ROUTES) {
     warn(
       route.path,
       `twitter:card must be "summary_large_image" for leaf routes; got "${tw.content}"`,
+      locFor("twitter:card"),
     );
   }
 
-  validateImageTags(route.path, effective);
+  validateImageTags(route.path, effective, { src: routeSrc, file: relFile });
 
   // EN/ES coverage.
   const locale = effective.get("property:og:locale")?.content;
   const alt = effective.get("property:og:locale:alternate")?.content;
   if (locale && locale !== "en_US") {
-    warn(route.path, `og:locale must be "en_US"; got "${locale}"`);
+    warn(route.path, `og:locale must be "en_US"; got "${locale}"`, locFor("og:locale"));
   }
   if (alt && alt !== "es_US") {
-    warn(route.path, `og:locale:alternate must be "es_US"; got "${alt}"`);
+    warn(route.path, `og:locale:alternate must be "es_US"; got "${alt}"`, locFor("og:locale:alternate"));
   }
   const desc =
     effective.get("name:description")?.content ??
@@ -309,6 +339,7 @@ for (const route of ROUTES) {
     warn(
       route.path,
       `description / og:description has no bilingual EN/ES marker — social previews won't signal Spanish coverage`,
+      locFor("description"),
     );
   }
 
@@ -316,9 +347,9 @@ for (const route of ROUTES) {
   // covered by the canonical-dedupe rule).
   const canonical = links.find((l) => l.rel === "canonical");
   if (!canonical) {
-    warn(route.path, `missing <link rel="canonical"> in leaf route head()`);
+    warn(route.path, `missing <link rel="canonical"> in leaf route head()`, { file: relFile, line: 1 });
   } else if (canonical.href && !/^https?:\/\//.test(canonical.href) && !canonical.href.includes("URL") && !canonical.href.includes("ORIGIN")) {
-    warn(route.path, `canonical href must be absolute; got "${canonical.href}"`);
+    warn(route.path, `canonical href must be absolute; got "${canonical.href}"`, locFor("canonical"));
   }
 }
 
@@ -422,6 +453,24 @@ if (LIVE_ORIGIN) {
   await liveCheck(LIVE_ORIGIN);
 }
 
+const IS_GITHUB = process.env.GITHUB_ACTIONS === "true";
+
+function emitGithubAnnotations(items) {
+  // GitHub workflow command spec:
+  // ::error file={path},line={n},title={t}::{message}
+  // Multiline messages must escape %, \r, \n.
+  const esc = (s) =>
+    String(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  for (const e of items) {
+    const parts = [];
+    if (e.file) parts.push(`file=${e.file}`);
+    if (e.line) parts.push(`line=${e.line}`);
+    parts.push(`title=social-head: ${esc(e.route)}`);
+    const prefix = `::error ${parts.join(",")}::`;
+    process.stdout.write(`${prefix}[${e.route}] ${esc(e.msg)}\n`);
+  }
+}
+
 if (errors.length === 0) {
   console.log(
     `[check-social-head] OK — ${ROUTES.length} routes have full OG/Twitter/canonical + EN/ES coverage${
@@ -431,8 +480,15 @@ if (errors.length === 0) {
   process.exit(0);
 }
 
+if (IS_GITHUB) emitGithubAnnotations(errors);
+
 console.error(
   `[check-social-head] FAILED — ${errors.length} issue(s):\n` +
-    errors.map((e, i) => `  ${i + 1}. ${e}`).join("\n"),
+    errors
+      .map((e, i) => {
+        const where = e.file ? ` (${e.file}${e.line ? `:${e.line}` : ""})` : "";
+        return `  ${i + 1}. [${e.route}]${where} ${e.msg}`;
+      })
+      .join("\n"),
 );
 process.exit(1);
