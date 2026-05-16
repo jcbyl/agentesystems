@@ -13,8 +13,8 @@ export function SiteFooter() {
           </div>
           <p className="text-[13px] leading-[1.6]" style={{ color: "var(--softer)" }}>
             {t(
-              "The bilingual AI agent platform for real estate, construction, solar, and medical. A JCB Industries product. Built in Puerto Rico.",
-              "La plataforma bilingüe de agentes IA para bienes raíces, construcción, solar y medicina. Un producto de JCB Industries. Hecho en Puerto Rico."
+              "The bilingual AI agent platform for real estate, construction, medical, beauty, and solar. A JCB Industries product. Built in Puerto Rico.",
+              "La plataforma bilingüe de agentes IA para bienes raíces, construcción, medicina, belleza y solar. Un producto de JCB Industries. Hecho en Puerto Rico."
             )}
           </p>
         </div>
