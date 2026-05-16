@@ -24,7 +24,7 @@ export const Route = createFileRoute("/medical")({
       { property: "og:image:type", content: "image/jpeg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { name: "twitter:card", content: "summary_large_image" }
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:description", content: "Grace books, reminds, and routes — bilingual EN/ES, HIPAA-aware, live in 48 hours." },
       { name: "twitter:title", content: "Agente.Medical — Grace" },
       { name: "twitter:image", content: OG_IMAGE },

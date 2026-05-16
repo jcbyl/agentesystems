@@ -25,7 +25,7 @@ export const Route = createFileRoute("/beauty")({
       { property: "og:image:type", content: "image/jpeg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { name: "twitter:card", content: "summary_large_image" }
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:description", content: "Bella books every DM while you work — bilingual EN/ES, deposit capture, no-show reminders, live in 24 hours." },
       { name: "twitter:title", content: "Agente.Beauty — Bella" },
       { name: "twitter:image", content: OG_IMAGE },
