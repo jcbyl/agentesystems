@@ -171,6 +171,7 @@ function Stats() {
 /* ---------- COMPARE TABLE ---------- */
 function Compare() {
   const { t } = useI18n();
+  const reduceMotion = useReducedMotion();
 
   type Cell = { icon: "ok" | "x" | "warn"; text: string };
   type Competitor = { name: string; rows: Cell[] };
