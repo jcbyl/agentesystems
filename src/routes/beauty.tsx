@@ -18,7 +18,7 @@ export const Route = createFileRoute("/beauty")({
   head: () => ({
     meta: [
       { title: TITLE_EN },
-      { name: "description", content: `${DESC_EN} | ${DESC_ES}` },
+      { name: "description", content: DESC_EN },
       { name: "keywords", content: "bilingual salon AI, Spanish speaking booking assistant, Instagram DM auto-reply, spa booking automation, deposit capture, beauty no-show prevention, agente IA salón, recepción virtual bilingüe" },
       { property: "og:site_name", content: "Agente.Systems" },
       { property: "og:title", content: TITLE_EN },
