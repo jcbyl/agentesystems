@@ -5,7 +5,6 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import ogImageUrl from "@/assets/og-home.jpg";
-import { demoUrl } from "@/lib/demo-link";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
