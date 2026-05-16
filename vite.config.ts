@@ -12,4 +12,10 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    assetsInclude: ["**/*.png"],
+    build: {
+      assetsInlineLimit: 0, // never inline PNGs as data URLs — always emit fingerprinted files
+    },
+  },
 });
