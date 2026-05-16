@@ -56,7 +56,7 @@ export function SiteNav() {
             );
           })}
         </div>
-        <div className="flex items-center gap-2 md:gap-2.5">
+        <div className="flex items-center gap-2 md:gap-2.5" data-cta-location="site-nav">
           <a
             href="tel:+17878100749"
             aria-label={t("Call +1 787 810 0749", "Llamar +1 787 810 0749")}
