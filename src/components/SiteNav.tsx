@@ -6,7 +6,7 @@ export function SiteNav() {
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md border-b border-[var(--rule)]" style={{ background: "rgba(13,27,34,.94)", padding: "16px 28px" }}>
       <div className="max-w-[1100px] mx-auto flex items-center justify-between gap-4">
-        <a href="/" className="flex items-center gap-1.5 font-extrabold text-[20px] tracking-[-0.025em] text-[var(--cream)]">
+        <a href="/" className="flex items-center gap-1 font-extrabold text-[20px] tracking-[-0.045em] text-[var(--cream)]">
           <RobotLogo />
           Agente<span className="text-[var(--coral)]">.</span>Systems
         </a>
