@@ -1,0 +1,39 @@
+name: Social head check
+
+# Static validation that every public route exposes the full
+# OpenGraph + Twitter + canonical + bilingual EN/ES head surface
+# (title, description, og:*, twitter:*, og:image with exact 1200x630
+# dimensions and matching secure_url). Implementation lives in
+# scripts/check-social-head.mjs.
+#
+# Errors are emitted as GitHub workflow annotations (`::error
+# file=,line=,title=::`) so each finding shows up inline in the PR
+# "Files changed" tab pointing at the exact route file and meta tag.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  check-social-head:
+    name: Verify OG/Twitter/canonical head tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Static-only run — no Vite build required. The script parses each
+      # route file's head() directly and merges in __root.tsx defaults.
+      # GITHUB_ACTIONS=true (set automatically) triggers per-finding
+      # ::error file=...,line=...,title=...:: annotations.
+      - name: Run social-head check
+        run: bun run check:social-head
