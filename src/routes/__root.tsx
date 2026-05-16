@@ -10,13 +10,12 @@ import {
 
 import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
-
-// Fingerprinted icon URLs — Vite emits hashed filenames like
-// `/assets/icon-512-abc123.png`, so any change to the source PNG produces a
-// new URL and bypasses every browser/CDN cache without manual versioning.
-import favicon16Url from "../assets/icons/favicon-16.png?url";
-import favicon32Url from "../assets/icons/favicon-32.png?url";
-import appleTouchIconUrl from "../assets/icons/apple-touch-icon.png?url";
+// Fingerprinted icon URLs. Importing the shared module here (which references
+// every icon) ensures Vite emits all PNGs into the client bundle, even the
+// ones only used by the server-only manifest route.
+import { ICON_URLS } from "@/lib/icon-urls";
+const { favicon16: favicon16Url, favicon32: favicon32Url, appleTouch: appleTouchIconUrl } =
+  ICON_URLS;
 
 function NotFoundComponent() {
   return (
