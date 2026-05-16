@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "vite build && node scripts/check-icon-links.mjs",
+    "build:dev": "vite build --mode development && node scripts/check-icon-links.mjs",
+    "check:icons": "node scripts/check-icon-links.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
