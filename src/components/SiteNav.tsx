@@ -6,9 +6,11 @@ export function SiteNav() {
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md border-b border-[var(--rule)]" style={{ background: "rgba(13,27,34,.94)", padding: "16px 28px" }}>
       <div className="max-w-[1100px] mx-auto flex items-center justify-between gap-4">
-        <a href="/" className="flex items-center gap-2.5 font-extrabold text-[19px] tracking-[-0.02em] text-[var(--cream)]">
+        <a href="/" className="flex items-center gap-2 font-extrabold text-[19px] text-[var(--cream)]" style={{ letterSpacing: "-0.035em" }}>
           <RobotLogo />
-          Agente<span className="text-[var(--coral)]">.</span>Systems
+          <span className="inline-flex items-baseline">
+            Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Systems
+          </span>
         </a>
         <div className="hidden md:flex gap-6 text-[14px] font-medium text-[color:var(--soft)]">
           <a href="#compare" className="hover:text-[var(--cream)] transition-colors">{t("vs Lindy", "vs Lindy")}</a>
