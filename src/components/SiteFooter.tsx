@@ -6,8 +6,8 @@ export function SiteFooter() {
     <footer className="border-t border-[var(--rule)] pt-12 pb-8">
       <div className="max-w-[1100px] mx-auto px-7 flex flex-wrap justify-between gap-10">
         <div className="max-w-[30ch]">
-          <div className="font-extrabold text-[19px] tracking-[-0.025em] text-[var(--cream)] mb-2.5">
-            Agente<span className="text-[var(--coral)]">.</span>systems
+          <div className="font-extrabold text-[19px] tracking-[-0.02em] text-[var(--cream)] mb-2.5">
+            Agente<span className="text-[var(--coral)]">.</span>Systems
           </div>
           <p className="text-[13px] leading-[1.6]" style={{ color: "var(--softer)" }}>
             {t(
