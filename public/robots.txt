@@ -1,4 +1,14 @@
+# Allow all crawlers to index public pages, including verticals.
 User-agent: *
 Allow: /
+Allow: /medical
+Allow: /beauty
+Allow: /solar
+Allow: /real-estate
+Allow: /construction
+
+# Internal / non-content endpoints — not useful in search results.
+Disallow: /api/
+Disallow: /lovable/
 
 Sitemap: https://agentesystems.lovable.app/sitemap.xml
