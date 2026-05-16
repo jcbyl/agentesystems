@@ -452,6 +452,13 @@ function Compare() {
               role="row"
               tabIndex={0}
               aria-label={label}
+              onKeyDown={(e) => {
+                // Escape returns focus to the chip that brought us here.
+                if (e.key === "Escape" && lastChipSlug) {
+                  e.preventDefault();
+                  focusChip(lastChipSlug);
+                }
+              }}
               initial={reduceMotion ? false : { opacity: 0, y: 16, filter: "blur(4px)" }}
               whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
