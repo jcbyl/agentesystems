@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RealEstateRouteImport } from './routes/real-estate'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as FaviconDoticoRouteImport } from './routes/favicon[.]ico'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fallback.$'
 
+const RealEstateRoute = RealEstateRouteImport.update({
+  id: '/real-estate',
+  path: '/real-estate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   id: '/manifest.webmanifest',
   path: '/manifest.webmanifest',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/real-estate': typeof RealEstateRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/real-estate': typeof RealEstateRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/real-estate': typeof RealEstateRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRouteTypes {
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/real-estate'
     | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/real-estate'
     | '/api/icon-fallback/$'
   id:
     | '__root__'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/real-estate'
     | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
 }
@@ -92,11 +104,19 @@ export interface RootRouteChildren {
   ConstructionRoute: typeof ConstructionRoute
   FaviconDoticoRoute: typeof FaviconDoticoRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  RealEstateRoute: typeof RealEstateRoute
   ApiIconFallbackSplatRoute: typeof ApiIconFallbackSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/real-estate': {
+      id: '/real-estate'
+      path: '/real-estate'
+      fullPath: '/real-estate'
+      preLoaderRoute: typeof RealEstateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/manifest.webmanifest': {
       id: '/manifest.webmanifest'
       path: '/manifest.webmanifest'
@@ -140,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConstructionRoute: ConstructionRoute,
   FaviconDoticoRoute: FaviconDoticoRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  RealEstateRoute: RealEstateRoute,
   ApiIconFallbackSplatRoute: ApiIconFallbackSplatRoute,
 }
 export const routeTree = rootRouteImport

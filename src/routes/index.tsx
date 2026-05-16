@@ -616,13 +616,13 @@ function Verticals() {
       letter: "C", name: "Carmen", role: t("Real Estate Agent", "Agente de Bienes Raíces"),
       title: t("Agente.RealEstate", "Agente.RealEstate"),
       body: t(
-        "Qualifies buyers instantly, books showings, sends hot-lead digests. Bilingual EN/ES/Spanglish auto-detect. Knows PR's five buyer types. First responder wins — Carmen makes sure that's you.",
-        "Califica compradores al instante, agenda visitas, envía resúmenes de leads calientes. Bilingüe EN/ES/Spanglish. Conoce los cinco tipos de compradores de PR. El primero en responder gana — Carmen se asegura de que seas tú."
+        "Qualifies buyers instantly, books showings, sends hot-lead digests. Bilingual EN/ES/Spanglish auto-detect. Knows local market dynamics and buyer profiles. First responder wins — Carmen makes sure that's you.",
+        "Califica compradores al instante, agenda visitas, envía resúmenes de leads calientes. Bilingüe EN/ES/Spanglish. Conoce la dinámica del mercado local y los perfiles de compradores. El primero en responder gana — Carmen se asegura de que seas tú."
       ),
-      meta: [[t("Market:", "Mercado:"), "PR → US"], [t("Pilot:", "Piloto:"), "Fitzpatrick Team RE/MAX"]],
+      meta: [[t("Market:", "Mercado:"), t("US real estate teams", "Equipos de bienes raíces EE.UU.")], [t("Pilot:", "Piloto:"), "Fitzpatrick Team RE/MAX"]],
       status: { label: t("Live", "Activa"), kind: "live" as const },
-      href: "https://agentepr.com",
-      ctaText: "agentepr.com →",
+      href: "/real-estate",
+      ctaText: t("Agente.RealEstate →", "Agente.RealEstate →"),
       color: "coral" as const,
     },
     {
