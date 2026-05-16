@@ -321,7 +321,7 @@ function Verticals() {
       ),
       meta: [[t("Market:", "Mercado:"), "DC · MD · VA"], [t("Pilot:", "Piloto:"), "Reston Restoration LLC"]],
       status: { label: t("Deploying", "Desplegando"), kind: "deploy" as const },
-      href: "#", ctaText: t("Agente.Construction →", "Agente.Construction →"),
+      href: "/construction", ctaText: t("Agente.Construction →", "Agente.Construction →"),
       color: "coral" as const,
     },
     {
