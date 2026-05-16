@@ -76,6 +76,72 @@ const REQUIRED_META = [
 const errors = [];
 const warn = (route, msg) => errors.push(`[${route}] ${msg}`);
 
+// Exact dimensions every share image must declare. 1200x630 is the
+// canonical OG/Twitter summary_large_image size — Facebook, LinkedIn,
+// Slack, iMessage, and X all render this 1.91:1 ratio without
+// re-cropping. Any drift breaks one or more of those previews.
+const REQUIRED_OG_IMAGE_WIDTH = "1200";
+const REQUIRED_OG_IMAGE_HEIGHT = "630";
+const ALLOWED_OG_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+function validateImageTags(route, effective) {
+  const get = (k) => effective.get(k)?.content ?? null;
+  const ogImage = get("property:og:image");
+  const ogSecure = get("property:og:image:secure_url");
+  const ogType = get("property:og:image:type");
+  const ogW = get("property:og:image:width");
+  const ogH = get("property:og:image:height");
+  const twImage = get("name:twitter:image");
+
+  if (ogImage && !/^https:\/\//.test(ogImage)) {
+    warn(route, `og:image must be an absolute https:// URL; got "${ogImage}"`);
+  }
+  if (ogSecure && !/^https:\/\//.test(ogSecure)) {
+    warn(route, `og:image:secure_url must be https://; got "${ogSecure}"`);
+  }
+  if (ogImage && ogSecure && ogImage !== ogSecure) {
+    warn(
+      route,
+      `og:image:secure_url must equal og:image (LinkedIn/Slack reject mismatched URLs); got og:image="${ogImage}" vs secure_url="${ogSecure}"`,
+    );
+  }
+  if (ogW && ogW !== REQUIRED_OG_IMAGE_WIDTH) {
+    warn(route, `og:image:width must be exactly "${REQUIRED_OG_IMAGE_WIDTH}"; got "${ogW}"`);
+  }
+  if (ogH && ogH !== REQUIRED_OG_IMAGE_HEIGHT) {
+    warn(route, `og:image:height must be exactly "${REQUIRED_OG_IMAGE_HEIGHT}"; got "${ogH}"`);
+  }
+  if (ogType && !ALLOWED_OG_IMAGE_TYPES.has(ogType)) {
+    warn(
+      route,
+      `og:image:type must be one of ${[...ALLOWED_OG_IMAGE_TYPES].join(", ")}; got "${ogType}"`,
+    );
+  }
+  if (ogImage && ogType) {
+    const extMatch = ogImage.match(/\.(jpe?g|png|webp)(?:\?|#|$)/i);
+    if (extMatch) {
+      const ext = extMatch[1].toLowerCase();
+      const expected =
+        ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+      if (ogType !== expected) {
+        warn(
+          route,
+          `og:image:type "${ogType}" does not match og:image extension ".${ext}" (expected "${expected}")`,
+        );
+      }
+    }
+  }
+  if (ogImage && twImage && ogImage !== twImage) {
+    warn(
+      route,
+      `twitter:image must equal og:image so X and OG previews stay in sync; got og:image="${ogImage}" vs twitter:image="${twImage}"`,
+    );
+  }
+  if (twImage && !/^https:\/\//.test(twImage)) {
+    warn(route, `twitter:image must be an absolute https:// URL; got "${twImage}"`);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Static parser: pull `meta: [ { ... }, ... ]` and `links: [ ... ]` blocks
 // out of a route file's head() return value.
@@ -224,6 +290,8 @@ for (const route of ROUTES) {
     );
   }
 
+  validateImageTags(route.path, effective);
+
   // EN/ES coverage.
   const locale = effective.get("property:og:locale")?.content;
   const alt = effective.get("property:og:locale:alternate")?.content;
@@ -302,6 +370,49 @@ async function liveCheck(origin) {
 
     if (!/<link[^>]*\brel\s*=\s*["']canonical["']/i.test(head)) {
       warn(route.path, `[live] missing <link rel="canonical"> at ${url}`);
+    }
+
+    // Live image-tag validation: extract content="..." for each image
+    // meta and run the same cross-tag checks as the static pass.
+    const liveContent = (attr, value) => {
+      const re = new RegExp(
+        `<meta[^>]*\\b${attr}\\s*=\\s*["']${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'][^>]*\\bcontent\\s*=\\s*["']([^"']*)["']`,
+        "i",
+      );
+      const m = head.match(re);
+      return m ? m[1] : null;
+    };
+    const liveEffective = new Map();
+    const liveSet = (k, v) => v !== null && liveEffective.set(k, { content: v });
+    liveSet("property:og:image", liveContent("property", "og:image"));
+    liveSet("property:og:image:secure_url", liveContent("property", "og:image:secure_url"));
+    liveSet("property:og:image:type", liveContent("property", "og:image:type"));
+    liveSet("property:og:image:width", liveContent("property", "og:image:width"));
+    liveSet("property:og:image:height", liveContent("property", "og:image:height"));
+    liveSet("name:twitter:image", liveContent("name", "twitter:image"));
+    validateImageTags(`live ${route.path}`, liveEffective);
+
+    // For live mode we can additionally HEAD the image URL and verify
+    // it actually responds with the declared content-type over HTTPS.
+    const ogImage = liveEffective.get("property:og:image")?.content;
+    const ogType = liveEffective.get("property:og:image:type")?.content;
+    if (ogImage) {
+      try {
+        const imgRes = await fetch(ogImage, { method: "HEAD", redirect: "follow" });
+        if (!imgRes.ok) {
+          warn(route.path, `[live] og:image fetch failed: HTTP ${imgRes.status} for ${ogImage}`);
+        } else {
+          const ct = imgRes.headers.get("content-type") ?? "";
+          if (ogType && !ct.toLowerCase().startsWith(ogType.toLowerCase())) {
+            warn(
+              route.path,
+              `[live] og:image content-type "${ct}" does not match declared og:image:type "${ogType}"`,
+            );
+          }
+        }
+      } catch (e) {
+        warn(route.path, `[live] og:image HEAD error for ${ogImage}: ${e.message}`);
+      }
     }
   }
 }
