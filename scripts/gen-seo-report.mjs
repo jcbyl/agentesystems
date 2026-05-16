@@ -282,13 +282,13 @@ const html = `<!doctype html>
 <h2>Per-page summary</h2>
 <div class="grid">${summaryCards}</div>
 
+${changesBlock}
+
 <h2>Detailed findings</h2>
 <table>
   <thead><tr><th>URL</th><th>Finding</th><th>Status</th><th>Notes</th></tr></thead>
   <tbody>${tableRows}</tbody>
 </table>
-
-${changesBlock}
 
 <h2>Run history</h2>
 <p class="muted">All runs are saved as JSON snapshots under <code>/reports/history/</code>. <a href="/reports/history/index.html">Browse all runs →</a></p>
