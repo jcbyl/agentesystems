@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node scripts/check-icon-links.mjs",
-    "build:dev": "vite build --mode development && node scripts/check-icon-links.mjs",
+    "build": "vite build && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs",
+    "build:dev": "vite build --mode development && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs",
     "check:icons": "node scripts/check-icon-links.mjs",
+    "check:social-head": "node scripts/check-social-head.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
