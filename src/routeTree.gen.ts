@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as FaviconDoticoRouteImport } from './routes/favicon[.]ico'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fallback.$'
 
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   id: '/manifest.webmanifest',
   path: '/manifest.webmanifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaviconDoticoRoute = FaviconDoticoRouteImport.update({
+  id: '/favicon.ico',
+  path: '/favicon.ico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConstructionRoute = ConstructionRouteImport.update({
@@ -28,35 +35,64 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiIconFallbackSplatRoute = ApiIconFallbackSplatRouteImport.update({
+  id: '/api/icon-fallback/$',
+  path: '/api/icon-fallback/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
+  '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/construction' | '/manifest.webmanifest'
+  fullPaths:
+    | '/'
+    | '/construction'
+    | '/favicon.ico'
+    | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/construction' | '/manifest.webmanifest'
-  id: '__root__' | '/' | '/construction' | '/manifest.webmanifest'
+  to:
+    | '/'
+    | '/construction'
+    | '/favicon.ico'
+    | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/construction'
+    | '/favicon.ico'
+    | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConstructionRoute: typeof ConstructionRoute
+  FaviconDoticoRoute: typeof FaviconDoticoRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  ApiIconFallbackSplatRoute: typeof ApiIconFallbackSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +102,13 @@ declare module '@tanstack/react-router' {
       path: '/manifest.webmanifest'
       fullPath: '/manifest.webmanifest'
       preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favicon.ico': {
+      id: '/favicon.ico'
+      path: '/favicon.ico'
+      fullPath: '/favicon.ico'
+      preLoaderRoute: typeof FaviconDoticoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/construction': {
@@ -82,13 +125,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/icon-fallback/$': {
+      id: '/api/icon-fallback/$'
+      path: '/api/icon-fallback/$'
+      fullPath: '/api/icon-fallback/$'
+      preLoaderRoute: typeof ApiIconFallbackSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConstructionRoute: ConstructionRoute,
+  FaviconDoticoRoute: FaviconDoticoRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  ApiIconFallbackSplatRoute: ApiIconFallbackSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
