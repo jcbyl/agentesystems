@@ -17,7 +17,7 @@ export const Route = createFileRoute("/construction")({
       {
         name: "description",
         content:
-          "Marco qualifies renovation leads, books estimates, follows up on proposals, and manages your full client lifecycle. Bilingual EN/ES for DC, Maryland, and Virginia contractors.",
+          "Marco qualifies leads, books estimates, follows up on proposals, and manages the client lifecycle. Bilingual EN/ES for DC, MD, and VA contractors.",
       },
       { property: "og:title", content: "Agente.Construction — Marco" },
       {

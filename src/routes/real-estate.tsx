@@ -17,7 +17,7 @@ export const Route = createFileRoute("/real-estate")({
       {
         name: "description",
         content:
-          "Carmen qualifies buyers instantly, books showings, sends hot-lead digests, and follows up on every listing. Bilingual EN/ES/Spanglish. Built for US real estate teams.",
+          "Carmen qualifies buyers, books showings, sends hot-lead digests, and follows up on every listing. Bilingual EN/ES/Spanglish for US real estate teams.",
       },
       { property: "og:title", content: "Agente.RealEstate — Carmen" },
       {
