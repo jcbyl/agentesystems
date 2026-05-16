@@ -1,4 +1,5 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { type APIRequestContext } from "@playwright/test";
+import { test, expect } from "./_helpers/icon-diagnostics";
 
 /**
  * Icon-link Cache-Control stability.
@@ -75,6 +76,7 @@ test.describe("icon links: Cache-Control stability across reloads & no-cache", (
     page,
     playwright,
     baseURL,
+    diag,
   }) => {
     expect(baseURL).toBeTruthy();
 
@@ -164,6 +166,37 @@ test.describe("icon links: Cache-Control stability across reloads & no-cache", (
       }
 
       const [plain1, plain2, noCache1, noCache2] = snapshots;
+
+      // One row per posture so the table shows whether drift was
+      // intra-posture, cross-posture, or both.
+      diag.record({
+        href: url,
+        status: plain1.status,
+        contentType: plain1.snapshot["content-type"],
+        cacheControl: plain1.snapshot["cache-control"],
+        note: "plain #1",
+      });
+      diag.record({
+        href: url,
+        status: plain2.status,
+        contentType: plain2.snapshot["content-type"],
+        cacheControl: plain2.snapshot["cache-control"],
+        note: "plain #2",
+      });
+      diag.record({
+        href: url,
+        status: noCache1.status,
+        contentType: noCache1.snapshot["content-type"],
+        cacheControl: noCache1.snapshot["cache-control"],
+        note: "no-cache #1",
+      });
+      diag.record({
+        href: url,
+        status: noCache2.status,
+        contentType: noCache2.snapshot["content-type"],
+        cacheControl: noCache2.snapshot["cache-control"],
+        note: "no-cache #2",
+      });
 
       // (b) intra-posture: plain
       const d1 = diff(plain1.snapshot, plain2.snapshot);
