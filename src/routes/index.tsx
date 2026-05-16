@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, MotionConfig } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -18,19 +18,21 @@ const fadeUp = {
 
 function Home() {
   return (
-    <div className="min-h-screen">
-      <SiteNav />
-      <Hero />
-      <Stats />
-      <Compare />
-      <Latino />
-      <Verticals />
-      <WhyAgente />
-      <HowItWorks />
-      <FinalCTA />
-      <SiteFooter />
-      <StickyMobile />
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen">
+        <SiteNav />
+        <Hero />
+        <Stats />
+        <Compare />
+        <Latino />
+        <Verticals />
+        <WhyAgente />
+        <HowItWorks />
+        <FinalCTA />
+        <SiteFooter />
+        <StickyMobile />
+      </div>
+    </MotionConfig>
   );
 }
 

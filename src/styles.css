@@ -52,6 +52,18 @@ body::before {
 
 @keyframes pulse-dot { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
 
+/* Respect users who prefer reduced motion: neutralize coral flash,
+ * scroll-in fades, smooth-scroll, pulse dot, and any CSS transitions. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
 /*
  * Design system definition.
  *
