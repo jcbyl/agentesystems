@@ -229,7 +229,7 @@ function Compare() {
   const jumpTo = (slug: string) => {
     const el = document.getElementById(`row-${slug}`);
     if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
     try { history.replaceState(null, "", `#row-${slug}`); } catch {}
     setFlashSlug(slug);
     window.setTimeout(() => setFlashSlug((s) => (s === slug ? null : s)), 1600);
@@ -412,21 +412,29 @@ function Compare() {
             <motion.div
               key={i}
               id={`row-${slugs[i]}`}
-              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={reduceMotion ? false : { opacity: 0, y: 16, filter: "blur(4px)" }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.05 * i }}
-              whileHover={{
-                backgroundColor: "rgba(232,65,24,.06)",
-                x: 2,
-                transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
-              }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.05 * i }
+              }
+              whileHover={
+                reduceMotion
+                  ? { backgroundColor: "rgba(232,65,24,.06)" }
+                  : {
+                      backgroundColor: "rgba(232,65,24,.06)",
+                      x: 2,
+                      transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+                    }
+              }
               className="ct-grid ct-row border-t border-[var(--rule)] scroll-mt-24"
               style={{
                 background: flashSlug === slugs[i]
                   ? "rgba(232,65,24,.10)"
                   : i % 2 ? "rgba(244,237,227,.02)" : "transparent",
-                transition: "background-color .6s ease",
+                transition: reduceMotion ? "none" : "background-color .6s ease",
                 ...gridStyle,
               }}
             >
