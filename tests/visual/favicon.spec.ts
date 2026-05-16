@@ -401,4 +401,80 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
       ).toBeFalsy();
     });
   }
+
+  /**
+   * Per-path assertions that pin each legacy filename to the *specific*
+   * canonical fingerprinted asset it should redirect to (not just "some
+   * Vite-managed URL"). The canonical targets are discovered at runtime
+   * from the rendered <link> tags and the manifest, so the test stays
+   * green across hash changes but fails loudly if a legacy alias starts
+   * pointing at the wrong size (e.g. /favicon-16.png → 32x32 asset) or
+   * stops resolving to the Apple-style icon for unsized aliases.
+   */
+  test("each legacy icon path redirects to its expected canonical fingerprinted target", async ({
+    page,
+    request,
+    baseURL,
+  }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const linkHref = async (sel: string) => {
+      const href = await page.locator(sel).first().getAttribute("href");
+      expect(href, `missing href for ${sel}`).toBeTruthy();
+      return new URL(href!, baseURL!).pathname;
+    };
+
+    const favicon16 = await linkHref(
+      'link[rel="icon"][type="image/png"][sizes="16x16"]',
+    );
+    const favicon32 = await linkHref(
+      'link[rel="icon"][type="image/png"][sizes="32x32"]',
+    );
+    const appleTouch = await linkHref('link[rel="apple-touch-icon"]');
+
+    const manifestResp = await request.get(`${baseURL}/manifest.webmanifest`, {
+      headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+    });
+    expect(manifestResp.status()).toBe(200);
+    const manifest = (await manifestResp.json()) as {
+      icons: { src: string; sizes: string; purpose?: string }[];
+    };
+    const findIcon = (sizes: string) => {
+      const icon = manifest.icons.find(
+        (i) =>
+          i.sizes === sizes &&
+          (i.purpose ?? "any").split(/\s+/).includes("any"),
+      );
+      expect(icon, `manifest missing purpose=any ${sizes} icon`).toBeTruthy();
+      return new URL(icon!.src, baseURL!).pathname;
+    };
+    const icon192 = findIcon("192x192");
+    const icon512 = findIcon("512x512");
+
+    const expected: Record<string, string> = {
+      "/favicon.ico": appleTouch,
+      "/favicon.png": appleTouch,
+      "/favicon-16.png": favicon16,
+      "/favicon-32.png": favicon32,
+      "/apple-touch-icon.png": appleTouch,
+      "/apple-touch-icon-precomposed.png": appleTouch,
+      "/icon-192.png": icon192,
+      "/icon-512.png": icon512,
+    };
+
+    for (const [legacyPath, expectedPath] of Object.entries(expected)) {
+      const resp = await request.get(`${baseURL}${legacyPath}`, {
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(resp.status(), `${legacyPath} status`).toBe(302);
+      const location = resp.headers()["location"];
+      expect(location, `${legacyPath} Location header`).toBeTruthy();
+      const actualPath = new URL(location!, baseURL!).pathname;
+      expect(
+        actualPath,
+        `${legacyPath} should redirect to ${expectedPath}, got ${actualPath}`,
+      ).toBe(expectedPath);
+    }
+  });
 });
