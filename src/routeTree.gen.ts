@@ -15,6 +15,7 @@ import { Route as RealEstateRouteImport } from './routes/real-estate'
 import { Route as MedicalRouteImport } from './routes/medical'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as FaviconDoticoRouteImport } from './routes/favicon[.]ico'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as BeautyRouteImport } from './routes/beauty'
 import { Route as IndexRouteImport } from './routes/index'
@@ -50,6 +51,11 @@ const FaviconDoticoRoute = FaviconDoticoRouteImport.update({
   path: '/favicon.ico',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConstructionRoute = ConstructionRouteImport.update({
   id: '/construction',
   path: '/construction',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
+  '/demo': typeof DemoRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
+  '/demo': typeof DemoRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
+  '/demo': typeof DemoRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/beauty'
     | '/construction'
+    | '/demo'
     | '/favicon.ico'
     | '/manifest.webmanifest'
     | '/medical'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/beauty'
     | '/construction'
+    | '/demo'
     | '/favicon.ico'
     | '/manifest.webmanifest'
     | '/medical'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/beauty'
     | '/construction'
+    | '/demo'
     | '/favicon.ico'
     | '/manifest.webmanifest'
     | '/medical'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BeautyRoute: typeof BeautyRoute
   ConstructionRoute: typeof ConstructionRoute
+  DemoRoute: typeof DemoRoute
   FaviconDoticoRoute: typeof FaviconDoticoRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   MedicalRoute: typeof MedicalRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaviconDoticoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/construction': {
       id: '/construction'
       path: '/construction'
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BeautyRoute: BeautyRoute,
   ConstructionRoute: ConstructionRoute,
+  DemoRoute: DemoRoute,
   FaviconDoticoRoute: FaviconDoticoRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   MedicalRoute: MedicalRoute,

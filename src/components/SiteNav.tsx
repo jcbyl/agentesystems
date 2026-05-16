@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { RobotLogo } from "./RobotLogo";
 import { VERTICALS, suffixForPath } from "@/lib/verticals";
-import { demoUrl } from "@/lib/demo-link";
 
 /**
  * Site-wide sticky nav.
@@ -93,15 +92,13 @@ export function SiteNav() {
             <span className="hidden sm:inline">{t("Start free trial →", "Prueba gratis →")}</span>
             <span className="sm:hidden">{t("Try free →", "Prueba →")}</span>
           </a>
-          <a
-            href={demoUrl(lang)}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/demo"
             className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[14px] font-bold text-[var(--cream)] border border-[var(--rule)] transition-colors hover:bg-[rgba(244,237,227,.08)] whitespace-nowrap"
             style={{ letterSpacing: "-0.02em" }}
           >
             {t("Book a demo", "Reservar demo")}
-          </a>
+          </Link>
         </div>
       </div>
     </nav>

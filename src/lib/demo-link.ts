@@ -17,3 +17,37 @@ export function demoUrl(lang: "en" | "es"): string {
   const text = lang === "es" ? PREFILL_ES : PREFILL_EN;
   return `https://wa.me/${DEMO_PHONE}?text=${encodeURIComponent(text)}`;
 }
+
+export type DemoFormPayload = {
+  name: string;
+  company?: string;
+  vertical?: string;
+  email?: string;
+  message?: string;
+};
+
+/**
+ * Build a richer WhatsApp deep link from /demo form fields. Same target
+ * number as `demoUrl()`, but the prefilled body includes whatever the
+ * user typed so the first reply can be a real scheduling question, not a
+ * back-and-forth to collect basics.
+ */
+export function demoUrlFromForm(lang: "en" | "es", payload: DemoFormPayload): string {
+  const lines: string[] = [];
+  if (lang === "es") {
+    lines.push("¡Hola Agente! Me gustaría agendar una demo.");
+    if (payload.name) lines.push(`Nombre: ${payload.name}`);
+    if (payload.company) lines.push(`Empresa: ${payload.company}`);
+    if (payload.vertical) lines.push(`Industria: ${payload.vertical}`);
+    if (payload.email) lines.push(`Correo: ${payload.email}`);
+    if (payload.message) lines.push(`Mensaje: ${payload.message}`);
+  } else {
+    lines.push("Hi Agente! I'd like to book a demo.");
+    if (payload.name) lines.push(`Name: ${payload.name}`);
+    if (payload.company) lines.push(`Company: ${payload.company}`);
+    if (payload.vertical) lines.push(`Industry: ${payload.vertical}`);
+    if (payload.email) lines.push(`Email: ${payload.email}`);
+    if (payload.message) lines.push(`Note: ${payload.message}`);
+  }
+  return `https://wa.me/${DEMO_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`;
+}

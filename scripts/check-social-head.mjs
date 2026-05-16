@@ -44,6 +44,7 @@ const ROUTES = [
   { path: "/solar", file: "solar.tsx" },
   { path: "/real-estate", file: "real-estate.tsx" },
   { path: "/construction", file: "construction.tsx" },
+  { path: "/demo", file: "demo.tsx" },
 ];
 
 // Required meta keys ("property:..." or "name:...") for any shareable
