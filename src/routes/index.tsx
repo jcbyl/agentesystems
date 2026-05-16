@@ -172,16 +172,25 @@ function Stats() {
 function Compare() {
   const { t } = useI18n();
 
-  // ─────────────────────────────────────────────────────────────
-  // Optional extra competitor column.
-  // To enable, set `competitor` to an object like:
-  //   { name: "Intercom", rows: [{icon:"x",text:t("...","...")}, ...] }
-  // The array length must match `rows`. Leave as `null` to hide.
-  // ─────────────────────────────────────────────────────────────
-  type Competitor = { name: string; rows: Array<{ icon: "ok" | "x" | "warn"; text: string }> };
-  const competitor = null as Competitor | null;
-
   type Cell = { icon: "ok" | "x" | "warn"; text: string };
+  type Competitor = { name: string; rows: Cell[] };
+
+  // View toggle: "lindy" = 3-col (Feature · Lindy · Agente)
+  //              "all"   = expanded multi-competitor view
+  const [view, setView] = useState<"lindy" | "all">("lindy");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("agente-compare-view");
+      if (saved === "lindy" || saved === "all") setView(saved);
+    } catch {}
+  }, []);
+
+  const switchView = (v: "lindy" | "all") => {
+    setView(v);
+    try { localStorage.setItem("agente-compare-view", v); } catch {}
+  };
+
   const rows: Array<[string, Cell, Cell]> = [
     [t("Language", "Idioma"), { icon: "x", text: t("English only", "Solo inglés") }, { icon: "ok", text: t("EN + ES bilingual, auto-detect", "EN + ES bilingüe, detección automática") }],
     [t("Primary channel", "Canal principal"), { icon: "warn", text: t("iMessage (iOS-first)", "iMessage (solo iOS)") }, { icon: "ok", text: t("WhatsApp + SMS — any device, global", "WhatsApp + SMS — cualquier dispositivo") }],
@@ -195,14 +204,56 @@ function Compare() {
     [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("<60 seconds, 24/7 — guaranteed in writing", "<60 segundos, 24/7 — garantizado por escrito") }],
   ];
 
-  const gridCols = competitor ? "1.1fr 1fr 1fr 1.2fr" : undefined;
-  const gridStyle = gridCols ? { gridTemplateColumns: gridCols } : undefined;
+  // Competitor data for expanded view. Each rows[] aligns 1:1 with the rows above.
+  const lindyCompetitor: Competitor = {
+    name: "Lindy",
+    rows: rows.map(([, l]) => l),
+  };
+  const intercomFin: Competitor = {
+    name: "Intercom Fin",
+    rows: [
+      { icon: "warn", text: t("EN + 40 langs (translation)", "EN + 40 idiomas (traducción)") },
+      { icon: "warn", text: t("Web chat + email", "Chat web + correo") },
+      { icon: "x",    text: t("Generic CS bot", "Bot genérico de soporte") },
+      { icon: "warn", text: t("$0.99 per resolution", "$0.99 por resolución") },
+      { icon: "warn", text: t("DIY workflows in Fin AI", "Flujos por tu cuenta en Fin AI") },
+      { icon: "x",    text: t("Support inbox only", "Solo bandeja de soporte") },
+      { icon: "x",    text: t("EN-first, ES limited", "EN primero, ES limitado") },
+      { icon: "ok",   text: t("Zendesk, Salesforce, HubSpot", "Zendesk, Salesforce, HubSpot") },
+      { icon: "warn", text: t("SOC 2; HIPAA add-on", "SOC 2; HIPAA con costo extra") },
+      { icon: "warn", text: t("Best-effort, no SLA", "Mejor esfuerzo, sin SLA") },
+    ],
+  };
+  const chatgptAgents: Competitor = {
+    name: "ChatGPT Agents",
+    rows: [
+      { icon: "ok",   text: t("EN + ES, but generic", "EN + ES, pero genérico") },
+      { icon: "x",    text: t("Web only — no WhatsApp", "Solo web — sin WhatsApp") },
+      { icon: "x",    text: t("General-purpose LLM", "LLM de propósito general") },
+      { icon: "warn", text: t("$20–$200/mo per seat", "$20–$200/mes por usuario") },
+      { icon: "warn", text: t("Prompt-engineer it yourself", "Tú lo configuras") },
+      { icon: "x",    text: t("Chat only — no pipeline", "Solo chat — sin pipeline") },
+      { icon: "x",    text: t("Not market-specific", "No específico al mercado") },
+      { icon: "warn", text: t("API access, custom GPTs", "API y GPTs personalizados") },
+      { icon: "x",    text: t("No HIPAA on consumer plans", "Sin HIPAA en planes de consumo") },
+      { icon: "x",    text: t("None — interactive only", "Ninguno — solo interactivo") },
+    ],
+  };
+
+  const competitors: Competitor[] = view === "all"
+    ? [lindyCompetitor, intercomFin, chatgptAgents]
+    : [lindyCompetitor];
+
+  // Build a CSS grid template based on competitor count.
+  const gridStyle: React.CSSProperties = {
+    gridTemplateColumns: `1.1fr ${competitors.map(() => "1fr").join(" ")} 1.2fr`,
+  };
 
   return (
     <section id="compare" className="py-20 border-b border-[var(--rule)]">
       <div className="max-w-[1080px] mx-auto px-7">
         <motion.div {...fadeUp} className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
-          Agente vs Lindy
+          {view === "all" ? t("Agente vs everyone", "Agente vs todos") : "Agente vs Lindy"}
         </motion.div>
         <motion.h2 {...fadeUp} className="font-extrabold text-[var(--cream)] mb-4" style={{ fontSize: "clamp(28px,4vw,52px)", lineHeight: 0.98, letterSpacing: "-.028em" }}>
           {t(
@@ -217,7 +268,34 @@ function Compare() {
           )}
         </motion.p>
 
+        {/* View toggle */}
+        <motion.div {...fadeUp} className="mt-8 inline-flex p-1 rounded-full border border-[var(--rule)]" style={{ background: "rgba(244,237,227,.04)" }} role="tablist" aria-label={t("Comparison view", "Vista de comparación")}>
+          {([
+            { id: "lindy", label: t("vs Lindy", "vs Lindy") },
+            { id: "all",   label: t("vs all competitors", "vs todos") },
+          ] as const).map((opt) => {
+            const active = view === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => switchView(opt.id)}
+                className="px-4 py-2 rounded-full font-mono text-[11px] font-semibold tracking-[.1em] uppercase transition-colors"
+                style={{
+                  background: active ? "var(--coral)" : "transparent",
+                  color: active ? "#FFF" : "rgba(244,237,227,.55)",
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </motion.div>
+
         <motion.div
+          key={view}
           {...fadeUp}
           className="ct-shell mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]"
         >
@@ -226,19 +304,16 @@ function Compare() {
             <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
               {t("Feature", "Característica")}
             </div>
-            <div className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
-              Lindy
-            </div>
-            {competitor && (
-              <div className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
-                {competitor.name}
+            {competitors.map((c) => (
+              <div key={c.name} className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
+                {c.name}
               </div>
-            )}
+            ))}
             <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
               Agente
             </div>
           </div>
-          {rows.map(([label, lindy, agente], i) => (
+          {rows.map(([label, , agente], i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 12 }}
@@ -250,14 +325,11 @@ function Compare() {
               style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent", ...gridStyle }}
             >
               <div className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
-              <div className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
-                <CellIcon kind={lindy.icon} /> <span>{lindy.text}</span>
-              </div>
-              {competitor && (
-                <div className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
-                  <CellIcon kind={competitor.rows[i]?.icon ?? "x"} /> <span>{competitor.rows[i]?.text ?? "—"}</span>
+              {competitors.map((c) => (
+                <div key={c.name} className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
+                  <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span>{c.rows[i]?.text ?? "—"}</span>
                 </div>
-              )}
+              ))}
               <div className="ct-cell flex items-start text-[var(--cream)]">
                 <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
               </div>
