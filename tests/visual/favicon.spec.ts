@@ -160,4 +160,74 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
       )}`,
     ).toBeGreaterThan(0);
   });
+
+  test("favicon and apple-touch-icon render correctly after hard reload (screenshot)", async ({
+    page,
+    baseURL,
+    browserName,
+  }) => {
+    // 1. Load the page so the SSR HTML resolves the fingerprinted hrefs.
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    // 2. Force a hard reload (bypassing HTTP cache via beforeEach headers).
+    await page.reload({ waitUntil: "domcontentloaded" });
+
+    // 3. Collect the actual hrefs for the 32x32 favicon and apple-touch-icon.
+    const targets = await page.evaluate(() => {
+      const pick = (sel: string) =>
+        (document.querySelector(sel) as HTMLLinkElement | null)?.href ?? null;
+      return {
+        favicon32: pick(
+          'link[rel="icon"][type="image/png"][sizes="32x32"]',
+        ),
+        appleTouch: pick('link[rel="apple-touch-icon"]'),
+      };
+    });
+    expect(targets.favicon32, "32x32 favicon href").toBeTruthy();
+    expect(targets.appleTouch, "apple-touch-icon href").toBeTruthy();
+
+    // 4. For each icon, render it standalone in a deterministic page and
+    //    snapshot the rendered pixels. This proves the bytes the browser
+    //    actually receives decode to the expected logo image after a hard
+    //    reload — not just that the URL returns 200.
+    const renderAndSnapshot = async (
+      label: string,
+      href: string,
+      sizePx: number,
+    ) => {
+      const url = href.startsWith("http") ? href : `${baseURL}${href}`;
+      await page.setViewportSize({ width: sizePx, height: sizePx });
+      await page.setContent(
+        `<!doctype html><html><head><style>
+           html,body{margin:0;padding:0;background:#fff;}
+           img{display:block;width:${sizePx}px;height:${sizePx}px;
+               image-rendering:pixelated;}
+         </style></head><body>
+           <img id="icon" src="${url}" />
+         </body></html>`,
+        { waitUntil: "domcontentloaded" },
+      );
+      // Wait for decode so the screenshot captures the actual pixels.
+      await page.evaluate(async () => {
+        const img = document.getElementById("icon") as HTMLImageElement;
+        if (!img.complete) {
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error("icon failed to load"));
+          });
+        }
+        await img.decode().catch(() => undefined);
+      });
+      const img = page.locator("#icon");
+      await expect(img).toHaveJSProperty("naturalWidth", sizePx);
+      await expect(img, `${label} (${browserName}) visual snapshot`).
+        toHaveScreenshot(`${label}-${browserName}.png`, {
+          maxDiffPixelRatio: 0.02,
+          animations: "disabled",
+        });
+    };
+
+    await renderAndSnapshot("favicon-32", targets.favicon32!, 32);
+    await renderAndSnapshot("apple-touch-icon", targets.appleTouch!, 180);
+  });
 });
