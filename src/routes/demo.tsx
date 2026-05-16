@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { hreflangLinks } from "@/lib/hreflang";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/demo")({
       { name: "twitter:image:alt", content: "Book a demo of Agente.Systems — bilingual EN/ES AI agents" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: URL }],
+    links: [{ rel: "canonical", href: URL }, ...hreflangLinks(URL)],
   }),
   component: DemoPage,
 });

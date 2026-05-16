@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { hreflangLinks } from "@/lib/hreflang";
 import { motion } from "framer-motion";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/real-estate")({
       { name: "twitter:image", content: OG_IMAGE },
       { name: "twitter:image:alt", content: "Carmen — bilingual EN/ES/Spanglish AI agent qualifying buyers, booking showings, and sending hot-lead digests for US real estate teams" },
     ],
-    links: [{ rel: "canonical", href: URL }],
+    links: [{ rel: "canonical", href: URL }, ...hreflangLinks(URL)],
     scripts: [
       {
         type: "application/ld+json",

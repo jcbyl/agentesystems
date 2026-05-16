@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { hreflangLinks } from "@/lib/hreflang";
 import { VerticalStub } from "@/components/VerticalStub";
 import { verticalForPath } from "@/lib/verticals";
 import ogImageUrl from "@/assets/og-medical.jpg";
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/medical")({
     ],
     links: [
       { rel: "canonical", href: URL },
+      ...hreflangLinks(URL),
     ],
     scripts: [
       {
