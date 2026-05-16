@@ -1,0 +1,93 @@
+name: PR Preview Deploy
+
+# Builds the app on every pull request and deploys it as an isolated
+# Cloudflare Workers preview version, then comments the preview URL
+# back on the PR so reviewers can click through to the animated
+# landing page.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build (development mode for preview)
+        run: bun run build:dev
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-${{ github.event.pull_request.number }}-build
+          path: |
+            dist
+            .output
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Check Cloudflare credentials
+        id: cf
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set — skipping deploy. Add them under Settings → Secrets → Actions to enable PR previews."
+          fi
+
+      - name: Deploy preview version to Cloudflare Workers
+        if: steps.cf.outputs.configured == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # `versions upload` creates an isolated preview URL per build
+          # without overwriting the production worker.
+          command: versions upload --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
+
+      - name: Extract preview URL
+        if: steps.cf.outputs.configured == 'true'
+        id: url
+        run: |
+          PREVIEW_URL="${{ steps.deploy.outputs.deployment-url }}"
+          if [ -z "$PREVIEW_URL" ]; then
+            PREVIEW_URL="(see Deploy step logs for preview URL)"
+          fi
+          echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on PR
+        if: steps.cf.outputs.configured == 'true'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            ### Preview deploy ready
+
+            **URL:** ${{ steps.url.outputs.preview_url }}
+            **Commit:** `${{ github.event.pull_request.head.sha }}`
+            **Run:** ${{ github.run_id }}
+
+            This preview is isolated from production and updates on every push to this PR.
