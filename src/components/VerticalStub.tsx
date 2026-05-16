@@ -93,6 +93,7 @@ export function VerticalStub({ vertical }: { vertical: Vertical }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-wrap gap-3 justify-center mb-8"
+            data-cta-location="vertical-hero"
           >
             <a
               href={waHref}

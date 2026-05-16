@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
+import { CtaAnalytics } from "@/components/CtaAnalytics";
 // Fingerprinted icon URLs. Importing the shared module here (which references
 // every icon) ensures Vite emits all PNGs into the client bundle, even the
 // ones only used by the server-only manifest route.
@@ -210,6 +211,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <CtaAnalytics />
         <Outlet />
       </I18nProvider>
     </QueryClientProvider>
