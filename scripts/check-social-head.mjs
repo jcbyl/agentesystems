@@ -151,12 +151,35 @@ function keyOf(obj) {
 
 function parseHead(filePath) {
   const src = readFileSync(filePath, "utf8");
+  // Resolve `const FOO = "..."` / template-literal string constants so we
+  // can dereference `content: DESC_EN` back to the underlying text.
+  const consts = new Map();
+  for (const m of src.matchAll(/\bconst\s+([A-Z_][A-Z0-9_]*)\s*=\s*"([^"]*)"/g)) {
+    consts.set(m[1], m[2]);
+  }
+  for (const m of src.matchAll(/\bconst\s+([A-Z_][A-Z0-9_]*)\s*=\s*`([^`]*)`/g)) {
+    if (!consts.has(m[1])) consts.set(m[1], m[2]);
+  }
+  // Two-line `const FOO =\n  "..."` form used by some routes.
+  for (const m of src.matchAll(/\bconst\s+([A-Z_][A-Z0-9_]*)\s*=\s*\n\s*"([^"]*)"/g)) {
+    if (!consts.has(m[1])) consts.set(m[1], m[2]);
+  }
   const metaBody = extractArrayBlock(src, "meta");
   const linksBody = extractArrayBlock(src, "links");
   const meta = new Map();
   if (metaBody) {
     for (const lit of splitObjectLiterals(metaBody)) {
       const obj = parseMetaObject(lit);
+      // Resolve identifier content to its string value (best-effort).
+      if (obj.content && /^[A-Za-z_$][\w$]*$/.test(obj.content) && consts.has(obj.content)) {
+        obj.content = consts.get(obj.content);
+      }
+      // Resolve `${DESC_EN} | ${DESC_ES}` style template literals.
+      if (obj.content && obj.content.includes("${")) {
+        obj.content = obj.content.replace(/\$\{([A-Za-z_$][\w$]*)\}/g, (_, id) =>
+          consts.get(id) ?? `\${${id}}`,
+        );
+      }
       const k = keyOf(obj);
       if (k) meta.set(k, obj);
     }
