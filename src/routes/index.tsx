@@ -171,7 +171,18 @@ function Stats() {
 /* ---------- COMPARE TABLE ---------- */
 function Compare() {
   const { t } = useI18n();
-  const rows: Array<[string, { icon: "x" | "warn"; text: string }, { icon: "ok"; text: string }]> = [
+
+  // ─────────────────────────────────────────────────────────────
+  // Optional extra competitor column.
+  // To enable, set `competitor` to an object like:
+  //   { name: "Intercom", rows: [{icon:"x",text:t("...","...")}, ...] }
+  // The array length must match `rows`. Leave as `null` to hide.
+  // ─────────────────────────────────────────────────────────────
+  type Competitor = { name: string; rows: Array<{ icon: "ok" | "x" | "warn"; text: string }> };
+  const competitor = null as Competitor | null;
+
+  type Cell = { icon: "ok" | "x" | "warn"; text: string };
+  const rows: Array<[string, Cell, Cell]> = [
     [t("Language", "Idioma"), { icon: "x", text: t("English only", "Solo inglés") }, { icon: "ok", text: t("EN + ES bilingual, auto-detect", "EN + ES bilingüe, detección automática") }],
     [t("Primary channel", "Canal principal"), { icon: "warn", text: t("iMessage (iOS-first)", "iMessage (solo iOS)") }, { icon: "ok", text: t("WhatsApp + SMS — any device, global", "WhatsApp + SMS — cualquier dispositivo") }],
     [t("Industry knowledge", "Conocimiento de industria"), { icon: "x", text: t("Generic — no industry expertise", "Genérico — sin expertise en tu industria") }, { icon: "ok", text: t("Codes, law, incentives, rates per vertical", "Códigos, leyes, incentivos por industria") }],
@@ -183,6 +194,9 @@ function Compare() {
     [t("Compliance & privacy", "Cumplimiento y privacidad"), { icon: "x", text: t("No HIPAA, no BAA, generic privacy", "Sin HIPAA, sin BAA, privacidad genérica") }, { icon: "ok", text: t("HIPAA-ready (Grace), BAA available, data stays in-region", "Listo para HIPAA (Grace), BAA disponible, datos en tu región") }],
     [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("<60 seconds, 24/7 — guaranteed in writing", "<60 segundos, 24/7 — garantizado por escrito") }],
   ];
+
+  const gridCols = competitor ? "1.1fr 1fr 1fr 1.2fr" : undefined;
+  const gridStyle = gridCols ? { gridTemplateColumns: gridCols } : undefined;
 
   return (
     <section id="compare" className="py-20 border-b border-[var(--rule)]">
@@ -208,13 +222,18 @@ function Compare() {
           className="ct-shell mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]"
         >
           {/* Header */}
-          <div className="ct-grid" style={{ background: "#111D24" }}>
+          <div className="ct-grid" style={{ background: "#111D24", ...gridStyle }}>
             <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
               {t("Feature", "Característica")}
             </div>
             <div className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
               Lindy
             </div>
+            {competitor && (
+              <div className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
+                {competitor.name}
+              </div>
+            )}
             <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
               Agente
             </div>
@@ -228,12 +247,17 @@ function Compare() {
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.04 * i }}
               whileHover={{ backgroundColor: "rgba(232,65,24,.04)" }}
               className="ct-grid ct-row border-t border-[var(--rule)]"
-              style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent" }}
+              style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent", ...gridStyle }}
             >
               <div className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               <div className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
                 <CellIcon kind={lindy.icon} /> <span>{lindy.text}</span>
               </div>
+              {competitor && (
+                <div className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
+                  <CellIcon kind={competitor.rows[i]?.icon ?? "x"} /> <span>{competitor.rows[i]?.text ?? "—"}</span>
+                </div>
+              )}
               <div className="ct-cell flex items-start text-[var(--cream)]">
                 <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
               </div>
