@@ -10,7 +10,7 @@ const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 const TITLE_EN = "Agente.Beauty — Bella · Bilingual Salon AI Agent";
 const TITLE_ES = "Agente.Beauty — Bella · Agente IA bilingüe para salones";
 const DESC_EN =
-  "Bella replies to every DM, WhatsApp, and missed call in under a second — bilingual EN/ES. Books slots, captures deposits, and cuts no-shows for US salons and spas.";
+  "Bella replies to every DM, WhatsApp, and missed call in under a second — bilingual EN/ES. Books slots, takes deposits, cuts no-shows for US salons.";
 const DESC_ES =
   "Bella responde cada DM, WhatsApp y llamada en menos de un segundo — bilingüe EN/ES. Agenda citas, cobra depósitos y reduce no-shows para salones y spas en EE.UU.";
 
