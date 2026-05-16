@@ -393,18 +393,20 @@ function Compare() {
           key={view}
           {...fadeUp}
           className="ct-shell mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]"
+          role="table"
+          aria-label={t("Agente vs competitors comparison", "Comparación de Agente vs competidores")}
         >
           {/* Header */}
-          <div className="ct-grid" style={{ background: "#111D24", ...gridStyle }}>
-            <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
+          <div className="ct-grid" role="row" style={{ background: "#111D24", ...gridStyle }}>
+            <div role="columnheader" className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
               {t("Feature", "Característica")}
             </div>
             {competitors.map((c) => (
-              <div key={c.name} className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
+              <div key={c.name} role="columnheader" className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
                 {c.name}
               </div>
             ))}
-            <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
+            <div role="columnheader" className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
               Agente
             </div>
           </div>
@@ -412,6 +414,9 @@ function Compare() {
             <motion.div
               key={i}
               id={`row-${slugs[i]}`}
+              role="row"
+              tabIndex={0}
+              aria-label={label}
               initial={reduceMotion ? false : { opacity: 0, y: 16, filter: "blur(4px)" }}
               whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
@@ -438,13 +443,13 @@ function Compare() {
                 ...gridStyle,
               }}
             >
-              <div className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
+              <div role="rowheader" className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               {competitors.map((c) => (
-                <div key={c.name} className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
+                <div key={c.name} role="cell" className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.45)" }}>
                   <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span>{c.rows[i]?.text ?? "—"}</span>
                 </div>
               ))}
-              <div className="ct-cell flex items-start text-[var(--cream)]">
+              <div role="cell" className="ct-cell flex items-start text-[var(--cream)]">
                 <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
               </div>
             </motion.div>
