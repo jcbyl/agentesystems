@@ -455,6 +455,22 @@ function Compare() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Compliance / privacy disclaimer */}
+        <motion.p
+          {...fadeUp}
+          className="mt-5 text-[12px] leading-[1.55] font-mono"
+          style={{ color: "rgba(244,237,227,.45)", maxWidth: "72ch" }}
+          role="note"
+        >
+          <span className="text-[var(--coral)] font-semibold tracking-[.08em] uppercase">
+            {t("Compliance note", "Nota de cumplimiento")} —{" "}
+          </span>
+          {t(
+            "HIPAA-ready deployments (Grace / medical vertical) require a signed Business Associate Agreement (BAA) before go-live. PHI is encrypted in transit and at rest, data stays in-region (US or your chosen region), and we never train shared models on your conversations. Standard SOC 2-aligned controls apply to all other verticals. Competitor capabilities listed above reflect publicly documented plans as of 2026 and may change.",
+            "Las implementaciones listas para HIPAA (Grace / vertical médico) requieren un Acuerdo de Asociado Comercial (BAA) firmado antes del lanzamiento. La PHI se cifra en tránsito y en reposo, los datos permanecen en tu región (EE. UU. o la región que elijas), y nunca entrenamos modelos compartidos con tus conversaciones. Para los demás verticales aplican controles alineados con SOC 2. Las capacidades de competidores mostradas arriba reflejan planes públicamente documentados al 2026 y pueden cambiar."
+          )}
+        </motion.p>
       </div>
     </section>
   );
