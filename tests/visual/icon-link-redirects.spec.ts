@@ -1,4 +1,4 @@
-import { test, expect, type APIResponse } from "@playwright/test";
+import { test, expect, type APIRequestContext } from "@playwright/test";
 
 /**
  * Icon-link redirect stability.
@@ -52,7 +52,7 @@ const RELOAD_COUNT = 3;
  * checks for non-redirected assets).
  */
 async function resolveIfRedirected(
-  request: APIResponse["request"] extends never ? never : import("@playwright/test").APIRequestContext,
+  request: APIRequestContext,
   url: string,
 ): Promise<{ status: number; finalUrl: string } | null> {
   // First: do NOT follow — see whether the server actually issues a redirect.
