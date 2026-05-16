@@ -8,7 +8,7 @@ export function SiteNav() {
       <div className="max-w-[1100px] mx-auto flex items-center justify-between gap-4">
         <a href="/" className="flex items-center gap-1.5 font-extrabold text-[20px] tracking-[-0.025em] text-[var(--cream)]">
           <RobotLogo />
-          Agente<span className="text-[var(--coral)]">.</span>SYSTEMS
+          Agente<span className="text-[var(--coral)]">.</span>Systems
         </a>
         <div className="hidden md:flex gap-6 text-[14px] font-medium text-[color:var(--soft)]">
           <a href="#compare" className="hover:text-[var(--cream)] transition-colors">{t("vs Lindy", "vs Lindy")}</a>
