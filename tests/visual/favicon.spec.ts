@@ -238,6 +238,122 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
   });
 
   /**
+   * Per-link validation for every Apple touch icon and Safari mask icon tag.
+   *
+   * For every `<link rel="apple-touch-icon">`,
+   * `<link rel="apple-touch-icon-precomposed">`, and `<link rel="mask-icon">`
+   * declared in the SSR HTML, fetch the href with `Cache-Control: no-cache`
+   * and assert:
+   *
+   *   • Status is 200 (or a redirect that itself resolves to 200 + image/*).
+   *   • Content-Type matches the rel:
+   *       - apple-touch-icon[-precomposed] → image/png
+   *       - mask-icon                       → image/svg+xml
+   *   • Cache-Control is set and matches the path's policy:
+   *       - Fingerprinted /assets/<name>-<hash>.* → `max-age` ≥ 6 digits + `immutable`.
+   *       - Anything else (e.g. /apple-touch-icon.png legacy redirect)
+   *         → `public`, `max-age=300`, `must-revalidate`.
+   *   • `data:` hrefs (used for the inline SVG favicon) are skipped — there
+   *     is no HTTP response to inspect.
+   */
+  test("apple-touch-icon + mask-icon links return expected status, content-type, and Cache-Control", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const links = await page
+      .locator(
+        'link[rel="apple-touch-icon"], link[rel="apple-touch-icon-precomposed"], link[rel="mask-icon"]',
+      )
+      .evaluateAll((els) =>
+        els
+          .map((el) => ({
+            rel: el.getAttribute("rel") ?? "",
+            href: el.getAttribute("href") ?? "",
+            sizes: el.getAttribute("sizes") ?? "",
+          }))
+          .filter((l) => l.href.length > 0),
+      );
+
+    // Must have at least one apple-touch-icon — the precomposed + mask-icon
+    // variants are optional, but if they're declared they get validated too.
+    expect(
+      links.filter((l) => l.rel.startsWith("apple-touch-icon")).length,
+      "expected at least one apple-touch-icon link",
+    ).toBeGreaterThan(0);
+
+    const FINGERPRINTED_RE = /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+/;
+
+    for (const link of links) {
+      // data: URLs (e.g. inline SVG favicon) have no HTTP response.
+      if (link.href.startsWith("data:")) continue;
+
+      const url = link.href.startsWith("http")
+        ? link.href
+        : `${baseURL}${link.href}`;
+      const label = `[${link.rel}${link.sizes ? ` ${link.sizes}` : ""}] ${link.href}`;
+
+      const resp = await page.request.fetch(url, {
+        method: "GET",
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+
+      // Follow at most one redirect — legacy paths (e.g. /apple-touch-icon.png)
+      // 302 to /api/icon-fallback/<name> which 302s to the hashed asset, so
+      // we walk up to 3 hops.
+      let final = resp;
+      let hops = 0;
+      while ([301, 302, 307, 308].includes(final.status()) && hops < 3) {
+        const location = final.headers()["location"] ?? "";
+        expect(location, `${label} redirect missing Location`).not.toBe("");
+        const next = location.startsWith("http")
+          ? location
+          : `${baseURL}${location}`;
+        final = await page.request.fetch(next, {
+          method: "GET",
+          maxRedirects: 0,
+          headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+        });
+        hops++;
+      }
+
+      expect(final.status(), `${label} final status`).toBe(200);
+
+      const expectedContentType = link.rel === "mask-icon"
+        ? /image\/svg\+xml/
+        : /image\/png/;
+      expect(
+        final.headers()["content-type"] ?? "",
+        `${label} content-type`,
+      ).toMatch(expectedContentType);
+
+      const cacheControl = final.headers()["cache-control"] ?? "";
+      expect(cacheControl, `${label} cache-control present`).not.toBe("");
+
+      const finalUrl = new URL(final.url());
+      if (FINGERPRINTED_RE.test(finalUrl.pathname)) {
+        expect(cacheControl, `${label} fingerprinted max-age`).toMatch(
+          /max-age=\d{6,}/,
+        );
+        expect(cacheControl, `${label} fingerprinted immutable`).toContain(
+          "immutable",
+        );
+      } else {
+        expect(cacheControl, `${label} short-cache public`).toMatch(/public/);
+        expect(cacheControl, `${label} short-cache max-age=300`).toMatch(
+          /max-age=300\b/,
+        );
+        expect(cacheControl, `${label} short-cache must-revalidate`).toMatch(
+          /must-revalidate/,
+        );
+      }
+    }
+  });
+
+
+  /**
    * Cache-Control + content-type contract for every canonical icon URL.
    *
    * Two policy classes live in `src/server.ts`:
