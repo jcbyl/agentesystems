@@ -185,15 +185,6 @@ export const VERTICALS: readonly Vertical[] = [
     },
   },
 ];
-      trustEs: [
-        "Visita técnica en la misma semana",
-        "Bilingüe EN · ES · Spanglish",
-        "En vivo en 48 horas",
-        "Cancela cuando quieras",
-      ],
-    },
-  },
-];
 
 /** Returns the vertical matching a pathname, or null for non-vertical routes. */
 export function verticalForPath(pathname: string): Vertical | null {
