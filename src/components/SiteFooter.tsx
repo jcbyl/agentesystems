@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { VERTICALS } from "@/lib/verticals";
 
 export function SiteFooter() {
   const { t } = useI18n();
@@ -17,10 +19,11 @@ export function SiteFooter() {
           </p>
         </div>
         <FCol title={t("Verticals", "Industrias")}>
-          <a href="https://agentepr.com">{t("Real Estate · Carmen", "Bienes Raíces · Carmen")}</a>
-          <a href="#verticals">{t("Construction · Marco", "Construcción · Marco")}</a>
-          <a href="#verticals">{t("Solar · Sol", "Solar · Sol")}</a>
-          <a href="#verticals">{t("Medical · Grace", "Médica · Grace")}</a>
+          {VERTICALS.map((v) => (
+            <Link key={v.path} to={v.path}>
+              {t(`${v.suffix} · ${v.persona}`, `${v.suffix} · ${v.persona}`)}
+            </Link>
+          ))}
         </FCol>
         <FCol title={t("Compare", "Comparar")}>
           <a href="#compare">{t("Agente vs Lindy", "Agente vs Lindy")}</a>
