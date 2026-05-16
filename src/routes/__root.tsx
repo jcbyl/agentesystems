@@ -80,6 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "The bilingual alternative to Lindy. WhatsApp-native. EN/ES. Flat pricing. Live in 24 hours." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "theme-color", content: "#E84118" },
+      { name: "application-name", content: "Agente" },
+      { name: "apple-mobile-web-app-title", content: "Agente" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
     ],
     links: [
       {
