@@ -739,7 +739,7 @@ function Verticals() {
             <AvatarLetter letter="B" color="pink" />
             <div>
               <div className="font-bold text-[17px] text-[var(--cream)]">
-                Bella · {t("Beauty & Nail Salons", "Salones de Belleza y Uñas")}
+                Bella · Agente.Beauty
               </div>
               <div className="text-[14px] mt-1" style={{ color: "var(--soft)" }}>
                 {t(
@@ -989,8 +989,8 @@ function Contact() {
     {
       key: "email",
       label: t("Email us", "Escríbenos"),
-      value: "hello@agentesystems.com",
-      href: "mailto:hello@agentesystems.com?subject=Agente%20inquiry",
+      value: "hello@agente.systems",
+      href: "mailto:hello@agente.systems?subject=Agente%20inquiry",
       hint: t("Replies within 1 business day", "Respondemos en 1 día hábil"),
       icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
