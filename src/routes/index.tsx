@@ -178,7 +178,8 @@ function Compare() {
   //   { name: "Intercom", rows: [{icon:"x",text:t("...","...")}, ...] }
   // The array length must match `rows`. Leave as `null` to hide.
   // ─────────────────────────────────────────────────────────────
-  const competitor: { name: string; rows: Array<{ icon: "ok" | "x" | "warn"; text: string }> } | null = null;
+  type Competitor = { name: string; rows: Array<{ icon: "ok" | "x" | "warn"; text: string }> };
+  const competitor = null as Competitor | null;
 
   type Cell = { icon: "ok" | "x" | "warn"; text: string };
   const rows: Array<[string, Cell, Cell]> = [
