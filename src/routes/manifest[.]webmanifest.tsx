@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import icon192Url from "../assets/icons/icon-192.png?url";
-import icon512Url from "../assets/icons/icon-512.png?url";
-import iconMaskable192Url from "../assets/icons/icon-maskable-192.png?url";
-import iconMaskable512Url from "../assets/icons/icon-maskable-512.png?url";
-import appleTouchIconUrl from "../assets/icons/apple-touch-icon.png?url";
+import { ICON_URLS } from "@/lib/icon-urls";
+
+const {
+  icon192: icon192Url,
+  icon512: icon512Url,
+  iconMaskable192: iconMaskable192Url,
+  iconMaskable512: iconMaskable512Url,
+  appleTouch: appleTouchIconUrl,
+} = ICON_URLS;
 
 /**
  * Web app manifest served at /manifest.webmanifest.

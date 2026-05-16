@@ -88,7 +88,7 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 // identical in dev, preview, and prod.
 const IMMUTABLE_ASSET_RE = /^\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+$/i;
 const SHORT_CACHE_ICON_RE =
-  /^\/(?:favicon[-.][\w-]*\.(?:png|ico|svg)|apple-touch-icon[\w-]*\.png|icon[-.][\w-]*\.png)$/i;
+  /^\/(?:favicon(?:[-.][\w-]*)?\.(?:png|ico|svg)|apple-touch-icon[\w-]*\.png|icon[-.][\w-]*\.png)$/i;
 
 function applyIconCacheHeaders(request: Request, response: Response): Response {
   if (response.status >= 400) return response;
