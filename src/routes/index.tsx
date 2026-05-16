@@ -340,21 +340,50 @@ function Compare() {
           aria-label={t("Jump to comparison row", "Saltar a fila de comparación")}
           className="mt-6 flex flex-wrap gap-2"
         >
-          {slugs.map((slug, i) => (
-            <a
-              key={slug}
-              href={`#row-${slug}`}
-              onClick={(e) => { e.preventDefault(); jumpTo(slug); }}
-              className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)]"
-              style={{
-                borderColor: "var(--rule)",
-                color: "rgba(244,237,227,.6)",
-                background: "rgba(244,237,227,.02)",
-              }}
-            >
-              {chipLabels[i]}
-            </a>
-          ))}
+          {slugs.map((slug, i) => {
+            const label = chipLabels[i];
+            const aria = t(`Jump to ${label} row`, `Saltar a la fila ${label}`);
+            return (
+              <a
+                key={slug}
+                href={`#row-${slug}`}
+                aria-label={aria}
+                aria-controls={`row-${slug}`}
+                data-chip-index={i}
+                onClick={(e) => { e.preventDefault(); jumpTo(slug); }}
+                onKeyDown={(e) => {
+                  // Space activates (anchors only handle Enter natively)
+                  if (e.key === " " || e.key === "Spacebar") {
+                    e.preventDefault();
+                    jumpTo(slug);
+                    return;
+                  }
+                  // Arrow / Home / End navigation across chips
+                  const max = slugs.length - 1;
+                  let next: number | null = null;
+                  if (e.key === "ArrowRight" || e.key === "ArrowDown") next = i === max ? 0 : i + 1;
+                  else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = i === 0 ? max : i - 1;
+                  else if (e.key === "Home") next = 0;
+                  else if (e.key === "End") next = max;
+                  if (next !== null) {
+                    e.preventDefault();
+                    const target = e.currentTarget.parentElement?.querySelector<HTMLAnchorElement>(
+                      `a[data-chip-index="${next}"]`
+                    );
+                    target?.focus();
+                  }
+                }}
+                className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navy)] focus-visible:text-[var(--coral)] focus-visible:border-[var(--coral)]"
+                style={{
+                  borderColor: "var(--rule)",
+                  color: "rgba(244,237,227,.6)",
+                  background: "rgba(244,237,227,.02)",
+                }}
+              >
+                {label}
+              </a>
+            );
+          })}
         </motion.nav>
 
         <motion.div
