@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SolarRouteImport } from './routes/solar'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RealEstateRouteImport } from './routes/real-estate'
 import { Route as MedicalRouteImport } from './routes/medical'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
@@ -22,6 +23,11 @@ import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fall
 const SolarRoute = SolarRouteImport.update({
   id: '/solar',
   path: '/solar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RealEstateRoute = RealEstateRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/medical'
     | '/real-estate'
+    | '/sitemap.xml'
     | '/solar'
     | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/medical'
     | '/real-estate'
+    | '/sitemap.xml'
     | '/solar'
     | '/api/icon-fallback/$'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/medical'
     | '/real-estate'
+    | '/sitemap.xml'
     | '/solar'
     | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   MedicalRoute: typeof MedicalRoute
   RealEstateRoute: typeof RealEstateRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SolarRoute: typeof SolarRoute
   ApiIconFallbackSplatRoute: typeof ApiIconFallbackSplatRoute
 }
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/solar'
       fullPath: '/solar'
       preLoaderRoute: typeof SolarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/real-estate': {
@@ -223,9 +243,20 @@ const rootRouteChildren: RootRouteChildren = {
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   MedicalRoute: MedicalRoute,
   RealEstateRoute: RealEstateRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SolarRoute: SolarRoute,
   ApiIconFallbackSplatRoute: ApiIconFallbackSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
