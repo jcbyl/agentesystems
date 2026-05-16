@@ -57,6 +57,7 @@ function Home() {
         <Verticals />
         <WhyAgente />
         <HowItWorks />
+        <Contact />
         <FinalCTA />
         <SiteFooter />
         <StickyMobile />
