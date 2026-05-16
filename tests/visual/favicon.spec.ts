@@ -17,10 +17,14 @@ import { test, expect } from "@playwright/test";
  * Run: `npx playwright test tests/visual/favicon.spec.ts`
  */
 
-// A Vite-emitted asset URL looks like `/assets/name-<8+ hex chars>.png`.
-// Accept a slightly looser shape so a future build hash format does not break
-// the test — the important thing is "not a plain unhashed filename".
-const FINGERPRINT_RE = /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+$/;
+// Asset URLs are processed by Vite:
+//   • production build → `/assets/<name>-<hash>.<ext>` (truly fingerprinted)
+//   • dev server       → `/src/assets/icons/<name>.<ext>` (Vite handles
+//     invalidation via HMR, no hash needed)
+// Both forms confirm the URL is owned by Vite (not a raw `/public/` path that
+// would never bust a stale cache). The hashed prod form is what ships.
+const VITE_ASSET_RE =
+  /^\/(?:assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+|src\/assets\/[^?]+\.[a-z0-9]+)(?:\?.*)?$/;
 
 test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
   test.beforeEach(async ({ context }) => {
@@ -62,9 +66,10 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
       );
     expect(pngHrefs.length).toBeGreaterThanOrEqual(3);
     for (const href of pngHrefs) {
-      expect(href, `expected fingerprinted href, got: ${href}`).toMatch(
-        FINGERPRINT_RE,
-      );
+      expect(
+        href,
+        `expected Vite-managed (fingerprinted in prod) href, got: ${href}`,
+      ).toMatch(VITE_ASSET_RE);
     }
 
     // Manifest stays at its canonical path (it's a server route).
@@ -129,9 +134,10 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
     );
 
     for (const icon of manifest.icons) {
-      expect(icon.src, `manifest icon ${icon.sizes} not fingerprinted`).toMatch(
-        FINGERPRINT_RE,
-      );
+      expect(
+        icon.src,
+        `manifest icon ${icon.sizes} src is not Vite-managed: ${icon.src}`,
+      ).toMatch(VITE_ASSET_RE);
     }
   });
 
@@ -141,7 +147,8 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
     const iconRequests: string[] = [];
     page.on("request", (req) => {
       const url = req.url();
-      if (/\.png(\?|$)/i.test(url) && /\/assets\//.test(url)) {
+      // Match both prod (`/assets/*.png`) and dev (`/src/assets/icons/*.png`).
+      if (/\.png(\?|$)/i.test(url) && /\/(?:src\/)?assets\//.test(url)) {
         iconRequests.push(new URL(url).pathname);
       }
     });
