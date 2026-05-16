@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import { demoUrl } from "@/lib/demo-link";
 import ogImageUrl from "@/assets/og-construction.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
@@ -132,7 +133,7 @@ function ConstructionPage() {
 }
 
 function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <section className="relative overflow-hidden" style={{ background: "var(--navy)", padding: "84px 28px 72px" }}>
       <div className="max-w-[1080px] mx-auto text-center">
@@ -169,7 +170,7 @@ function Hero() {
         </motion.p>
         <motion.div {...fadeUp} className="flex flex-wrap gap-3 justify-center mb-8">
           <a
-            href="https://wa.me/17878100749"
+            href={demoUrl(lang)}
             className="inline-flex items-center gap-2 px-7 py-[15px] rounded-[12px] font-bold text-white text-[17px] transition-transform hover:-translate-y-px"
             style={{ background: "var(--coral)", boxShadow: "0 6px 24px rgba(232,65,24,.35)" }}
           >
@@ -477,7 +478,7 @@ function Lifecycle() {
 }
 
 function Pricing() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const items = [
     t("Instant response on every channel, 24/7", "Respuesta instantánea en cada canal, 24/7"),
     t("Lead qualification — scope, location, budget, timeline, pre-1978 flag", "Calificación de leads — alcance, ubicación, presupuesto, cronograma, alerta pre-1978"),
@@ -536,7 +537,7 @@ function Pricing() {
               ))}
             </ul>
             <a
-              href="https://wa.me/17878100749"
+              href={demoUrl(lang)}
               className="block w-full text-center px-6 py-3.5 rounded-[12px] font-bold text-white text-[16px] transition-transform hover:-translate-y-px"
               style={{ background: "var(--coral)", boxShadow: "0 6px 24px rgba(232,65,24,.3)" }}
             >
@@ -546,7 +547,7 @@ function Pricing() {
         </motion.div>
         <p className="mt-4 text-[13px] text-[var(--soft)]">
           {t("Multi-location or franchise pricing · ", "Precio multi-sucursal o franquicia · ")}
-          <a href="https://wa.me/17878100749" className="text-[var(--coral)] font-semibold">
+          <a href={demoUrl(lang)} className="text-[var(--coral)] font-semibold">
             {t("Message for a quote", "Escríbenos para una cotización")}
           </a>
         </p>
@@ -627,7 +628,7 @@ function FAQ() {
 }
 
 function FinalCTA() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <section className="text-center px-7 py-24" style={{ background: "var(--navy)" }}>
       <motion.h2
@@ -648,7 +649,7 @@ function FinalCTA() {
       </motion.p>
       <motion.div {...fadeUp} className="flex flex-wrap gap-3 justify-center">
         <a
-          href="https://wa.me/17878100749"
+          href={demoUrl(lang)}
           className="inline-flex items-center px-7 py-[15px] rounded-[12px] font-bold text-white text-[16px] transition-transform hover:-translate-y-px"
           style={{ background: "var(--coral)", boxShadow: "0 6px 24px rgba(232,65,24,.35)" }}
         >
