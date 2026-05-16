@@ -301,7 +301,7 @@ function Verticals() {
   const verticals = [
     {
       letter: "C", name: "Carmen", role: t("Real Estate Agent", "Agente de Bienes Raíces"),
-      title: t("Agente Real Estate", "Agente Bienes Raíces"),
+      title: t("Agente.RealEstate", "Agente.RealEstate"),
       body: t(
         "Qualifies buyers instantly, books showings, sends hot-lead digests. Bilingual EN/ES/Spanglish auto-detect. Knows PR's five buyer types. First responder wins — Carmen makes sure that's you.",
         "Califica compradores al instante, agenda visitas, envía resúmenes de leads calientes. Bilingüe EN/ES/Spanglish. Conoce los cinco tipos de compradores de PR. El primero en responder gana — Carmen se asegura de que seas tú."
@@ -314,38 +314,38 @@ function Verticals() {
     },
     {
       letter: "M", name: "Marco", role: t("Construction Agent", "Agente de Construcción"),
-      title: t("Agente Construction", "Agente Construcción"),
+      title: t("Agente.Construction", "Agente.Construction"),
       body: t(
         "Qualifies renovation leads, books estimates, runs proposal follow-up, sends job milestone updates, captures reviews and referrals. Knows DC, Maryland, and Virginia building codes and permit fees.",
         "Califica leads de renovación, agenda evaluaciones, da seguimiento a propuestas, envía actualizaciones del proyecto, captura reseñas y referidos. Conoce los códigos de construcción y permisos de DC, Maryland y Virginia."
       ),
       meta: [[t("Market:", "Mercado:"), "DC · MD · VA"], [t("Pilot:", "Piloto:"), "Reston Restoration LLC"]],
       status: { label: t("Deploying", "Desplegando"), kind: "deploy" as const },
-      href: "#", ctaText: t("Agente Construction →", "Agente Construcción →"),
+      href: "#", ctaText: t("Agente.Construction →", "Agente.Construction →"),
       color: "coral" as const,
     },
     {
       letter: "S", name: "Sol", role: t("Solar Agent", "Agente Solar"),
-      title: t("Agente Solar", "Agente Solar"),
+      title: t("Agente.Solar", "Agente.Solar"),
       body: t(
         "Bilingual EN/ES solar qualification for Puerto Rico. Knows net metering (Act 10-2024), LUMA interconnection, and the ITC nuance most mainland companies get wrong. 163K+ installs, 3,200 new per month.",
         "Calificación solar bilingüe EN/ES para Puerto Rico. Conoce la medición neta (Ley 10-2024), la interconexión de LUMA y el detalle del crédito fiscal que la mayoría de empresas del continente malinterpretan. 163K+ instalaciones."
       ),
       meta: [[t("Market:", "Mercado:"), "Puerto Rico"]],
       status: { label: t("Ready", "Listo"), kind: "deploy" as const },
-      href: "#", ctaText: t("Agente Solar →", "Agente Solar →"),
+      href: "#", ctaText: t("Agente.Solar →", "Agente.Solar →"),
       color: "sol" as const,
     },
     {
       letter: "G", name: "Grace", role: t("Medical Agent", "Agente Médica"),
-      title: t("Agente Medical", "Agente Médica"),
+      title: t("Agente.Medical", "Agente.Medical"),
       body: t(
         "Books appointments, sends reminders, routes clinical questions to the patient portal. HIPAA-compliant on the base plan. Recovers $7K–$10K/month in no-show revenue for the average family practice.",
         "Agenda citas, envía recordatorios, redirige preguntas clínicas al portal del paciente. Cumple con HIPAA en el plan base. Recupera $7K–$10K/mes en ingresos por citas perdidas."
       ),
       meta: [[t("Market:", "Mercado:"), t("US medical practices", "Consultorios médicos EE.UU.")]],
       status: { label: t("In development", "En desarrollo"), kind: "dev" as const },
-      href: "#", ctaText: t("Agente Medical →", "Agente Médica →"),
+      href: "#", ctaText: t("Agente.Medical →", "Agente.Medical →"),
       color: "med" as const,
     },
   ];
