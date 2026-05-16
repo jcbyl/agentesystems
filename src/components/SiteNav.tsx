@@ -12,11 +12,11 @@ export function SiteNav() {
             Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Systems
           </span>
         </a>
-        <div className="hidden md:flex gap-6 text-[14px] font-medium text-[color:var(--soft)]">
-          <a href="#compare" className="hover:text-[var(--cream)] transition-colors">{t("vs Lindy", "vs Lindy")}</a>
-          <a href="#verticals" className="hover:text-[var(--cream)] transition-colors">{t("Verticals", "Industrias")}</a>
-          <a href="#how" className="hover:text-[var(--cream)] transition-colors">{t("How it works", "Cómo funciona")}</a>
-          <a href="#latino" className="hover:text-[var(--cream)] transition-colors">{t("Level the field", "Nivela el campo")}</a>
+        <div className="hidden md:flex gap-5 text-[14px] font-semibold text-[color:var(--soft)]" style={{ letterSpacing: "-0.025em" }}>
+          <a href="/" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>RealEstate</a>
+          <a href="/construction" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Construction</a>
+          <a href="/" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Solar</a>
+          <a href="/" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Medical</a>
         </div>
         <div className="flex items-center gap-2.5">
           <div className="flex gap-px rounded-lg p-0.5" style={{ background: "var(--rule)" }}>
