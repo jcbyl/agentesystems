@@ -316,11 +316,15 @@ function Compare() {
           {rows.map(([label, , agente], i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.04 * i }}
-              whileHover={{ backgroundColor: "rgba(232,65,24,.04)" }}
+              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.05 * i }}
+              whileHover={{
+                backgroundColor: "rgba(232,65,24,.06)",
+                x: 2,
+                transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+              }}
               className="ct-grid ct-row border-t border-[var(--rule)]"
               style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent", ...gridStyle }}
             >
