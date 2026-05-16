@@ -227,8 +227,18 @@ function Compare() {
   ];
 
   const [flashSlug, setFlashSlug] = useState<string | null>(null);
+  // Remember the chip that initiated the jump so Escape / Shift+Tab can
+  // return focus to the chip group instead of stranding the user mid-table.
+  const [lastChipSlug, setLastChipSlug] = useState<string | null>(null);
 
-  const jumpTo = (slug: string) => {
+  const focusChip = (slug: string) => {
+    const chip = document.querySelector<HTMLAnchorElement>(
+      `a[aria-controls="row-${slug}"]`
+    );
+    chip?.focus();
+  };
+
+  const jumpTo = (slug: string, opts: { fromChip?: boolean } = {}) => {
     const el = document.getElementById(`row-${slug}`);
     if (!el) return;
     // Measure the sticky nav so the highlighted row never slips behind it.
@@ -246,6 +256,13 @@ function Compare() {
     try { history.replaceState(null, "", `#row-${slug}`); } catch {}
     setFlashSlug(slug);
     window.setTimeout(() => setFlashSlug((s) => (s === slug ? null : s)), 1600);
+    if (opts.fromChip) setLastChipSlug(slug);
+    // Move focus to the row so screen readers announce it and keyboard users
+    // are placed inside the table. preventScroll keeps our computed offset.
+    const focusDelay = reduceMotion ? 0 : 320;
+    window.setTimeout(() => {
+      el.focus({ preventScroll: true });
+    }, focusDelay);
   };
 
   useEffect(() => {
@@ -366,12 +383,17 @@ function Compare() {
                 aria-controls={`row-${slug}`}
                 aria-current={isActive ? "location" : undefined}
                 data-chip-index={i}
-                onClick={(e) => { e.preventDefault(); jumpTo(slug); }}
+                onClick={(e) => { e.preventDefault(); jumpTo(slug, { fromChip: true }); }}
                 onKeyDown={(e) => {
                   // Space activates (anchors only handle Enter natively)
                   if (e.key === " " || e.key === "Spacebar") {
                     e.preventDefault();
-                    jumpTo(slug);
+                    jumpTo(slug, { fromChip: true });
+                    return;
+                  }
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    jumpTo(slug, { fromChip: true });
                     return;
                   }
                   // Arrow / Home / End navigation across chips
@@ -430,6 +452,13 @@ function Compare() {
               role="row"
               tabIndex={0}
               aria-label={label}
+              onKeyDown={(e) => {
+                // Escape returns focus to the chip that brought us here.
+                if (e.key === "Escape" && lastChipSlug) {
+                  e.preventDefault();
+                  focusChip(lastChipSlug);
+                }
+              }}
               initial={reduceMotion ? false : { opacity: 0, y: 16, filter: "blur(4px)" }}
               whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
