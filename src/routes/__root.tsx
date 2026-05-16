@@ -20,6 +20,12 @@ const { favicon16: favicon16Url, favicon32: favicon32Url, appleTouch: appleTouch
 // route does not override og:image. Without this, root would fall back to
 // the 512×512 apple-touch icon and social platforms would render a tiny
 // summary card instead of a large branded preview.
+//
+// Importing the JPG as a module URL lets Vite emit it with a content
+// hash (e.g. /assets/og-default-<hash>.jpg). Social scrapers cache the
+// full URL, so any edit to og-default.jpg ships a brand-new path and
+// Facebook/LinkedIn/Slack/X re-fetch automatically — no manual debugger
+// re-scrape required.
 import ogDefaultUrl from "@/assets/og-default.jpg";
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_DEFAULT = `${ORIGIN}${ogDefaultUrl}`;

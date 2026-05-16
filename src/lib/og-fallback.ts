@@ -12,9 +12,18 @@
  *   import { ogFallback } from "@/lib/og-fallback";
  *   const OG_IMAGE = ogFallback("demo");
  *
+ * URLs include a `?v=<contentHash>` query string sourced from
+ * src/lib/og-fallback-manifest.ts (regenerated every build by
+ * scripts/gen-og-fallbacks.mjs). Social scrapers key their cache on
+ * the full URL, so changing the PNG bytes automatically invalidates
+ * Facebook/LinkedIn/Slack/X previews without needing a manual
+ * re-scrape.
+ *
  * Keep the slug list in sync with scripts/gen-og-fallbacks.mjs — the
  * type below enforces this at compile time on the consumer side.
  */
+import { OG_FALLBACK_HASHES } from "./og-fallback-manifest";
+
 export type OgFallbackSlug =
   | "home"
   | "demo"
@@ -30,7 +39,8 @@ export type OgFallbackSlug =
 const ORIGIN = "https://agentesystems.lovable.app";
 
 export function ogFallback(slug: OgFallbackSlug): string {
-  return `${ORIGIN}/og-fallback/${slug}.png`;
+  const hash = OG_FALLBACK_HASHES[slug];
+  return `${ORIGIN}/og-fallback/${slug}.png?v=${hash}`;
 }
 
 // Convenience for routes that want both `og:image` and
