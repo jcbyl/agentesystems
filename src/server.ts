@@ -90,6 +90,29 @@ const IMMUTABLE_ASSET_RE = /^\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+$/i;
 const SHORT_CACHE_ICON_RE =
   /^\/(?:favicon(?:[-.][\w-]*)?\.(?:png|ico|svg)|apple-touch-icon[\w-]*\.png|icon[-.][\w-]*\.png)$/i;
 
+// Legacy icon paths at the site root that should fall back to the canonical
+// Apple-style rounded icon. Catches old bookmarks, scrapers, link-preview
+// bots, and stale HTML from previous deploys that still reference unhashed
+// filenames. We rewrite them to the splat handler at
+// `/api/icon-fallback/<name>`, which 302s to the right fingerprinted asset.
+//
+// `/favicon.ico` has its own dedicated route file and is intentionally
+// excluded here so the rewrite doesn't shadow it.
+const LEGACY_ICON_FALLBACK_RE =
+  /^\/(?:favicon(?:-[\w-]*)?\.(?:png|svg)|apple-touch-icon(?:-precomposed)?(?:-[\w-]*)?\.png|icon-[\w-]+\.png)$/i;
+
+function rewriteLegacyIconRequest(request: Request): Request {
+  const url = new URL(request.url);
+  if (!LEGACY_ICON_FALLBACK_RE.test(url.pathname)) return request;
+  // Don't shadow the canonical assets emitted by Vite under /assets/.
+  if (url.pathname.startsWith("/assets/")) return request;
+
+  const name = url.pathname.replace(/^\/+/, "");
+  const rewritten = new URL(`/api/icon-fallback/${name}`, url);
+  rewritten.search = url.search;
+  return new Request(rewritten.toString(), request);
+}
+
 function applyIconCacheHeaders(request: Request, response: Response): Response {
   if (response.status >= 400) return response;
   if (response.headers.has("cache-control")) return response;
@@ -120,7 +143,8 @@ export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
+      const rewritten = rewriteLegacyIconRequest(request);
+      const response = await handler.fetch(rewritten, env, ctx);
       const normalized = await normalizeCatastrophicSsrResponse(response);
       return applyIconCacheHeaders(request, normalized);
     } catch (error) {
