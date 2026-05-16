@@ -343,12 +343,14 @@ function Compare() {
           {slugs.map((slug, i) => {
             const label = chipLabels[i];
             const aria = t(`Jump to ${label} row`, `Saltar a la fila ${label}`);
+            const isActive = flashSlug === slug;
             return (
               <a
                 key={slug}
                 href={`#row-${slug}`}
                 aria-label={aria}
                 aria-controls={`row-${slug}`}
+                aria-current={isActive ? "location" : undefined}
                 data-chip-index={i}
                 onClick={(e) => { e.preventDefault(); jumpTo(slug); }}
                 onKeyDown={(e) => {
@@ -373,11 +375,11 @@ function Compare() {
                     target?.focus();
                   }
                 }}
-                className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navy)] focus-visible:text-[var(--coral)] focus-visible:border-[var(--coral)]"
+                className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navy)] focus-visible:text-[var(--coral)] focus-visible:border-[var(--coral)] aria-[current=location]:text-[var(--coral)] aria-[current=location]:border-[var(--coral)]"
                 style={{
-                  borderColor: "var(--rule)",
-                  color: "rgba(244,237,227,.6)",
-                  background: "rgba(244,237,227,.02)",
+                  borderColor: isActive ? "var(--coral)" : "var(--rule)",
+                  color: isActive ? "var(--coral)" : "rgba(244,237,227,.6)",
+                  background: isActive ? "rgba(232,65,24,.08)" : "rgba(244,237,227,.02)",
                 }}
               >
                 {label}
