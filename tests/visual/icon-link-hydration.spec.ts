@@ -11,38 +11,77 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
  * contract against them here:
  *
  *   1. HTTP 200
- *   2. content-type matches the URL's file extension
+ *   2. Base MIME type (charset/parameters stripped) belongs to the family
+ *      allowed for the link's `rel` AND matches the URL's file extension.
+ *      `image/svg+xml; charset=utf-8` is treated as `image/svg+xml`.
  *   3. Cache-Control matches the SSR icons' Cache-Control byte-for-byte
  *      (so a hashed asset doesn't suddenly become `no-store`, and a
  *      no-store endpoint doesn't suddenly become `immutable`)
  *   4. Resolves to a Vite-managed asset URL (fingerprinted in prod)
- *
- * Strategy: snapshot icon hrefs from the raw SSR HTML, then load the page
- * with full JS, wait for hydration + a settle window, and diff. Any URL
- * present after hydration but not in the SSR snapshot is "hydration-
- * injected" and validated.
  */
 
-const ICON_LINK_SELECTORS = [
-  'link[rel="icon"]',
-  'link[rel="apple-touch-icon"]',
-  'link[rel="apple-touch-icon-precomposed"]',
-  'link[rel="shortcut icon"]',
-  'link[rel="mask-icon"]',
+type IconLink = { rel: IconRel; href: string };
+type IconRel =
+  | "icon"
+  | "shortcut icon"
+  | "apple-touch-icon"
+  | "apple-touch-icon-precomposed"
+  | "mask-icon";
+
+const ICON_RELS: readonly IconRel[] = [
+  "icon",
+  "shortcut icon",
+  "apple-touch-icon",
+  "apple-touch-icon-precomposed",
+  "mask-icon",
 ];
+
+const ICON_LINK_SELECTORS = ICON_RELS.map((r) => `link[rel="${r}"]`);
 
 const VITE_ASSET_RE =
   /^\/(?:assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+|src\/assets\/[^?]+\.[a-z0-9]+)(?:\?.*)?$/;
 
-const EXT_TO_MIME: Record<string, RegExp> = {
-  png: /image\/png/,
-  ico: /image\/(x-icon|vnd\.microsoft\.icon)/,
-  svg: /image\/svg\+xml/,
-  webp: /image\/webp/,
-  jpg: /image\/jpe?g/,
-  jpeg: /image\/jpe?g/,
-  gif: /image\/gif/,
+// Canonical (lower-cased, parameter-free) base MIME types per format.
+const MIME_PNG = ["image/png"];
+const MIME_ICO = ["image/x-icon", "image/vnd.microsoft.icon"];
+const MIME_SVG = ["image/svg+xml"];
+const MIME_WEBP = ["image/webp"];
+const MIME_JPEG = ["image/jpeg"];
+const MIME_GIF = ["image/gif"];
+
+// Allowed MIME families per file extension.
+const EXT_TO_MIME_FAMILY: Record<string, string[]> = {
+  png: MIME_PNG,
+  ico: MIME_ICO,
+  svg: MIME_SVG,
+  webp: MIME_WEBP,
+  jpg: MIME_JPEG,
+  jpeg: MIME_JPEG,
+  gif: MIME_GIF,
 };
+
+// Allowed MIME families per `rel`. Sources:
+//   - HTML spec / Microsoft: `icon` and `shortcut icon` accept any image
+//   - Apple HIG: `apple-touch-icon[-precomposed]` must be PNG
+//   - Safari pinned-tab: `mask-icon` must be a monochrome SVG
+const REL_TO_ALLOWED_MIMES: Record<IconRel, string[]> = {
+  icon: [...MIME_PNG, ...MIME_ICO, ...MIME_SVG, ...MIME_WEBP],
+  "shortcut icon": [...MIME_PNG, ...MIME_ICO],
+  "apple-touch-icon": [...MIME_PNG],
+  "apple-touch-icon-precomposed": [...MIME_PNG],
+  "mask-icon": [...MIME_SVG],
+};
+
+/**
+ * Parse a Content-Type header into its base MIME type (lowercase, params
+ * stripped). `Image/SVG+XML; charset=utf-8` → `image/svg+xml`. Returns
+ * empty string when the header is missing/blank.
+ */
+function parseBaseMime(contentType: string): string {
+  const first = (contentType ?? "").split(",")[0] ?? "";
+  const base = first.split(";")[0] ?? "";
+  return base.trim().toLowerCase();
+}
 
 function extOf(url: string): string {
   const path = url.split("?")[0]!.split("#")[0]!;
@@ -50,29 +89,25 @@ function extOf(url: string): string {
   return dot >= 0 ? path.slice(dot + 1).toLowerCase() : "";
 }
 
-function parseIconHrefsFromHtml(html: string): string[] {
-  const out = new Set<string>();
-  // Cheap, framework-free <link> extraction from raw SSR HTML.
+function parseIconLinksFromHtml(html: string): IconLink[] {
+  const out: IconLink[] = [];
+  const seen = new Set<string>();
   const linkRe = /<link\b[^>]*>/gi;
   for (const tag of html.match(linkRe) ?? []) {
-    const rel = /\brel\s*=\s*"([^"]+)"|\brel\s*=\s*'([^']+)'/i.exec(tag);
-    const relVal = (rel?.[1] ?? rel?.[2] ?? "").toLowerCase();
-    if (
-      ![
-        "icon",
-        "apple-touch-icon",
-        "apple-touch-icon-precomposed",
-        "shortcut icon",
-        "mask-icon",
-      ].includes(relVal)
-    ) {
-      continue;
-    }
-    const href = /\bhref\s*=\s*"([^"]+)"|\bhref\s*=\s*'([^']+)'/i.exec(tag);
-    const hrefVal = href?.[1] ?? href?.[2];
-    if (hrefVal) out.add(hrefVal);
+    const relMatch = /\brel\s*=\s*"([^"]+)"|\brel\s*=\s*'([^']+)'/i.exec(tag);
+    const relVal = (relMatch?.[1] ?? relMatch?.[2] ?? "")
+      .toLowerCase()
+      .trim() as IconRel;
+    if (!ICON_RELS.includes(relVal)) continue;
+    const hrefMatch = /\bhref\s*=\s*"([^"]+)"|\bhref\s*=\s*'([^']+)'/i.exec(tag);
+    const href = hrefMatch?.[1] ?? hrefMatch?.[2];
+    if (!href) continue;
+    const key = `${relVal}|${href}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ rel: relVal, href });
   }
-  return Array.from(out);
+  return out;
 }
 
 function normalizeUrl(href: string, baseURL: string): string | null {
@@ -102,7 +137,7 @@ async function fetchIcon(
 }
 
 test.describe("icon links: hydration-injected validation", () => {
-  test("any icon link injected after hydration matches SSR status/content-type/Cache-Control", async ({
+  test("any icon link injected after hydration matches SSR contract (rel-aware MIME, charset-tolerant)", async ({
     page,
     playwright,
     baseURL,
@@ -110,7 +145,7 @@ test.describe("icon links: hydration-injected validation", () => {
     expect(baseURL).toBeTruthy();
 
     // -----------------------------------------------------------------
-    // 1. SSR snapshot — fetch raw HTML (no JS) and extract icon hrefs.
+    // 1. SSR snapshot — fetch raw HTML (no JS) and extract {rel, href}.
     // -----------------------------------------------------------------
     const ssrCtx = await playwright.request.newContext({ baseURL });
     const ssrResp = await ssrCtx.get("/", {
@@ -118,26 +153,26 @@ test.describe("icon links: hydration-injected validation", () => {
     });
     expect(ssrResp.status(), "SSR GET / status").toBe(200);
     const ssrHtml = await ssrResp.text();
-    const ssrHrefs = parseIconHrefsFromHtml(ssrHtml)
-      .map((h) => normalizeUrl(h, baseURL!))
-      .filter((u): u is string => !!u);
-    expect(ssrHrefs.length, "SSR HTML should declare icon links").toBeGreaterThan(0);
 
-    // Capture SSR Cache-Control baseline. We expect every SSR icon URL
-    // to share the same Cache-Control (e.g. `public, max-age=31536000,
-    // immutable` for hashed assets); if SSR itself disagrees, that's a
-    // separate problem and we surface it.
-    const ssrHeaders = new Map<string, { contentType: string; cacheControl: string }>();
-    for (const url of ssrHrefs) {
-      const h = await fetchIcon(ssrCtx, url);
-      expect(h.status, `SSR icon ${url} status`).toBe(200);
-      ssrHeaders.set(url, { contentType: h.contentType, cacheControl: h.cacheControl });
+    const ssrLinks: IconLink[] = parseIconLinksFromHtml(ssrHtml)
+      .map((l) => {
+        const u = normalizeUrl(l.href, baseURL!);
+        return u ? { rel: l.rel, href: u } : null;
+      })
+      .filter((l): l is IconLink => !!l);
+    expect(ssrLinks.length, "SSR HTML should declare icon links").toBeGreaterThan(0);
+
+    // Cache-Control baseline (assert SSR icons agree).
+    const ssrCacheByUrl = new Map<string, string>();
+    for (const { href } of ssrLinks) {
+      if (ssrCacheByUrl.has(href)) continue;
+      const h = await fetchIcon(ssrCtx, href);
+      expect(h.status, `SSR icon ${href} status`).toBe(200);
+      ssrCacheByUrl.set(href, h.cacheControl);
     }
     await ssrCtx.dispose();
 
-    const ssrCacheControls = new Set(
-      Array.from(ssrHeaders.values()).map((h) => h.cacheControl),
-    );
+    const ssrCacheControls = new Set(ssrCacheByUrl.values());
     expect(
       ssrCacheControls.size,
       `SSR icons disagree on Cache-Control: ${JSON.stringify([...ssrCacheControls])}`,
@@ -145,88 +180,117 @@ test.describe("icon links: hydration-injected validation", () => {
     const expectedCacheControl = [...ssrCacheControls][0]!;
 
     // -----------------------------------------------------------------
-    // 2. Hydrated snapshot — load the page with JS, wait for hydration
-    //    and an extra settle window, then read the live <head>.
+    // 2. Hydrated snapshot — read live <head> with rel attached.
     // -----------------------------------------------------------------
     await page.goto("/", { waitUntil: "networkidle" });
-    // Extra settle: post-hydration effects (theme/locale icon swap,
-    // SW registration mutating <head>) typically run in the first tick.
     await page.waitForTimeout(750);
 
-    const hydratedHrefs = await page.evaluate((selectors) => {
-      const out = new Set<string>();
+    const hydratedRaw = await page.evaluate((selectors) => {
+      const seen = new Set<string>();
+      const out: { rel: string; href: string }[] = [];
       for (const sel of selectors) {
         document.querySelectorAll<HTMLLinkElement>(sel).forEach((el) => {
+          const rel = (el.getAttribute("rel") ?? "").toLowerCase().trim();
           const href = el.getAttribute("href");
-          if (href) out.add(href);
+          if (!href) return;
+          const key = `${rel}|${href}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          out.push({ rel, href });
         });
       }
-      return Array.from(out);
+      return out;
     }, ICON_LINK_SELECTORS);
 
-    const hydratedUrls = hydratedHrefs
-      .map((h) => normalizeUrl(h, baseURL!))
-      .filter((u): u is string => !!u);
+    const hydratedLinks: IconLink[] = hydratedRaw
+      .map((l) => {
+        if (!ICON_RELS.includes(l.rel as IconRel)) return null;
+        const u = normalizeUrl(l.href, baseURL!);
+        return u ? { rel: l.rel as IconRel, href: u } : null;
+      })
+      .filter((l): l is IconLink => !!l);
 
     // -----------------------------------------------------------------
     // 3. Diff: anything in hydrated but not SSR is hydration-injected.
     // -----------------------------------------------------------------
-    const ssrSet = new Set(ssrHrefs);
-    const injected = hydratedUrls.filter((u) => !ssrSet.has(u));
+    const ssrKeys = new Set(ssrLinks.map((l) => `${l.rel}|${l.href}`));
+    const injected = hydratedLinks.filter(
+      (l) => !ssrKeys.has(`${l.rel}|${l.href}`),
+    );
 
     console.log(
-      `[icon-hydration] SSR: ${ssrHrefs.length}, hydrated: ${hydratedUrls.length}, injected: ${injected.length}`,
+      `[icon-hydration] SSR: ${ssrLinks.length}, hydrated: ${hydratedLinks.length}, injected: ${injected.length}`,
     );
     if (injected.length) {
-      console.log("[icon-hydration] injected URLs:\n  " + injected.join("\n  "));
+      console.log(
+        "[icon-hydration] injected:\n  " +
+          injected.map((l) => `[${l.rel}] ${l.href}`).join("\n  "),
+      );
     }
 
-    // No injected links → spec passes trivially. We still want the test
-    // to exist so a future hydration-side icon swap can't slip past
-    // without re-running these contracts.
     if (injected.length === 0) {
       test.info().annotations.push({
         type: "note",
-        description: "No hydration-injected icon links detected — assertions vacuous but contract enforced.",
+        description:
+          "No hydration-injected icon links detected — assertions vacuous but contract enforced.",
       });
       return;
     }
 
     // -----------------------------------------------------------------
-    // 4. Validate each injected icon against the SSR contract.
+    // 4. Validate each injected icon against the contract.
     // -----------------------------------------------------------------
     const failures: string[] = [];
     const ctx = await playwright.request.newContext({ baseURL });
     try {
-      for (const url of injected) {
-        // (a) URL shape: Vite-managed asset.
-        const relPath = new URL(url).pathname + (new URL(url).search || "");
-        if (!VITE_ASSET_RE.test(relPath)) {
-          failures.push(`${url}: not a Vite-managed asset path`);
+      for (const { rel, href } of injected) {
+        const label = `[${rel}] ${href}`;
+
+        // (a) Vite-managed asset path.
+        const u = new URL(href);
+        if (!VITE_ASSET_RE.test(u.pathname + (u.search || ""))) {
+          failures.push(`${label}: not a Vite-managed asset path`);
           continue;
         }
 
-        // (b) Fetch and check status + content-type + Cache-Control.
-        const h = await fetchIcon(ctx, url);
-
+        // (b) Fetch headers.
+        const h = await fetchIcon(ctx, href);
         if (h.status !== 200) {
-          failures.push(`${url}: status ${h.status}, expected 200`);
+          failures.push(`${label}: status ${h.status}, expected 200`);
           continue;
         }
 
-        const ext = extOf(url);
-        const mimeRe = EXT_TO_MIME[ext];
-        if (!mimeRe) {
-          failures.push(`${url}: unknown icon extension ".${ext}"`);
-        } else if (!mimeRe.test(h.contentType)) {
-          failures.push(
-            `${url}: content-type "${h.contentType}" does not match extension .${ext}`,
-          );
+        // (c) MIME — strip parameters (e.g. `; charset=utf-8`) and
+        //     compare base MIME against:
+        //       (i) the family allowed for this rel, AND
+        //      (ii) the family implied by the URL extension.
+        const baseMime = parseBaseMime(h.contentType);
+        if (!baseMime) {
+          failures.push(`${label}: missing Content-Type header`);
+        } else {
+          const relAllowed = REL_TO_ALLOWED_MIMES[rel];
+          if (!relAllowed.includes(baseMime)) {
+            failures.push(
+              `${label}: served as "${h.contentType}" (base "${baseMime}"), ` +
+                `not in allowed MIMEs for rel="${rel}" [${relAllowed.join(", ")}]`,
+            );
+          }
+          const ext = extOf(href);
+          const extAllowed = EXT_TO_MIME_FAMILY[ext];
+          if (!extAllowed) {
+            failures.push(`${label}: unknown icon extension ".${ext}"`);
+          } else if (!extAllowed.includes(baseMime)) {
+            failures.push(
+              `${label}: served as "${h.contentType}" (base "${baseMime}"), ` +
+                `does not match extension .${ext} [${extAllowed.join(", ")}]`,
+            );
+          }
         }
 
+        // (d) Cache-Control byte-for-byte equal to SSR baseline.
         if (h.cacheControl !== expectedCacheControl) {
           failures.push(
-            `${url}: Cache-Control "${h.cacheControl}" ≠ SSR baseline "${expectedCacheControl}"`,
+            `${label}: Cache-Control "${h.cacheControl}" ≠ SSR baseline "${expectedCacheControl}"`,
           );
         }
       }
