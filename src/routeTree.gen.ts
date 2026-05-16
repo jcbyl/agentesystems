@@ -9,16 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SolarRouteImport } from './routes/solar'
 import { Route as RealEstateRouteImport } from './routes/real-estate'
+import { Route as MedicalRouteImport } from './routes/medical'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as FaviconDoticoRouteImport } from './routes/favicon[.]ico'
 import { Route as ConstructionRouteImport } from './routes/construction'
+import { Route as BeautyRouteImport } from './routes/beauty'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fallback.$'
 
+const SolarRoute = SolarRouteImport.update({
+  id: '/solar',
+  path: '/solar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RealEstateRoute = RealEstateRouteImport.update({
   id: '/real-estate',
   path: '/real-estate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MedicalRoute = MedicalRouteImport.update({
+  id: '/medical',
+  path: '/medical',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
@@ -36,6 +49,11 @@ const ConstructionRoute = ConstructionRouteImport.update({
   path: '/construction',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BeautyRoute = BeautyRouteImport.update({
+  id: '/beauty',
+  path: '/beauty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,72 +67,107 @@ const ApiIconFallbackSplatRoute = ApiIconFallbackSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/beauty': typeof BeautyRoute
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/medical': typeof MedicalRoute
   '/real-estate': typeof RealEstateRoute
+  '/solar': typeof SolarRoute
   '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/beauty'
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/medical'
     | '/real-estate'
+    | '/solar'
     | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/beauty'
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/medical'
     | '/real-estate'
+    | '/solar'
     | '/api/icon-fallback/$'
   id:
     | '__root__'
     | '/'
+    | '/beauty'
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/medical'
     | '/real-estate'
+    | '/solar'
     | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BeautyRoute: typeof BeautyRoute
   ConstructionRoute: typeof ConstructionRoute
   FaviconDoticoRoute: typeof FaviconDoticoRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  MedicalRoute: typeof MedicalRoute
   RealEstateRoute: typeof RealEstateRoute
+  SolarRoute: typeof SolarRoute
   ApiIconFallbackSplatRoute: typeof ApiIconFallbackSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/solar': {
+      id: '/solar'
+      path: '/solar'
+      fullPath: '/solar'
+      preLoaderRoute: typeof SolarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/real-estate': {
       id: '/real-estate'
       path: '/real-estate'
       fullPath: '/real-estate'
       preLoaderRoute: typeof RealEstateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/medical': {
+      id: '/medical'
+      path: '/medical'
+      fullPath: '/medical'
+      preLoaderRoute: typeof MedicalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manifest.webmanifest': {
@@ -138,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConstructionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/beauty': {
+      id: '/beauty'
+      path: '/beauty'
+      fullPath: '/beauty'
+      preLoaderRoute: typeof BeautyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -157,12 +217,25 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BeautyRoute: BeautyRoute,
   ConstructionRoute: ConstructionRoute,
   FaviconDoticoRoute: FaviconDoticoRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  MedicalRoute: MedicalRoute,
   RealEstateRoute: RealEstateRoute,
+  SolarRoute: SolarRoute,
   ApiIconFallbackSplatRoute: ApiIconFallbackSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
