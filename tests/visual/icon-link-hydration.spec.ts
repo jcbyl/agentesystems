@@ -1,4 +1,5 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { type APIRequestContext } from "@playwright/test";
+import { test, expect } from "./_helpers/icon-diagnostics";
 
 /**
  * Hydration-injected icon-link validation.
@@ -141,6 +142,7 @@ test.describe("icon links: hydration-injected validation", () => {
     page,
     playwright,
     baseURL,
+    diag,
   }) => {
     expect(baseURL).toBeTruthy();
 
@@ -164,13 +166,27 @@ test.describe("icon links: hydration-injected validation", () => {
 
     // Cache-Control baseline (assert SSR icons agree).
     const ssrCacheByUrl = new Map<string, string>();
+    const ssrCtypeByUrl = new Map<string, string>();
     for (const { href } of ssrLinks) {
       if (ssrCacheByUrl.has(href)) continue;
       const h = await fetchIcon(ssrCtx, href);
       expect(h.status, `SSR icon ${href} status`).toBe(200);
       ssrCacheByUrl.set(href, h.cacheControl);
+      ssrCtypeByUrl.set(href, h.contentType);
     }
     await ssrCtx.dispose();
+
+    // Record one row per SSR link so the diagnostic table is useful
+    // even when the failure is on an SSR (not injected) URL.
+    for (const { rel, href } of ssrLinks) {
+      diag.record({
+        rel: `${rel} [SSR]`,
+        href,
+        status: 200,
+        contentType: ssrCtypeByUrl.get(href),
+        cacheControl: ssrCacheByUrl.get(href),
+      });
+    }
 
     const ssrCacheControls = new Set(ssrCacheByUrl.values());
     expect(
@@ -250,11 +266,19 @@ test.describe("icon links: hydration-injected validation", () => {
         const u = new URL(href);
         if (!VITE_ASSET_RE.test(u.pathname + (u.search || ""))) {
           failures.push(`${label}: not a Vite-managed asset path`);
+          diag.record({ rel: `${rel} [injected]`, href, note: "not a Vite-managed asset path" });
           continue;
         }
 
         // (b) Fetch headers.
         const h = await fetchIcon(ctx, href);
+        diag.record({
+          rel: `${rel} [injected]`,
+          href,
+          status: h.status,
+          contentType: h.contentType,
+          cacheControl: h.cacheControl,
+        });
         if (h.status !== 200) {
           failures.push(`${label}: status ${h.status}, expected 200`);
           continue;
