@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import ogImageUrl from "@/assets/og-home.jpg";
 import { demoUrl } from "@/lib/demo-link";
+import { Link } from "@tanstack/react-router";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
@@ -151,15 +152,13 @@ function Hero() {
           >
             {t("How we compare", "Cómo nos comparamos")}
           </a>
-          <a
-            href={demoUrl(lang)}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/demo"
             className="inline-flex items-center gap-2 px-6 py-4 rounded-xl text-[17px] font-bold text-[var(--cream)] border border-[var(--rule)] transition-transform hover:-translate-y-px"
             style={{ background: "rgba(244,237,227,.08)" }}
           >
             {t("Book a demo", "Reservar demo")}
-          </a>
+          </Link>
         </motion.div>
 
         <div className="flex gap-5 justify-center flex-wrap text-[13px]" style={{ color: "var(--softer)" }}>
