@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { VerticalStub } from "@/components/VerticalStub";
 import { verticalForPath } from "@/lib/verticals";
+import ogImageUrl from "@/assets/og-medical.jpg";
 
 const vertical = verticalForPath("/medical")!;
 const URL = "https://agentesystems.lovable.app/medical";
+// Absolute URL for crawlers — relative paths are rejected by social scrapers.
+const ORIGIN = "https://agentesystems.lovable.app";
+const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 const TITLE_EN = "Agente.Medical — Grace · Bilingual AI Agent for Medical Practices";
 const TITLE_ES = "Agente.Medical — Grace · Agente IA bilingüe para consultas médicas";
 const DESC_EN =
@@ -25,9 +29,15 @@ export const Route = createFileRoute("/medical")({
       { property: "og:locale", content: "en_US" },
       { property: "og:locale:alternate", content: "es_US" },
       { property: "og:image:alt", content: "Grace — bilingual AI agent for medical practices" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:secure_url", content: OG_IMAGE },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: TITLE_EN },
       { name: "twitter:description", content: DESC_EN },
+      { name: "twitter:image", content: OG_IMAGE },
       { name: "twitter:image:alt", content: "Grace — bilingual AI agent for medical practices" },
     ],
     links: [
