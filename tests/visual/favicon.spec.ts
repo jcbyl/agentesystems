@@ -230,4 +230,94 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
     await renderAndSnapshot("favicon-32", targets.favicon32!, 32);
     await renderAndSnapshot("apple-touch-icon", targets.appleTouch!, 180);
   });
+
+  /**
+   * Per-size assertions for the 16x16 and 32x32 PNG favicons.
+   *
+   * For each declared size we verify, after a hard reload:
+   *   1. Exactly one <link rel="icon" type="image/png" sizes="NxN"> exists.
+   *   2. Its href is Vite-managed (fingerprinted in prod, /src/assets/ in dev).
+   *   3. The href resolves to 200 + image/png + non-trivial body.
+   *   4. The PNG's intrinsic pixel dimensions match the declared sizes attr.
+   *   5. After a second hard reload, the link's href is stable (same hash)
+   *      AND a fresh fetch with `Cache-Control: no-cache` still returns 200
+   *      with byte-identical content — proving the post-reload icon update
+   *      path works without 404s or content drift.
+   */
+  for (const size of [16, 32] as const) {
+    test(`favicon-${size} link tag + asset update correctly after hard reload`, async ({
+      page,
+      baseURL,
+    }) => {
+      const selector = `link[rel="icon"][type="image/png"][sizes="${size}x${size}"]`;
+
+      // First load.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
+      await expect(
+        page.locator(selector),
+        `expected exactly one ${selector}`,
+      ).toHaveCount(1);
+
+      const firstHref = await page.locator(selector).getAttribute("href");
+      expect(firstHref, `${selector} href`).toBeTruthy();
+      expect(firstHref!, `${selector} href is Vite-managed`).toMatch(
+        VITE_ASSET_RE,
+      );
+
+      const fetchIcon = async (href: string) => {
+        const url = href.startsWith("http") ? href : `${baseURL}${href}`;
+        const resp = await page.request.get(url, {
+          headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+        });
+        expect(resp.status(), `${href} status`).toBe(200);
+        expect(
+          resp.headers()["content-type"] ?? "",
+          `${href} content-type`,
+        ).toMatch(/image\/png/);
+        const body = await resp.body();
+        expect(body.byteLength, `${href} body size`).toBeGreaterThan(100);
+        return body;
+      };
+
+      const firstBody = await fetchIcon(firstHref!);
+
+      // Intrinsic dimensions must match the declared `sizes` attribute.
+      const dims = await page.evaluate(
+        ({ sel }) =>
+          new Promise<{ w: number; h: number }>((resolve, reject) => {
+            const link = document.querySelector(sel) as HTMLLinkElement | null;
+            if (!link?.href) return reject(new Error("link missing href"));
+            const img = new Image();
+            img.onload = () =>
+              resolve({ w: img.naturalWidth, h: img.naturalHeight });
+            img.onerror = () => reject(new Error(`failed to decode ${link.href}`));
+            img.src = link.href;
+          }),
+        { sel: selector },
+      );
+      expect(dims.w, `${selector} natural width`).toBe(size);
+      expect(dims.h, `${selector} natural height`).toBe(size);
+
+      // Hard reload (beforeEach sets no-cache headers) — link must still be
+      // present, href must remain Vite-managed, asset must still serve 200,
+      // and content must be byte-identical to the pre-reload fetch.
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await expect(
+        page.locator(selector),
+        `${selector} after hard reload`,
+      ).toHaveCount(1);
+
+      const secondHref = await page.locator(selector).getAttribute("href");
+      expect(secondHref, `${selector} href after reload`).toBeTruthy();
+      expect(secondHref!, `${selector} href stable across reload`).toBe(
+        firstHref!,
+      );
+
+      const secondBody = await fetchIcon(secondHref!);
+      expect(
+        secondBody.equals(firstBody),
+        `${selector} bytes stable across hard reload`,
+      ).toBe(true);
+    });
+  }
 });
