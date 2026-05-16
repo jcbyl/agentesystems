@@ -57,6 +57,7 @@ function Home() {
         <Verticals />
         <WhyAgente />
         <HowItWorks />
+        <Contact />
         <FinalCTA />
         <SiteFooter />
         <StickyMobile />
@@ -962,6 +963,102 @@ function HowItWorks() {
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- CONTACT ---------- */
+function Contact() {
+  const { t, lang } = useI18n();
+  const items = [
+    {
+      key: "phone",
+      label: t("Call us", "Llámanos"),
+      value: "+1 787 810 0749",
+      href: "tel:+17878100749",
+      hint: t("Mon–Fri · 9am–7pm AST", "Lun–Vie · 9am–7pm AST"),
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
+        </svg>
+      ),
+    },
+    {
+      key: "email",
+      label: t("Email us", "Escríbenos"),
+      value: "hello@agentesystems.com",
+      href: "mailto:hello@agentesystems.com?subject=Agente%20inquiry",
+      hint: t("Replies within 1 business day", "Respondemos en 1 día hábil"),
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m3 7 9 6 9-6" />
+        </svg>
+      ),
+    },
+    {
+      key: "whatsapp",
+      label: t("WhatsApp", "WhatsApp"),
+      value: t("Start free trial", "Prueba gratis"),
+      href: "https://wa.me/17878100749",
+      hint: t("Fastest — usually <2 min", "Lo más rápido — normalmente <2 min"),
+      isPrimary: true,
+      icon: <WhatsAppIcon />,
+    },
+  ];
+
+  return (
+    <section id="contact" className="px-7 py-[100px]" style={{ background: "rgba(244,237,227,.02)" }}>
+      <div className="max-w-[1100px] mx-auto">
+        <div className="text-center mb-12">
+          <div className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
+            {t("Contact", "Contacto")}
+          </div>
+          <h2 className="font-extrabold text-[var(--cream)] mx-auto" style={{ fontSize: "clamp(28px,4vw,44px)", lineHeight: 1.05, letterSpacing: "-.028em", maxWidth: "22ch" }}>
+            {t("Talk to a human, in any language", "Habla con una persona, en cualquier idioma")}
+          </h2>
+          <p className="text-[16px] leading-[1.55] mx-auto mt-4" style={{ color: "rgba(244,237,227,.7)", maxWidth: "54ch" }}>
+            {t(
+              "Questions, demos, integrations — pick the channel you like best. We answer in EN/ES/Spanglish.",
+              "Preguntas, demos, integraciones — escoge el canal que prefieras. Respondemos en EN/ES/Spanglish."
+            )}
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {items.map((it) => (
+            <a
+              key={it.key}
+              href={it.href}
+              target={it.href.startsWith("http") ? "_blank" : undefined}
+              rel={it.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="group flex flex-col gap-3 p-6 rounded-2xl border transition-all hover:-translate-y-px"
+              style={{
+                background: it.isPrimary ? "var(--coral)" : "rgba(244,237,227,.04)",
+                borderColor: it.isPrimary ? "transparent" : "var(--rule)",
+                color: it.isPrimary ? "white" : "var(--cream)",
+                boxShadow: it.isPrimary ? "0 4px 20px rgba(232,65,24,.3)" : undefined,
+              }}
+            >
+              <div className="flex items-center gap-2.5 text-[12px] font-mono font-semibold tracking-[.14em] uppercase" style={{ opacity: it.isPrimary ? 0.9 : 0.55 }}>
+                {it.icon}
+                {it.label}
+              </div>
+              <div className="text-[20px] font-extrabold leading-tight" style={{ letterSpacing: "-.02em" }}>
+                {it.value}
+              </div>
+              <div className="text-[13px]" style={{ opacity: it.isPrimary ? 0.85 : 0.55 }}>
+                {it.hint}
+              </div>
+            </a>
+          ))}
+        </div>
+        <p className="text-center text-[12px] mt-8" style={{ color: "var(--softer)" }}>
+          {t(
+            <>Prefer to schedule? <a href={demoUrl(lang)} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--cream)]">Book a demo</a> and pick a time.</>,
+            <>¿Prefieres agendar? <a href={demoUrl(lang)} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--cream)]">Reserva una demo</a> y elige una hora.</>
+          )}
+        </p>
       </div>
     </section>
   );
