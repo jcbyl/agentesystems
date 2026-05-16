@@ -1090,8 +1090,8 @@ function Contact() {
         </div>
         <p className="text-center text-[12px] mt-8" style={{ color: "var(--softer)" }}>
           {t(
-            <>Prefer to schedule? <Link to="/demo" className="underline hover:text-[var(--cream)]">Book a demo</Link> and pick a time.</>,
-            <>¿Prefieres agendar? <Link to="/demo" className="underline hover:text-[var(--cream)]">Reserva una demo</Link> y elige una hora.</>
+            <>No forms — your demo happens in the same WhatsApp chat your customers use. <Link to="/demo" className="underline hover:text-[var(--cream)]">More about the demo</Link>.</>,
+            <>Sin formularios — tu demo ocurre en el mismo chat de WhatsApp que usan tus clientes. <Link to="/demo" className="underline hover:text-[var(--cream)]">Más sobre la demo</Link>.</>
           )}
         </p>
       </div>
