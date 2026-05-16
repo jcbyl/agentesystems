@@ -10,8 +10,6 @@
  * non-vertical page (privacy, contact, etc.).
  */
 
-import type { ReactNode } from "react";
-
 export type HeroCopy = {
   /** Live-pilot badge, e.g. "Grace is live for Bayamón Family Clinic" */
   liveBadgeEn: string;
@@ -177,7 +175,3 @@ export function verticalForPath(pathname: string): Vertical | null {
 export function suffixForPath(pathname: string): string {
   return verticalForPath(pathname)?.suffix ?? "Systems";
 }
-
-// Keep ReactNode imported so future hero copy can embed nodes without
-// a separate import churn — referenced via the HeroCopy JSDoc.
-export type _ReactNode = ReactNode;
