@@ -23,6 +23,12 @@ export type HeroCopy = {
   /** Four trust-strip chips */
   trustEn: [string, string, string, string];
   trustEs: [string, string, string, string];
+  /** WhatsApp CTA button label, e.g. "Book Grace for your clinic →" */
+  waLabelEn: string;
+  waLabelEs: string;
+  /** Pre-filled WhatsApp message body (plain text, not URL-encoded) */
+  waMessageEn: string;
+  waMessageEs: string;
 };
 
 export type Vertical = {
