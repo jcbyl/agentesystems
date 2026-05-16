@@ -38,6 +38,72 @@ export const Route = createFileRoute("/construction")({
       { name: "twitter:image:alt", content: "Marco — bilingual EN/ES AI agent qualifying renovation leads, booking free estimates, and managing the full client lifecycle for DC, Maryland, and Virginia contractors" },
     ],
     links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Agente.Construction — Marco",
+          serviceType: "Bilingual AI agent for contractors",
+          provider: { "@type": "Organization", name: "Agente.Systems", url: ORIGIN },
+          areaServed: ["District of Columbia", "Maryland", "Virginia"],
+          availableLanguage: ["en", "es"],
+          description:
+            "Instant lead qualification, free estimate booking, and full client lifecycle management for DC/MD/VA contractors. Bilingual EN/ES.",
+          url: URL,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "Does Marco know DC, Maryland, and Virginia codes?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. Marco covers the 2021 VUSBC, DC Department of Buildings permit fees, Maryland MHIC licensing, Montgomery and Prince George's County specifics, and county-by-county permit timelines across the DMV.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Will Marco quote prices to leads?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Never. Marco gives general ranges to qualify leads but never commits to a number. Estimates are always done in person.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What if the lead asks about permits?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Marco confirms the company pulls permits and flags whether the project requires them, but defers specifics to the estimator without giving legal advice.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How does Marco handle after-hours leads?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Instantly. Marco responds within a second whenever the lead arrives. Quiet hours (10pm–7am ET) are configurable so he queues messages instead of texting at 2am.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How long does setup take?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "48 hours once we have your company info — services list, service area, VA/DC/MD license numbers, estimate availability, and Google Review link.",
+              },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: ConstructionPage,
 });
