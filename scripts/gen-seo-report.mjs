@@ -3,8 +3,8 @@
 // summary at the top. Source of truth = the FINDINGS table below.
 // Run: node scripts/gen-seo-report.mjs
 
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { dirname } from "node:path";
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 const SITE = "https://agentesystems.lovable.app";
 
@@ -76,6 +76,69 @@ const totals = {
 };
 const overall = scorePage(rows);
 
+// --- History snapshot + diff vs. previous run --------------------------------
+const HISTORY_DIRS = ["public/reports/history", "/mnt/documents/seo-history"];
+const runId = new Date().toISOString().replace(/[:.]/g, "-"); // filesystem-safe
+const runIso = new Date().toISOString();
+
+const snapshot = {
+  runId,
+  generatedAt: runIso,
+  site: SITE,
+  overall,
+  totals,
+  pages: perPage.map((p) => ({ url: p.fullUrl, name: p.name, score: p.score })),
+  findings: rows,
+};
+
+function listSnapshots(dir) {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".json") && f !== "index.json")
+    .sort(); // ISO timestamps sort chronologically
+}
+
+// Load the most recent prior snapshot for diffing (before writing the new one).
+let previous = null;
+for (const dir of HISTORY_DIRS) {
+  const files = listSnapshots(dir);
+  if (files.length > 0) {
+    try { previous = JSON.parse(readFileSync(join(dir, files[files.length - 1]), "utf8")); break; }
+    catch { /* ignore corrupt snapshot */ }
+  }
+}
+
+// Per-URL diff
+function diffPages(prev, curr) {
+  const prevByUrl = new Map((prev?.pages ?? []).map((p) => [p.url, p]));
+  const prevFindings = new Map();
+  for (const f of prev?.findings ?? []) prevFindings.set(`${f.url}|${f.finding_id}`, f);
+
+  const out = [];
+  for (const p of curr.pages) {
+    const before = prevByUrl.get(p.url);
+    const beforePct = before?.score.pct ?? null;
+    const delta = beforePct == null ? null : p.score.pct - beforePct;
+    const transitions = [];
+    for (const f of curr.findings.filter((r) => r.url === p.url)) {
+      const prevF = prevFindings.get(`${f.url}|${f.finding_id}`);
+      if (!prevF) transitions.push({ kind: "added", finding_id: f.finding_id, finding: f.finding, to: f.state });
+      else if (prevF.state !== f.state) transitions.push({ kind: "changed", finding_id: f.finding_id, finding: f.finding, from: prevF.state, to: f.state });
+    }
+    // Removed findings (present before, missing now)
+    for (const [key, prevF] of prevFindings) {
+      if (!key.startsWith(p.url + "|")) continue;
+      const still = curr.findings.some((r) => r.url === p.url && r.finding_id === prevF.finding_id);
+      if (!still) transitions.push({ kind: "removed", finding_id: prevF.finding_id, finding: prevF.finding, from: prevF.state });
+    }
+    out.push({ url: p.url, name: p.name, beforePct, afterPct: p.score.pct, delta, transitions });
+  }
+  return out;
+}
+
+const diff = previous ? diffPages(previous, snapshot) : null;
+const changedPages = diff ? diff.filter((d) => d.transitions.length > 0 || (d.delta ?? 0) !== 0) : [];
+
 function csvEscape(v) {
   const s = String(v ?? "");
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
@@ -135,6 +198,35 @@ const tableRows = rows.map((r) => `<tr>
   <td class='muted'>${r.notes}</td>
 </tr>`).join("");
 
+// --- Changes-since-last-run block (HTML) ------------------------------------
+function arrow(delta) {
+  if (delta == null) return `<span style="color:#64748b">new</span>`;
+  if (delta > 0) return `<span style="color:#16a34a">▲ +${delta}</span>`;
+  if (delta < 0) return `<span style="color:#dc2626">▼ ${delta}</span>`;
+  return `<span style="color:#64748b">— 0</span>`;
+}
+function transitionLine(t) {
+  if (t.kind === "added")   return `<li>+ <strong>${t.finding}</strong> added (${badge(t.to, STATE_COLOR[t.to] ?? "#64748b")})</li>`;
+  if (t.kind === "removed") return `<li>− <strong>${t.finding}</strong> removed (was ${badge(t.from, STATE_COLOR[t.from] ?? "#64748b")})</li>`;
+  return `<li>↻ <strong>${t.finding}</strong>: ${badge(t.from, STATE_COLOR[t.from] ?? "#64748b")} → ${badge(t.to, STATE_COLOR[t.to] ?? "#64748b")}</li>`;
+}
+let changesBlock = "";
+if (!previous) {
+  changesBlock = `<h2>Changes since last run</h2>
+    <div class="card" style="display:block"><div class="muted">This is the first recorded run — future runs will diff against it.</div></div>`;
+} else if (changedPages.length === 0) {
+  changesBlock = `<h2>Changes since last run</h2>
+    <div class="card" style="display:block"><div class="muted">No changes since <code>${previous.generatedAt}</code>. All ${diff.length} pages identical.</div></div>`;
+} else {
+  const items = changedPages.map((d) => `<div class="card" style="display:block">
+      <div class="prow"><strong>${d.name}</strong> · <a href="${d.url}">${d.url}</a></div>
+      <div class="muted" style="margin:4px 0 8px">Score: ${d.beforePct ?? "—"}% → ${d.afterPct}% ${arrow(d.delta)}</div>
+      ${d.transitions.length ? `<ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.8">${d.transitions.map(transitionLine).join("")}</ul>` : `<div class="muted">No finding-level changes.</div>`}
+    </div>`).join("");
+  changesBlock = `<h2>Changes since last run <span style="font-size:11px;color:#64748b;text-transform:none;letter-spacing:0">vs ${previous.generatedAt}</span></h2>
+    <div class="grid">${items}</div>`;
+}
+
 const overallColor = ringColor(overall.pct, overall.failing);
 
 const html = `<!doctype html>
@@ -190,11 +282,16 @@ const html = `<!doctype html>
 <h2>Per-page summary</h2>
 <div class="grid">${summaryCards}</div>
 
+${changesBlock}
+
 <h2>Detailed findings</h2>
 <table>
   <thead><tr><th>URL</th><th>Finding</th><th>Status</th><th>Notes</th></tr></thead>
   <tbody>${tableRows}</tbody>
 </table>
+
+<h2>Run history</h2>
+<p class="muted">All runs are saved as JSON snapshots under <code>/reports/history/</code>. <a href="/reports/history/index.html">Browse all runs →</a></p>
 </div></body></html>`;
 
 const OUT = [
@@ -209,5 +306,42 @@ for (const path of OUT) {
   writeFileSync(path, path.endsWith(".csv") ? csvLines.join("\n") + "\n" : html);
 }
 
+// --- Write snapshot + history index -----------------------------------------
+for (const dir of HISTORY_DIRS) {
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, `${runId}.json`), JSON.stringify(snapshot, null, 2));
+}
+
+const allRuns = listSnapshots("public/reports/history")
+  .map((f) => {
+    try { return JSON.parse(readFileSync(join("public/reports/history", f), "utf8")); }
+    catch { return null; }
+  })
+  .filter(Boolean)
+  .reverse(); // newest first
+
+const indexRows = allRuns.map((s, i) => {
+  const prev = allRuns[i + 1];
+  const delta = prev ? s.overall.pct - prev.overall.pct : null;
+  return `<tr>
+    <td><code>${s.generatedAt}</code></td>
+    <td>${s.overall.pct}% ${arrow(delta)}</td>
+    <td>${s.totals.passing}/${s.totals.fixed}/${s.totals.failing}</td>
+    <td><a href="./${s.runId}.json">snapshot.json</a></td>
+  </tr>`;
+}).join("");
+
+const historyHtml = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SEO Audit — Run History</title>
+<style>body{font:14px/1.5 -apple-system,sans-serif;margin:0;padding:32px;background:#f8fafc;color:#0f172a}.wrap{max-width:900px;margin:0 auto}h1{font-size:22px;margin:0 0 16px}table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #f1f5f9}th{background:#f1f5f9;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#475569}code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f1f5f9;padding:1px 5px;border-radius:4px}a{color:#0369a1}</style>
+</head><body><div class="wrap">
+<h1>SEO Audit — Run History (${allRuns.length})</h1>
+<p><a href="/reports/seo-audit.html">← Back to latest report</a></p>
+<table><thead><tr><th>Run</th><th>Overall</th><th>Pass/Fixed/Fail</th><th>Snapshot</th></tr></thead><tbody>${indexRows}</tbody></table>
+</div></body></html>`;
+writeFileSync("public/reports/history/index.html", historyHtml);
+writeFileSync("/mnt/documents/seo-history/index.html", historyHtml);
+
 console.log(`Wrote ${OUT.length} report files. Overall ${overall.pct}% · ${totals.failing} failing.`);
 for (const p of perPage) console.log(`  ${p.name.padEnd(28)} ${String(p.score.pct).padStart(3)}%  ${p.score.grade.padEnd(3)} ${p.score.status}`);
+console.log(`Snapshot saved: ${runId}.json · ${allRuns.length} run(s) total · ${previous ? `${changedPages.length} page(s) changed since previous run` : "first run"}.`);
