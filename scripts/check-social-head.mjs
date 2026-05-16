@@ -328,10 +328,10 @@ for (const route of ROUTES) {
     effective.get("name:description")?.content ??
     effective.get("property:og:description")?.content ??
     "";
-  if (!/EN\/ES|biling[uü]e?|bilingual/i.test(desc)) {
+  if (!hasBilingualMarker(desc)) {
     warn(
       route.path,
-      `description / og:description has no bilingual EN/ES marker — social previews won't signal Spanish coverage`,
+      `description / og:description has no bilingual EN/ES marker — social previews won't signal Spanish coverage. Accepted markers: "EN/ES" or "ES/EN", "bilingual"/"bilingüe", "English and Spanish"/"Spanish and English", "inglés y español"/"español e inglés", a "EN: … ES: …" split, or one description split by "|" or "·" where one side contains Spanish-only characters (á é í ó ú ñ ¿ ¡).`,
       locFor("description"),
     );
   }
