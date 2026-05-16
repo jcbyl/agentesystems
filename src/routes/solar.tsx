@@ -7,12 +7,12 @@ const vertical = verticalForPath("/solar")!;
 const URL = "https://agentesystems.lovable.app/solar";
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
-const TITLE_EN = "Agente.Solar — Sol · Bilingual AI Agent for Solar Installers";
-const TITLE_ES = "Agente.Solar — Sol · Agente IA bilingüe para instaladores solares";
+const TITLE_EN = "Agente.Solar — Sol · Bilingual Installer AI Agent";
+const TITLE_ES = "Agente.Solar — Sol · Agente IA bilingüe para instaladores";
 const DESC_EN =
-  "Sol replies to every form fill, ad click, and referral in under a second — bilingual EN/ES/Spanglish. Qualifies the home (roof, bill, ownership), books the site survey, and keeps homeowners warm through permit, install, and PTO for US solar teams.";
+  "Sol qualifies every lead in under a second — bilingual EN/ES. Books site surveys and keeps homeowners warm through permit, install, and PTO for US solar teams.";
 const DESC_ES =
-  "Sol responde cada formulario, clic en anuncio y referido en menos de un segundo — bilingüe EN/ES/Spanglish. Califica la casa (techo, factura, propiedad), agenda la visita técnica y mantiene al dueño informado durante permisos, instalación y PTO para equipos solares en EE.UU.";
+  "Sol califica cada lead en menos de un segundo — bilingüe EN/ES. Agenda visitas y mantiene al dueño informado durante permisos, instalación y PTO para equipos solares.";
 
 export const Route = createFileRoute("/solar")({
   head: () => ({
