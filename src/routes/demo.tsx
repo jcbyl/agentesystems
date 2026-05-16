@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import { demoUrl, demoUrlFromForm, type DemoFormPayload } from "@/lib/demo-link";
+import { ogFallbackPair } from "@/lib/og-fallback";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const URL = `${ORIGIN}/demo`;
@@ -12,6 +13,11 @@ const DESC_EN =
   "See Agente live: bilingual EN/ES AI agents for real estate, construction, solar, and medical teams. WhatsApp-native, live in 24 hours. Pick a time or message us directly.";
 const DESC_ES =
   "Mira Agente en vivo: agentes IA bilingües EN/ES para bienes raíces, construcción, solar y consultas médicas. Nativo en WhatsApp, en vivo en 24 horas. Agenda una hora o escríbenos.";
+// Seeded 1200×630 fallback rendered at build time by
+// scripts/gen-og-fallbacks.mjs (public/og-fallback/demo.png). Used so
+// /demo gets a unique share preview instead of inheriting the
+// sitewide og-default card.
+const OG = ogFallbackPair("demo");
 
 export const Route = createFileRoute("/demo")({
   head: () => ({
@@ -24,9 +30,17 @@ export const Route = createFileRoute("/demo")({
       { property: "og:url", content: URL },
       { property: "og:locale", content: "en_US" },
       { property: "og:locale:alternate", content: "es_US" },
+      { property: "og:image", content: OG.url },
+      { property: "og:image:secure_url", content: OG.secureUrl },
+      { property: "og:image:type", content: OG.type },
+      { property: "og:image:width", content: OG.width },
+      { property: "og:image:height", content: OG.height },
       { property: "og:image:alt", content: "Book a demo of Agente.Systems — bilingual EN/ES AI agents" },
       { name: "twitter:title", content: TITLE_EN },
       { name: "twitter:description", content: DESC_EN },
+      { name: "twitter:image", content: OG.url },
+      { name: "twitter:image:alt", content: "Book a demo of Agente.Systems — bilingual EN/ES AI agents" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: URL }],
   }),
