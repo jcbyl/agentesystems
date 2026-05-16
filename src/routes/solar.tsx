@@ -18,7 +18,7 @@ export const Route = createFileRoute("/solar")({
   head: () => ({
     meta: [
       { title: TITLE_EN },
-      { name: "description", content: `${DESC_EN} | ${DESC_ES}` },
+      { name: "description", content: DESC_EN },
       { name: "keywords", content: "bilingual solar AI, Spanish speaking solar sales assistant, solar lead qualification, site survey booking, PTO follow-up, residential solar automation, agente IA solar, instalador solar bilingüe" },
       { property: "og:site_name", content: "Agente.Systems" },
       { property: "og:title", content: TITLE_EN },
