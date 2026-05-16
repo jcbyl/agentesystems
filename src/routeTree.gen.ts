@@ -13,6 +13,7 @@ import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]
 import { Route as FaviconDoticoRouteImport } from './routes/favicon[.]ico'
 import { Route as ConstructionRouteImport } from './routes/construction'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiIconFallbackSplatRouteImport } from './routes/api/icon-fallback.$'
 
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   id: '/manifest.webmanifest',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiIconFallbackSplatRoute = ApiIconFallbackSplatRouteImport.update({
+  id: '/api/icon-fallback/$',
+  path: '/api/icon-fallback/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +61,30 @@ export interface FileRoutesById {
   '/construction': typeof ConstructionRoute
   '/favicon.ico': typeof FaviconDoticoRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/api/icon-fallback/$': typeof ApiIconFallbackSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/construction' | '/favicon.ico' | '/manifest.webmanifest'
+  fullPaths:
+    | '/'
+    | '/construction'
+    | '/favicon.ico'
+    | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/construction' | '/favicon.ico' | '/manifest.webmanifest'
+  to:
+    | '/'
+    | '/construction'
+    | '/favicon.ico'
+    | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
   id:
     | '__root__'
     | '/'
     | '/construction'
     | '/favicon.ico'
     | '/manifest.webmanifest'
+    | '/api/icon-fallback/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +92,7 @@ export interface RootRouteChildren {
   ConstructionRoute: typeof ConstructionRoute
   FaviconDoticoRoute: typeof FaviconDoticoRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  ApiIconFallbackSplatRoute: typeof ApiIconFallbackSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/icon-fallback/$': {
+      id: '/api/icon-fallback/$'
+      path: '/api/icon-fallback/$'
+      fullPath: '/api/icon-fallback/$'
+      preLoaderRoute: typeof ApiIconFallbackSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -112,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConstructionRoute: ConstructionRoute,
   FaviconDoticoRoute: FaviconDoticoRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  ApiIconFallbackSplatRoute: ApiIconFallbackSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
