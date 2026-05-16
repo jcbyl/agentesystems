@@ -385,7 +385,6 @@ function Compare() {
             return (
               <li key={slug} role="listitem">
               <a
-                key={slug}
                 href={`#row-${slug}`}
                 aria-label={aria}
                 aria-controls={`row-${slug}`}
