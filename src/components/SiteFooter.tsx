@@ -37,7 +37,7 @@ export function SiteFooter() {
         </FCol>
       </div>
       <div className="max-w-[1100px] mx-auto mt-7 px-7 pt-4 border-t border-[var(--rule)] flex justify-between flex-wrap gap-2 font-mono text-[11px]" style={{ color: "var(--softer)" }}>
-        <span>© 2026 Agente · JCB Industries LLC · San Juan, Puerto Rico</span>
+        <span>© 2026 Agente · JCB Industries LLC · 7 Calle 1 Ste 204 · Guaynabo, PR 00968</span>
         <span>🌴 {t("Built in Puerto Rico", "Hecho en Puerto Rico")}</span>
       </div>
     </footer>
