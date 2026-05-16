@@ -368,16 +368,23 @@ function Compare() {
         {/* Deep-link chip nav — jump to any comparison row */}
         <motion.nav
           {...fadeUp}
-          aria-label={t("Jump to comparison row", "Saltar a fila de comparación")}
-          className="mt-6 flex flex-wrap gap-2"
+          aria-labelledby="cmp-chip-heading"
+          className="mt-6"
         >
+          <h3 id="cmp-chip-heading" className="sr-only">
+            {t(
+              "Jump to comparison row — use arrow keys to navigate, Enter to activate",
+              "Saltar a fila de comparación — usa las flechas para navegar, Enter para activar"
+            )}
+          </h3>
+          <ul role="list" className="flex flex-wrap gap-2 list-none p-0 m-0">
           {slugs.map((slug, i) => {
             const label = chipLabels[i];
             const aria = t(`Jump to ${label} row`, `Saltar a la fila ${label}`);
             const isActive = flashSlug === slug;
             return (
+              <li key={slug} role="listitem">
               <a
-                key={slug}
                 href={`#row-${slug}`}
                 aria-label={aria}
                 aria-controls={`row-${slug}`}
@@ -405,7 +412,7 @@ function Compare() {
                   else if (e.key === "End") next = max;
                   if (next !== null) {
                     e.preventDefault();
-                    const target = e.currentTarget.parentElement?.querySelector<HTMLAnchorElement>(
+                    const target = e.currentTarget.closest("nav")?.querySelector<HTMLAnchorElement>(
                       `a[data-chip-index="${next}"]`
                     );
                     target?.focus();
@@ -420,8 +427,10 @@ function Compare() {
               >
                 {label}
               </a>
+              </li>
             );
           })}
+          </ul>
         </motion.nav>
 
         <motion.div
