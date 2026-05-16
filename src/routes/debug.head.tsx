@@ -161,6 +161,22 @@ function HeadDebugPage() {
               className="ml-auto w-48 rounded border border-border bg-background px-2 py-1 text-sm"
               placeholder="Filter tags…"
             />
+            <a
+              href="/reports/seo-audit.html"
+              download="seo-audit.html"
+              className="rounded border border-border bg-background px-2 py-1 text-xs font-medium hover:bg-muted"
+              title="Download the latest SEO audit report as HTML"
+            >
+              ↓ Audit HTML
+            </a>
+            <a
+              href="/reports/seo-audit.csv"
+              download="seo-audit.csv"
+              className="rounded border border-border bg-background px-2 py-1 text-xs font-medium hover:bg-muted"
+              title="Download the latest SEO audit report as CSV"
+            >
+              ↓ Audit CSV
+            </a>
           </div>
         </div>
       </div>
