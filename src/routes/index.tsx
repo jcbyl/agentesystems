@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useReducedMotion, MotionConfig } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
@@ -6,7 +6,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
 import ogImageUrl from "@/assets/og-home.jpg";
 import { demoUrl } from "@/lib/demo-link";
-import { Link } from "@tanstack/react-router";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
@@ -1054,8 +1053,8 @@ function Contact() {
         </div>
         <p className="text-center text-[12px] mt-8" style={{ color: "var(--softer)" }}>
           {t(
-            <>Prefer to schedule? <a href={demoUrl(lang)} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--cream)]">Book a demo</a> and pick a time.</>,
-            <>¿Prefieres agendar? <a href={demoUrl(lang)} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--cream)]">Reserva una demo</a> y elige una hora.</>
+            <>Prefer to schedule? <Link to="/demo" className="underline hover:text-[var(--cream)]">Book a demo</Link> and pick a time.</>,
+            <>¿Prefieres agendar? <Link to="/demo" className="underline hover:text-[var(--cream)]">Reserva una demo</Link> y elige una hora.</>
           )}
         </p>
       </div>
