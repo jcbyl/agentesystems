@@ -320,4 +320,85 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
       ).toBe(true);
     });
   }
+
+  /**
+   * Legacy icon paths (e.g. /favicon.ico, /apple-touch-icon.png) must redirect
+   * to a canonical Vite-managed asset in **exactly one hop**. Regressions to
+   * guard against:
+   *
+   *   1. Legacy path → another legacy path (e.g. /favicon.ico → /favicon.png)
+   *      — that double-hops because the second legacy path also redirects.
+   *   2. Chains longer than 1 hop (legacy → legacy → asset, or worse).
+   *   3. Self-redirect loops.
+   *
+   * We disable automatic redirect following and assert each response is a
+   * 302 whose Location points straight at a non-legacy, Vite-managed URL
+   * that itself returns 200 (terminal — no further redirect).
+   */
+  const LEGACY_ICON_PATHS = [
+    "/favicon.ico",
+    "/favicon.png",
+    "/favicon-16.png",
+    "/favicon-32.png",
+    "/apple-touch-icon.png",
+    "/apple-touch-icon-precomposed.png",
+    "/icon-192.png",
+    "/icon-512.png",
+  ] as const;
+
+  // Anything that LEGACY_ICON_PATHS itself matches is, by definition,
+  // another legacy path — redirecting there would create a multi-hop chain.
+  const LEGACY_PATH_RE =
+    /^\/(?:favicon(?:-[\w-]*)?\.(?:png|ico|svg)|apple-touch-icon(?:-precomposed)?(?:-[\w-]*)?\.png|icon-[\w-]+\.png)$/i;
+
+  for (const legacyPath of LEGACY_ICON_PATHS) {
+    test(`legacy ${legacyPath} → single-hop redirect to canonical asset`, async ({
+      request,
+      baseURL,
+    }) => {
+      // Hop 1: legacy path. Do NOT follow redirects automatically.
+      const first = await request.get(`${baseURL}${legacyPath}`, {
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(
+        first.status(),
+        `${legacyPath} should 302, got ${first.status()}`,
+      ).toBe(302);
+
+      const location = first.headers()["location"];
+      expect(location, `${legacyPath} missing Location header`).toBeTruthy();
+
+      // Normalize to a pathname we can pattern-match against.
+      const targetUrl = new URL(location!, baseURL!);
+      expect(
+        targetUrl.pathname,
+        `${legacyPath} redirected to itself (loop)`,
+      ).not.toBe(legacyPath);
+      expect(
+        targetUrl.pathname,
+        `${legacyPath} redirected to another legacy path: ${targetUrl.pathname}`,
+      ).not.toMatch(LEGACY_PATH_RE);
+      // Must redirect into the Vite-managed asset namespace
+      // (prod `/assets/*-<hash>.*` or dev `/src/assets/icons/*`).
+      expect(
+        targetUrl.pathname,
+        `${legacyPath} redirected outside Vite asset namespace: ${targetUrl.pathname}`,
+      ).toMatch(VITE_ASSET_RE);
+
+      // Hop 2 must be terminal: 200 with no further Location.
+      const second = await request.get(targetUrl.toString(), {
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(
+        second.status(),
+        `${legacyPath} → ${targetUrl.pathname} should be terminal 200, got ${second.status()}`,
+      ).toBe(200);
+      expect(
+        second.headers()["location"],
+        `${legacyPath} chain longer than 1 hop (second response has Location)`,
+      ).toBeFalsy();
+    });
+  }
 });
