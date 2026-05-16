@@ -7,12 +7,12 @@ const vertical = verticalForPath("/beauty")!;
 const URL = "https://agentesystems.lovable.app/beauty";
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
-const TITLE_EN = "Agente.Beauty — Bella · Bilingual AI Agent for Beauty & Wellness";
-const TITLE_ES = "Agente.Beauty — Bella · Agente IA bilingüe para belleza y bienestar";
+const TITLE_EN = "Agente.Beauty — Bella · Bilingual Salon AI Agent";
+const TITLE_ES = "Agente.Beauty — Bella · Agente IA bilingüe para salones";
 const DESC_EN =
-  "Bella replies to every Instagram DM, WhatsApp, and missed call in under a second — bilingual EN/ES/Spanglish. Picks the right service and stylist, books the slot, captures deposits, and cuts no-shows for US salons, spas, and med-spas.";
+  "Bella replies to every DM, WhatsApp, and missed call in under a second — bilingual EN/ES. Books slots, captures deposits, and cuts no-shows for US salons and spas.";
 const DESC_ES =
-  "Bella responde cada DM de Instagram, WhatsApp y llamada perdida en menos de un segundo — bilingüe EN/ES/Spanglish. Elige el servicio y el estilista correctos, agenda, cobra el depósito y reduce los no-shows para salones, spas y med-spas en EE.UU.";
+  "Bella responde cada DM, WhatsApp y llamada en menos de un segundo — bilingüe EN/ES. Agenda citas, cobra depósitos y reduce no-shows para salones y spas en EE.UU.";
 
 export const Route = createFileRoute("/beauty")({
   head: () => ({
