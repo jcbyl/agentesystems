@@ -177,6 +177,15 @@ function HeadDebugPage() {
             >
               ↓ Audit CSV
             </a>
+            <a
+              href="/reports/history/index.html"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded border border-border bg-background px-2 py-1 text-xs font-medium hover:bg-muted"
+              title="Browse all recorded audit runs and compare changes"
+            >
+              ⌛ Run history
+            </a>
           </div>
         </div>
       </div>
