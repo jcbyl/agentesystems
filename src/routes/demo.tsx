@@ -25,6 +25,8 @@ export const Route = createFileRoute("/demo")({
       { property: "og:locale", content: "en_US" },
       { property: "og:locale:alternate", content: "es_US" },
       { property: "og:image:alt", content: "Book a demo of Agente.Systems — bilingual EN/ES AI agents" },
+      { name: "twitter:title", content: TITLE_EN },
+      { name: "twitter:description", content: DESC_EN },
     ],
     links: [{ rel: "canonical", href: URL }],
   }),
