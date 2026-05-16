@@ -23,6 +23,12 @@ export type HeroCopy = {
   /** Four trust-strip chips */
   trustEn: [string, string, string, string];
   trustEs: [string, string, string, string];
+  /** WhatsApp CTA button label, e.g. "Book Grace for your clinic →" */
+  waLabelEn: string;
+  waLabelEs: string;
+  /** Pre-filled WhatsApp message body (plain text, not URL-encoded) */
+  waMessageEn: string;
+  waMessageEs: string;
 };
 
 export type Vertical = {
@@ -88,6 +94,12 @@ export const VERTICALS: readonly Vertical[] = [
         "En vivo en 48 horas",
         "Cancela cuando quieras",
       ],
+      waLabelEn: "Book Grace for your clinic →",
+      waLabelEs: "Agenda a Grace para tu clínica →",
+      waMessageEn:
+        "Hi Grace — I run a medical practice and want to see how you handle bilingual patient intake, insurance verification, and appointment booking. Can we set up a demo?",
+      waMessageEs:
+        "Hola Grace — tengo una consulta médica y quiero ver cómo manejas el intake bilingüe de pacientes, la verificación de seguro y la agenda de citas. ¿Podemos coordinar una demo?",
     },
   },
   {
@@ -123,6 +135,12 @@ export const VERTICALS: readonly Vertical[] = [
         "En vivo en 24 horas",
         "Cancela cuando quieras",
       ],
+      waLabelEn: "Book Bella for your studio →",
+      waLabelEs: "Agenda a Bella para tu estudio →",
+      waMessageEn:
+        "Hi Bella — I run a salon/spa and want to see how you reply to Instagram DMs and WhatsApp, book the right service and stylist, and capture deposits. Can we set up a demo?",
+      waMessageEs:
+        "Hola Bella — tengo un salón/spa y quiero ver cómo respondes DMs de Instagram y WhatsApp, agendas el servicio y estilista correctos y cobras el depósito. ¿Podemos coordinar una demo?",
     },
   },
   {
@@ -158,6 +176,12 @@ export const VERTICALS: readonly Vertical[] = [
         "En vivo en 48 horas",
         "Cancela cuando quieras",
       ],
+      waLabelEn: "Book Sol for your solar team →",
+      waLabelEs: "Agenda a Sol para tu equipo solar →",
+      waMessageEn:
+        "Hi Sol — I run a solar install business and want to see how you qualify homeowners (roof, bill, ownership), book site surveys, and keep deals warm through permit, install, and PTO. Can we set up a demo?",
+      waMessageEs:
+        "Hola Sol — tengo una empresa de instalación solar y quiero ver cómo calificas dueños (techo, factura, propiedad), agendas visitas técnicas y mantienes los cierres activos durante permisos, instalación y PTO. ¿Podemos coordinar una demo?",
     },
   },
 ];

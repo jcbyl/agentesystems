@@ -18,6 +18,21 @@ export function VerticalStub({ vertical }: { vertical: Vertical }) {
   const { t } = useI18n();
   const hero = vertical.hero;
   const headline = hero ? t(hero.headlineEn, hero.headlineEs) : null;
+  // Default WhatsApp label + prefilled message when a vertical has no
+  // custom hero copy. Verticals with hero data override both.
+  const waLabel = hero
+    ? t(hero.waLabelEn, hero.waLabelEs)
+    : t(
+        `Talk to ${vertical.persona} on WhatsApp →`,
+        `Habla con ${vertical.persona} por WhatsApp →`,
+      );
+  const waMessage = hero
+    ? t(hero.waMessageEn, hero.waMessageEs)
+    : t(
+        `Hi ${vertical.persona} — I'd like to learn how Agente.${vertical.suffix} works for my business.`,
+        `Hola ${vertical.persona} — me gustaría saber cómo funciona Agente.${vertical.suffix} para mi negocio.`,
+      );
+  const waHref = `https://wa.me/17878100749?text=${encodeURIComponent(waMessage)}`;
   return (
     <div className="min-h-screen bg-[var(--navy)]">
       <SiteNav />
@@ -80,14 +95,11 @@ export function VerticalStub({ vertical }: { vertical: Vertical }) {
             className="flex flex-wrap gap-3 justify-center mb-8"
           >
             <a
-              href="https://wa.me/17878100749"
+              href={waHref}
               className="inline-flex items-center gap-2 px-7 py-[15px] rounded-[12px] font-bold text-white text-[17px] transition-transform hover:-translate-y-px"
               style={{ background: "var(--coral)", boxShadow: "0 6px 24px rgba(232,65,24,.35)" }}
             >
-              {t(
-                `Talk to ${vertical.persona} on WhatsApp →`,
-                `Habla con ${vertical.persona} por WhatsApp →`,
-              )}
+              {waLabel}
             </a>
             <Link
               to="/"
