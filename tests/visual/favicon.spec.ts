@@ -141,6 +141,82 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
     }
   });
 
+  test("manifest declares the full canonical icon set and each src resolves to the hashed asset at the declared pixel size", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const resp = await page.request.get(`${baseURL}/manifest.webmanifest`, {
+      headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+    });
+    expect(resp.status()).toBe(200);
+
+    const manifest = (await resp.json()) as {
+      icons: { src: string; sizes: string; type?: string; purpose?: string }[];
+    };
+
+    // Canonical set the manifest MUST declare. Keyed by `sizes|purpose`.
+    const REQUIRED = [
+      { sizes: "16x16", purpose: "any" },
+      { sizes: "32x32", purpose: "any" },
+      { sizes: "192x192", purpose: "any" },
+      { sizes: "512x512", purpose: "any" },
+      { sizes: "192x192", purpose: "maskable" },
+      { sizes: "512x512", purpose: "maskable" },
+    ] as const;
+
+    const have = new Map(
+      manifest.icons.map((i) => [`${i.sizes}|${i.purpose ?? "any"}`, i] as const),
+    );
+    for (const req of REQUIRED) {
+      const key = `${req.sizes}|${req.purpose}`;
+      expect(have.has(key), `manifest missing icon ${key}`).toBe(true);
+      const icon = have.get(key)!;
+      expect(icon.type, `manifest icon ${key} type`).toBe("image/png");
+      expect(
+        icon.src,
+        `manifest icon ${key} src not Vite-managed: ${icon.src}`,
+      ).toMatch(VITE_ASSET_RE);
+    }
+
+    // Resolve every declared icon and assert the browser actually gets a 200
+    // image/png whose intrinsic pixel dimensions match the declared sizes
+    // attribute — i.e. the hashed URL points at the canonical asset.
+    for (const icon of manifest.icons) {
+      const [wStr, hStr] = icon.sizes.split("x");
+      const w = Number(wStr);
+      const h = Number(hStr);
+      const url = icon.src.startsWith("http") ? icon.src : `${baseURL}${icon.src}`;
+
+      const assetResp = await page.request.get(url, {
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(assetResp.status(), `${icon.src} status`).toBe(200);
+      expect(
+        assetResp.headers()["content-type"] ?? "",
+        `${icon.src} content-type`,
+      ).toMatch(/image\/png/);
+
+      await page.setContent(
+        `<!doctype html><html><body><img id="i" src="${url}"></body></html>`,
+        { waitUntil: "domcontentloaded" },
+      );
+      const dims = await page.evaluate(async () => {
+        const img = document.getElementById("i") as HTMLImageElement;
+        if (!img.complete) {
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error("img load failed"));
+          });
+        }
+        await img.decode().catch(() => undefined);
+        return { w: img.naturalWidth, h: img.naturalHeight };
+      });
+      expect(dims.w, `${icon.src} natural width`).toBe(w);
+      expect(dims.h, `${icon.src} natural height`).toBe(h);
+    }
+  });
+
   test("at least one PNG favicon is actually requested by the browser on load", async ({
     page,
   }) => {
