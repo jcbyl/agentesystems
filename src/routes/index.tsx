@@ -203,23 +203,23 @@ function Compare() {
         <motion.div {...fadeUp} className="mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]">
           {/* Header */}
           <div className="grid" style={{ gridTemplateColumns: "1.2fr 1fr 1.3fr", background: "#111D24" }}>
-            <div className="px-5 py-4 font-mono text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
+            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)", padding: "16px 22px" }}>
               {t("Feature", "Característica")}
             </div>
-            <div className="px-5 py-4 font-mono text-[11px] font-semibold tracking-[.1em] uppercase hidden sm:block" style={{ color: "rgba(244,237,227,.3)" }}>
+            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase hidden sm:block" style={{ color: "rgba(244,237,227,.3)", padding: "16px 22px" }}>
               Lindy
             </div>
-            <div className="px-5 py-4 font-mono text-[11px] font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
+            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase text-[var(--coral)]" style={{ padding: "16px 22px" }}>
               Agente
             </div>
           </div>
           {rows.map(([label, lindy, agente], i) => (
             <div key={i} className="grid border-t border-[var(--rule)]" style={{ gridTemplateColumns: "1.2fr 1fr 1.3fr", background: i % 2 ? "rgba(244,237,227,.02)" : "transparent" }}>
-              <div className="px-5 py-3.5 text-[14px] font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
-              <div className="px-5 py-3.5 text-[14px] gap-2 items-start hidden sm:flex" style={{ color: "rgba(244,237,227,.35)" }}>
+              <div className="text-[14px] font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)", padding: "14px 22px" }}>{label}</div>
+              <div className="text-[14px] items-start hidden sm:flex" style={{ color: "rgba(244,237,227,.35)", padding: "14px 22px", gap: "7px" }}>
                 <CellIcon kind={lindy.icon} /> <span>{lindy.text}</span>
               </div>
-              <div className="px-5 py-3.5 text-[14px] flex gap-2 items-start text-[var(--cream)]">
+              <div className="text-[14px] flex items-start text-[var(--cream)]" style={{ padding: "14px 22px", gap: "7px" }}>
                 <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
               </div>
             </div>
