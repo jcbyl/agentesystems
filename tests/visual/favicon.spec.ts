@@ -237,6 +237,154 @@ test.describe("favicon & touch icon (cross-browser, hard reload)", () => {
     ).toBeGreaterThan(0);
   });
 
+  /**
+   * Cache-Control + content-type contract for every canonical icon URL.
+   *
+   * Two policy classes live in `src/server.ts`:
+   *
+   *   • Fingerprinted assets under `/assets/<name>-<hash>.<ext>` (the icons
+   *     that ship in production) MUST be served with
+   *     `public, max-age=31536000, immutable` so Safari/Chrome stop
+   *     revalidating them after the first hit.
+   *
+   *   • Stable canonical endpoints — `/favicon.ico`, `/manifest.webmanifest`,
+   *     and `/api/icon-fallback/*` — MUST be served with
+   *     `public, max-age=300, must-revalidate` so an icon swap propagates
+   *     within 5 minutes without manual cache-busting.
+   *
+   * In dev, Vite serves `/src/assets/*` without long-cache headers — that
+   * branch is allowed to skip the immutable assertion (the prod build is
+   * what ships). The 200 + content-type assertions still apply in both.
+   */
+  test("canonical icon URLs return 200 with correct content-type + Cache-Control", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    // Collect every fingerprinted icon href surfaced by the SSR HTML.
+    const linkedHrefs = await page
+      .locator(
+        'link[rel="icon"][type="image/png"], link[rel="apple-touch-icon"]',
+      )
+      .evaluateAll((els) =>
+        els
+          .map((el) => el.getAttribute("href"))
+          .filter((h): h is string => !!h),
+      );
+    expect(linkedHrefs.length).toBeGreaterThanOrEqual(3);
+
+    // Pull the manifest's icon srcs too — those are the same canonical URLs
+    // the PWA install path consumes.
+    const manifestResp = await page.request.get(
+      `${baseURL}/manifest.webmanifest`,
+      { headers: { "Cache-Control": "no-cache", Pragma: "no-cache" } },
+    );
+    expect(manifestResp.status()).toBe(200);
+    const manifest = (await manifestResp.json()) as {
+      icons: { src: string }[];
+    };
+    const manifestHrefs = manifest.icons.map((i) => i.src);
+
+    // Fingerprinted asset contract: 200 + image/png + immutable long-cache.
+    const fingerprinted = [...new Set([...linkedHrefs, ...manifestHrefs])];
+    for (const href of fingerprinted) {
+      const url = href.startsWith("http") ? href : `${baseURL}${href}`;
+      const resp = await page.request.get(url, {
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(resp.status(), `${href} status`).toBe(200);
+      const contentType = resp.headers()["content-type"] ?? "";
+      expect(contentType, `${href} content-type`).toMatch(
+        /image\/(png|svg\+xml)/,
+      );
+
+      const cacheControl = resp.headers()["cache-control"] ?? "";
+      const isFingerprinted = /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\./.test(
+        new URL(url).pathname,
+      );
+      if (isFingerprinted) {
+        expect(
+          cacheControl,
+          `${href} should be immutable long-cached`,
+        ).toMatch(/max-age=\d{6,}/);
+        expect(cacheControl, `${href} should be immutable`).toContain(
+          "immutable",
+        );
+      }
+    }
+
+    // Stable canonical endpoints contract: 200/302 + short cache w/ revalidate.
+    const shortCached: { url: string; expectContentType: RegExp; expectStatus: number[] }[] = [
+      {
+        url: `${baseURL}/manifest.webmanifest`,
+        expectContentType: /application\/(manifest\+json|json)/,
+        expectStatus: [200],
+      },
+      {
+        url: `${baseURL}/favicon.ico`,
+        // /favicon.ico in this app redirects to the canonical hashed asset.
+        expectContentType: /image\/|text\/html/,
+        expectStatus: [200, 301, 302, 307, 308],
+      },
+      {
+        url: `${baseURL}/apple-touch-icon.png`,
+        expectContentType: /image\/|text\/html/,
+        expectStatus: [200, 301, 302, 307, 308],
+      },
+      {
+        url: `${baseURL}/apple-touch-icon-precomposed.png`,
+        expectContentType: /image\/|text\/html/,
+        expectStatus: [200, 301, 302, 307, 308],
+      },
+    ];
+
+    for (const { url, expectContentType, expectStatus } of shortCached) {
+      const resp = await page.request.fetch(url, {
+        method: "GET",
+        maxRedirects: 0,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      });
+      expect(
+        expectStatus,
+        `${url} status ${resp.status()} not in ${JSON.stringify(expectStatus)}`,
+      ).toContain(resp.status());
+
+      const cacheControl = resp.headers()["cache-control"] ?? "";
+      expect(cacheControl, `${url} cache-control`).toMatch(/public/);
+      expect(cacheControl, `${url} cache-control max-age`).toMatch(
+        /max-age=300\b/,
+      );
+      expect(cacheControl, `${url} cache-control must-revalidate`).toMatch(
+        /must-revalidate/,
+      );
+
+      if (resp.status() === 200) {
+        expect(
+          resp.headers()["content-type"] ?? "",
+          `${url} content-type`,
+        ).toMatch(expectContentType);
+      } else {
+        // Redirect: assert the Location points at a fingerprinted asset and
+        // following it returns 200 + image/* with the immutable long-cache.
+        const location = resp.headers()["location"] ?? "";
+        expect(location, `${url} redirect location`).toMatch(
+          /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+|\/src\/assets\//,
+        );
+        const followed = await page.request.get(
+          location.startsWith("http") ? location : `${baseURL}${location}`,
+          { headers: { "Cache-Control": "no-cache", Pragma: "no-cache" } },
+        );
+        expect(followed.status(), `${url} -> ${location} status`).toBe(200);
+        expect(
+          followed.headers()["content-type"] ?? "",
+          `${url} -> ${location} content-type`,
+        ).toMatch(/image\//);
+      }
+    }
+  });
+
+
   test("favicon and apple-touch-icon render correctly after hard reload (screenshot)", async ({
     page,
     baseURL,
