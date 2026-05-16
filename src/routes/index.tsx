@@ -204,6 +204,46 @@ function Compare() {
     [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("<60 seconds, 24/7 — guaranteed in writing", "<60 segundos, 24/7 — garantizado por escrito") }],
   ];
 
+  // Stable slugs (EN-derived) for deep-linking — one per row, same order.
+  const slugs = [
+    "language", "channel", "industry", "pricing", "setup",
+    "lifecycle", "latino-market", "integrations", "compliance", "sla",
+  ] as const;
+
+  const chipLabels: string[] = [
+    t("Language", "Idioma"),
+    t("Channel", "Canal"),
+    t("Industry", "Industria"),
+    t("Pricing", "Precios"),
+    t("Setup", "Setup"),
+    t("Lifecycle", "Ciclo"),
+    t("Latino market", "Mercado latino"),
+    t("Integrations", "Integraciones"),
+    t("Compliance", "Cumplimiento"),
+    t("SLA", "SLA"),
+  ];
+
+  const [flashSlug, setFlashSlug] = useState<string | null>(null);
+
+  const jumpTo = (slug: string) => {
+    const el = document.getElementById(`row-${slug}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    try { history.replaceState(null, "", `#row-${slug}`); } catch {}
+    setFlashSlug(slug);
+    window.setTimeout(() => setFlashSlug((s) => (s === slug ? null : s)), 1600);
+  };
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash.startsWith("row-")) return;
+    const slug = hash.slice(4);
+    if (!(slugs as readonly string[]).includes(slug)) return;
+    const id = window.setTimeout(() => jumpTo(slug), 60);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Competitor data for expanded view. Each rows[] aligns 1:1 with the rows above.
   const lindyCompetitor: Competitor = {
     name: "Lindy",
@@ -294,6 +334,29 @@ function Compare() {
           })}
         </motion.div>
 
+        {/* Deep-link chip nav — jump to any comparison row */}
+        <motion.nav
+          {...fadeUp}
+          aria-label={t("Jump to comparison row", "Saltar a fila de comparación")}
+          className="mt-6 flex flex-wrap gap-2"
+        >
+          {slugs.map((slug, i) => (
+            <a
+              key={slug}
+              href={`#row-${slug}`}
+              onClick={(e) => { e.preventDefault(); jumpTo(slug); }}
+              className="px-3 py-1.5 rounded-full border text-[12px] font-mono font-semibold tracking-[.08em] uppercase transition-colors hover:text-[var(--coral)] hover:border-[var(--coral)]"
+              style={{
+                borderColor: "var(--rule)",
+                color: "rgba(244,237,227,.6)",
+                background: "rgba(244,237,227,.02)",
+              }}
+            >
+              {chipLabels[i]}
+            </a>
+          ))}
+        </motion.nav>
+
         <motion.div
           key={view}
           {...fadeUp}
@@ -316,6 +379,7 @@ function Compare() {
           {rows.map(([label, , agente], i) => (
             <motion.div
               key={i}
+              id={`row-${slugs[i]}`}
               initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
@@ -325,8 +389,14 @@ function Compare() {
                 x: 2,
                 transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
               }}
-              className="ct-grid ct-row border-t border-[var(--rule)]"
-              style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent", ...gridStyle }}
+              className="ct-grid ct-row border-t border-[var(--rule)] scroll-mt-24"
+              style={{
+                background: flashSlug === slugs[i]
+                  ? "rgba(232,65,24,.10)"
+                  : i % 2 ? "rgba(244,237,227,.02)" : "transparent",
+                transition: "background-color .6s ease",
+                ...gridStyle,
+              }}
             >
               <div className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               {competitors.map((c) => (
