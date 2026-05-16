@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { VERTICALS } from "@/lib/verticals";
 
 export function SiteFooter() {
   const { t } = useI18n();
@@ -11,16 +13,17 @@ export function SiteFooter() {
           </div>
           <p className="text-[13px] leading-[1.6]" style={{ color: "var(--softer)" }}>
             {t(
-              "The bilingual AI agent platform for real estate, construction, solar, and medical. A JCB Industries product. Built in Puerto Rico.",
-              "La plataforma bilingüe de agentes IA para bienes raíces, construcción, solar y medicina. Un producto de JCB Industries. Hecho en Puerto Rico."
+              "The bilingual AI agent platform for real estate, construction, medical, beauty, and solar. A JCB Industries product. Built in Puerto Rico.",
+              "La plataforma bilingüe de agentes IA para bienes raíces, construcción, medicina, belleza y solar. Un producto de JCB Industries. Hecho en Puerto Rico."
             )}
           </p>
         </div>
         <FCol title={t("Verticals", "Industrias")}>
-          <a href="https://agentepr.com">{t("Real Estate · Carmen", "Bienes Raíces · Carmen")}</a>
-          <a href="#verticals">{t("Construction · Marco", "Construcción · Marco")}</a>
-          <a href="#verticals">{t("Solar · Sol", "Solar · Sol")}</a>
-          <a href="#verticals">{t("Medical · Grace", "Médica · Grace")}</a>
+          {VERTICALS.map((v) => (
+            <Link key={v.path} to={v.path}>
+              {t(`${v.suffix} · ${v.persona}`, `${v.suffix} · ${v.persona}`)}
+            </Link>
+          ))}
         </FCol>
         <FCol title={t("Compare", "Comparar")}>
           <a href="#compare">{t("Agente vs Lindy", "Agente vs Lindy")}</a>
