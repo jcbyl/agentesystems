@@ -43,8 +43,9 @@ function scorePage(rows) {
   }
   const pct = scored === 0 ? 100 : Math.round((healthy / scored) * 100);
   let grade = "A", status = "Healthy";
+  const pending = rows.filter((r) => r.state === "fixed").length;
   if (failing > 0) { status = "Needs attention"; grade = pct >= 80 ? "B" : pct >= 60 ? "C" : pct >= 40 ? "D" : "F"; }
-  else if (pct < 100) { grade = "A−"; status = "Healthy (rescan pending)"; }
+  else if (pending > 0) { grade = "A−"; status = "Healthy (rescan pending)"; }
   return { pct, grade, status, failing, scored, healthy };
 }
 
