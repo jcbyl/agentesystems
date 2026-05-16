@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import ogImageUrl from "@/assets/og-real-estate.jpg";
+
+const ORIGIN = "https://agentesystems.lovable.app";
+const URL = `${ORIGIN}/real-estate`;
+const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 
 export const Route = createFileRoute("/real-estate")({
   head: () => ({
@@ -19,7 +24,20 @@ export const Route = createFileRoute("/real-estate")({
         content:
           "Instant buyer qualification, showing bookings, and hot-lead digests for US real estate teams. Bilingual EN/ES/Spanglish.",
       },
+      { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:secure_url", content: OG_IMAGE },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Carmen — bilingual AI agent for real estate teams" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Agente.RealEstate — Carmen" },
+      { name: "twitter:description", content: "Instant buyer qualification, showing bookings, and hot-lead digests for US real estate teams. Bilingual EN/ES/Spanglish." },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:image:alt", content: "Carmen — bilingual AI agent for real estate teams" },
     ],
+    links: [{ rel: "canonical", href: URL }],
   }),
   component: RealEstatePage,
 });

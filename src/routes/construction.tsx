@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import ogImageUrl from "@/assets/og-construction.jpg";
+
+const ORIGIN = "https://agentesystems.lovable.app";
+const URL = `${ORIGIN}/construction`;
+const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 
 export const Route = createFileRoute("/construction")({
   head: () => ({
@@ -19,7 +24,20 @@ export const Route = createFileRoute("/construction")({
         content:
           "Instant lead qualification, free estimate booking, and full client lifecycle management for DC/MD/VA contractors.",
       },
+      { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:secure_url", content: OG_IMAGE },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Marco — bilingual AI agent for contractors" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Agente.Construction — Marco" },
+      { name: "twitter:description", content: "Instant lead qualification, free estimate booking, and full client lifecycle management for DC/MD/VA contractors." },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:image:alt", content: "Marco — bilingual AI agent for contractors" },
     ],
+    links: [{ rel: "canonical", href: URL }],
   }),
   component: ConstructionPage,
 });
