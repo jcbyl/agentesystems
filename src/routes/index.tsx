@@ -446,11 +446,11 @@ function Compare() {
               <div role="rowheader" className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               {competitors.map((c) => (
                 <div key={c.name} role="cell" className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.45)" }}>
-                  <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span>{c.rows[i]?.text ?? "—"}</span>
+                  <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span className="min-w-0 break-words">{c.rows[i]?.text ?? "—"}</span>
                 </div>
               ))}
               <div role="cell" className="ct-cell flex items-start text-[var(--cream)]">
-                <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
+                <CellIcon kind={agente.icon} /> <span className="min-w-0 break-words">{agente.text}</span>
               </div>
             </motion.div>
           ))}
