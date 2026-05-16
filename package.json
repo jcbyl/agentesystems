@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "node scripts/gen-og-fallbacks.mjs && vite build && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs",
-    "build:dev": "node scripts/gen-og-fallbacks.mjs && vite build --mode development && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs",
+    "build": "node scripts/gen-og-fallbacks.mjs && vite build && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs && node scripts/check-seo.mjs",
+    "build:dev": "node scripts/gen-og-fallbacks.mjs && vite build --mode development && node scripts/check-icon-links.mjs && node scripts/check-social-head.mjs && node scripts/check-seo.mjs",
     "check:icons": "node scripts/check-icon-links.mjs",
     "check:social-head": "node scripts/check-social-head.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
     "gen:og-fallbacks": "node scripts/gen-og-fallbacks.mjs",
     "report:social-head": "node scripts/report-social-head.mjs",
     "preview": "vite preview",
