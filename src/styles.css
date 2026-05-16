@@ -4,6 +4,54 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-navy: #0D1B22;
+  --color-card: #18303C;
+  --color-cream: #F4EDE3;
+  --color-mid: #2E4A56;
+  --color-soft: #5B7480;
+  --color-coral: #E84118;
+}
+
+:root {
+  --navy: #0D1B22;
+  --card: #18303C;
+  --cream: #F4EDE3;
+  --soft: rgba(244,237,227,.55);
+  --softer: rgba(244,237,227,.28);
+  --coral: #E84118;
+  --coral-bg: rgba(232,65,24,.08);
+  --rule: rgba(244,237,227,.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy);
+  color: var(--cream);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") repeat 0 0;
+  opacity: .028;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+@keyframes pulse-dot { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+
 /*
  * Design system definition.
  *
