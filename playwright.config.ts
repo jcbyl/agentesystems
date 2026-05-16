@@ -29,14 +29,14 @@ export default defineConfig({
   projects: [
     // Per-viewport visual-regression projects. Smoke + favicon specs run
     // under dedicated projects below so they don't snapshot 4×.
-    { name: "w900", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 900, height: 1200 } } },
-    { name: "w768", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1200 } } },
-    { name: "w640", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 640, height: 1200 } } },
-    { name: "w375", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 1200 } } },
+    { name: "w900", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 900, height: 1200 } } },
+    { name: "w768", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1200 } } },
+    { name: "w640", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 640, height: 1200 } } },
+    { name: "w375", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 1200 } } },
     // Fast runtime-error smoke. Runs once at a desktop viewport.
     {
       name: "smoke",
-      testMatch: /real-estate-smoke\.spec\.ts/,
+      testMatch: /(real-estate-smoke|lang-autodetect)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 } },
     },
     // Cross-browser favicon/touch-icon checks (see tests/visual/favicon.spec.ts).
