@@ -29,14 +29,14 @@ export default defineConfig({
   projects: [
     // Per-viewport visual-regression projects. Smoke + favicon specs run
     // under dedicated projects below so they don't snapshot 4×.
-    { name: "w900", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 900, height: 1200 } } },
-    { name: "w768", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1200 } } },
-    { name: "w640", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 640, height: 1200 } } },
-    { name: "w375", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 1200 } } },
+    { name: "w900", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /head-locale\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 900, height: 1200 } } },
+    { name: "w768", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /head-locale\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1200 } } },
+    { name: "w640", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /head-locale\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 640, height: 1200 } } },
+    { name: "w375", testIgnore: [/favicon\.spec\.ts/, /real-estate-smoke\.spec\.ts/, /lang-autodetect\.spec\.ts/, /head-locale\.spec\.ts/, /a11y\.spec\.ts/, /icon-link-redirects\.spec\.ts/, /icon-link-hydration\.spec\.ts/, /icon-link-cache-stability\.spec\.ts/], use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 1200 } } },
     // Fast runtime-error smoke. Runs once at a desktop viewport.
     {
       name: "smoke",
-      testMatch: /(real-estate-smoke|lang-autodetect)\.spec\.ts/,
+      testMatch: /(real-estate-smoke|lang-autodetect|head-locale)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 } },
     },
     // Accessibility audit (axe-core, WCAG 2.1 A + AA). Runs once at desktop.
