@@ -31,5 +31,22 @@ export default defineConfig({
     { name: "w768", use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1200 } } },
     { name: "w640", use: { ...devices["Desktop Chrome"], viewport: { width: 640, height: 1200 } } },
     { name: "w375", use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 1200 } } },
+    // Cross-browser favicon/touch-icon checks (see tests/visual/favicon.spec.ts).
+    // Requires: `npx playwright install chromium firefox webkit`.
+    {
+      name: "chromium-favicon",
+      testMatch: /favicon\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox-favicon",
+      testMatch: /favicon\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-favicon",
+      testMatch: /favicon\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
 });
