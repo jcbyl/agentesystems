@@ -1,0 +1,58 @@
+name: /real-estate visual regression
+
+# Snapshots the /real-estate landing page at each responsive breakpoint
+# (w375, w640, w768, w900) and diffs against committed baselines under
+# tests/visual/real-estate.spec.ts-snapshots/. A failing diff fails the PR.
+#
+# Updating baselines after an intentional design change:
+#   bun run test:visual:update -- tests/visual/real-estate.spec.ts
+# then commit the regenerated PNGs.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  real-estate-visual:
+    name: real-estate (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [w375, w640, w768, w900]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium + OS deps
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run /real-estate visual regression
+        run: bunx playwright test tests/visual/real-estate.spec.ts --project=${{ matrix.project }}
+        env:
+          CI: "true"
+
+      - name: Upload Playwright HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-estate-report-${{ matrix.project }}
+          path: playwright-report
+          retention-days: 14
+
+      - name: Upload snapshot diffs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-estate-diffs-${{ matrix.project }}
+          path: test-results
+          retention-days: 14
