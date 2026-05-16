@@ -36,9 +36,28 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLangState((prev) => (prev === detected ? prev : detected));
   }, []);
 
-  // Keep <html lang="…"> attribute in sync
+  // Keep <html lang="…"> attribute AND OpenGraph locale meta in sync.
+  // Social crawlers (Facebook, LinkedIn, Slack) read og:locale to pick
+  // which translation to render; flipping it on language change keeps
+  // shares from a Spanish-speaking visitor advertising as en_US.
   useEffect(() => {
-    if (typeof document !== "undefined") document.documentElement.lang = lang;
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = lang;
+    const ogLocale = lang === "es" ? "es_US" : "en_US";
+    const ogAlternate = lang === "es" ? "en_US" : "es_US";
+    const setMeta = (property: string, content: string) => {
+      let el = document.head.querySelector<HTMLMetaElement>(
+        `meta[property="${property}"]`,
+      );
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("property", property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    setMeta("og:locale", ogLocale);
+    setMeta("og:locale:alternate", ogAlternate);
   }, [lang]);
 
   // Cross-tab + same-tab sync. Other tabs fire `storage`; same-tab consumers
