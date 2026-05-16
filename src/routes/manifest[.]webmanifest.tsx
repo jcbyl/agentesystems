@@ -3,11 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ICON_URLS } from "@/lib/icon-urls";
 
 const {
+  favicon16: favicon16Url,
+  favicon32: favicon32Url,
   icon192: icon192Url,
   icon512: icon512Url,
   iconMaskable192: iconMaskable192Url,
   iconMaskable512: iconMaskable512Url,
-  appleTouch: appleTouchIconUrl,
 } = ICON_URLS;
 
 /**
@@ -38,6 +39,8 @@ export const Route = createFileRoute("/manifest.webmanifest")({
           background_color: "#18303C",
           theme_color: "#E84118",
           icons: [
+            { src: favicon16Url, sizes: "16x16", type: "image/png", purpose: "any" },
+            { src: favicon32Url, sizes: "32x32", type: "image/png", purpose: "any" },
             { src: icon192Url, sizes: "192x192", type: "image/png", purpose: "any" },
             { src: icon512Url, sizes: "512x512", type: "image/png", purpose: "any" },
             {
@@ -51,12 +54,6 @@ export const Route = createFileRoute("/manifest.webmanifest")({
               sizes: "512x512",
               type: "image/png",
               purpose: "maskable",
-            },
-            {
-              src: appleTouchIconUrl,
-              sizes: "512x512",
-              type: "image/png",
-              purpose: "any",
             },
           ],
         };
