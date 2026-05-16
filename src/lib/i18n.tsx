@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { resolveAlt } from "./og-alt-i18n";
 
 type Lang = "en" | "es";
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: <T,>(en: T, es: T) => T };
@@ -30,6 +32,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   // without a hydration mismatch because state changes after mount.
   const [lang, setLangState] = useState<Lang>("en");
 
+  // Track pathname so the alt-meta effect re-applies translations on
+  // every navigation, not just on language toggles. useRouterState
+  // selector keeps re-renders scoped to the field we care about.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
   // Hydrate from storage/cookie/navigator on mount
   useEffect(() => {
     const detected = detectInitialLang();
@@ -58,7 +65,26 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     };
     setMeta("og:locale", ogLocale);
     setMeta("og:locale:alternate", ogAlternate);
-  }, [lang]);
+
+    // Localize the alt strings. Each route declares the EN alt in its
+    // head() so SSR + first paint stay canonical; this effect rewrites
+    // both og:image:alt (property=) and twitter:image:alt (name=) to
+    // the ES translation when the visitor is on Spanish, and restores
+    // EN when they switch back. Crawlers re-render previews fast
+    // enough that the alt now matches the locale the share lands in.
+    const altText = resolveAlt(pathname, lang);
+    const setNamedMeta = (selector: string, attr: "property" | "name", key: string, content: string) => {
+      let el = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    setNamedMeta('meta[property="og:image:alt"]', "property", "og:image:alt", altText);
+    setNamedMeta('meta[name="twitter:image:alt"]', "name", "twitter:image:alt", altText);
+  }, [lang, pathname]);
 
   // Cross-tab + same-tab sync. Other tabs fire `storage`; same-tab consumers
   // (e.g., multiple providers) get a custom event so they update without reload.
