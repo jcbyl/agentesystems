@@ -1,0 +1,40 @@
+name: Icon link check
+
+# Build-time validation that every <link rel="icon"> / <link rel="apple-touch-icon">
+# declared in src/routes/__root.tsx has the correct `sizes`, its href resolves
+# to the expected ICON_URLS key, the source PNG exists on disk, and the Vite
+# build emitted a fingerprinted asset for every reference. Implementation lives
+# in scripts/check-icon-links.mjs.
+#
+# This is a fast (~seconds) static + manifest check, so it runs on every PR
+# and push to main independently of the longer visual-regression suite.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  check-icon-links:
+    name: Verify icon <link> tags and fingerprinted hrefs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # `bun run build` runs `vite build && node scripts/check-icon-links.mjs`,
+      # so a failure in either step fails the job. The Vite build step is
+      # required because the check cross-references dist/.../manifest.json to
+      # confirm every icon asset was emitted as a fingerprinted file.
+      - name: Build + run icon link check
+        run: bun run build
+        env:
+          CI: "true"
