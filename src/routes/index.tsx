@@ -8,9 +8,9 @@ import ogImageUrl from "@/assets/og-home.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
-const TITLE = "Agente — Bilingual AI Agents for Real Estate, Construction, Solar & Medical";
+const TITLE = "Agente — Bilingual EN/ES AI Agents for SMBs";
 const DESC =
-  "The bilingual alternative to Lindy. Industry-expert AI agents for Latino-owned businesses. WhatsApp-native. EN/ES. Flat pricing. Live in 24 hours.";
+  "Industry-expert bilingual EN/ES AI agents for Latino-owned SMBs. WhatsApp-native. Flat pricing. Live in 24 hours. The alternative to Lindy.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +33,43 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image:alt", content: "Agente.Systems — Bilingual EN/ES AI agents for real estate, construction, solar, and medical teams. WhatsApp-native, live in 24 hours." },
     ],
     links: [{ rel: "canonical", href: `${ORIGIN}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${ORIGIN}/#organization`,
+              name: "Agente.Systems",
+              url: `${ORIGIN}/`,
+              logo: `${ORIGIN}${ogImageUrl}`,
+              sameAs: ["https://wa.me/17878100749"],
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: "+1-787-810-0749",
+                  contactType: "sales",
+                  email: "hello@agentesystems.com",
+                  availableLanguage: ["English", "Spanish"],
+                  areaServed: "US",
+                },
+              ],
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${ORIGIN}/#website`,
+              url: `${ORIGIN}/`,
+              name: "Agente.Systems",
+              description: DESC,
+              inLanguage: ["en-US", "es-US"],
+              publisher: { "@id": `${ORIGIN}/#organization` },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: Home,
 });

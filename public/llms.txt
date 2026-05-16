@@ -1,0 +1,26 @@
+# Agente.Systems
+
+> Bilingual EN/ES AI agents for Latino-owned US small businesses — WhatsApp-native, industry-expert, flat monthly pricing, live in 24 hours.
+
+Agente.Systems deploys vertical AI agents that know an industry cold (codes,
+regulations, incentives, market rates) and reply natively in English, Spanish,
+or Spanglish on every channel customers actually use — phone, WhatsApp, SMS,
+Instagram DMs, Facebook Lead Ads, and web forms. Each agent has a fixed
+SOUL.md persona, never negotiates terms, and routes hot leads to humans.
+The alternative to Lindy for bilingual US markets.
+
+## Pages
+
+- [Home](/): Bilingual EN/ES AI agents for SMBs — overview, comparison vs Lindy, verticals, pricing, contact.
+- [Real estate — Carmen](/real-estate): Buyer qualification, showing bookings, and hot-lead digests for US real estate teams.
+- [Construction — Marco](/construction): Lead qualification, free estimate booking, and full client lifecycle for DC/MD/VA contractors.
+- [Solar — Sol](/solar): Lead qualification, site-survey booking, and homeowner updates through permit, install, and PTO for US solar installers.
+- [Medical — Grace](/medical): HIPAA-aware intake, insurance verification, and appointment booking for US clinics.
+- [Beauty & wellness — Bella](/beauty): DM/WhatsApp/missed-call replies, booking, deposits, and no-show reduction for US salons and spas.
+- [Book a demo](/demo): 30-minute live walkthrough on your real lead flow, demoed in EN/ES/Spanglish.
+
+## Contact
+
+- WhatsApp / phone: +1 787 810 0749
+- Email: hello@agentesystems.com
+- Sitemap: /sitemap.xml

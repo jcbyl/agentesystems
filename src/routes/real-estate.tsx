@@ -38,6 +38,72 @@ export const Route = createFileRoute("/real-estate")({
       { name: "twitter:image:alt", content: "Carmen — bilingual EN/ES/Spanglish AI agent qualifying buyers, booking showings, and sending hot-lead digests for US real estate teams" },
     ],
     links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Agente.RealEstate — Carmen",
+          serviceType: "Bilingual AI agent for real estate teams",
+          provider: { "@type": "Organization", name: "Agente.Systems", url: ORIGIN },
+          areaServed: "United States",
+          availableLanguage: ["en", "es"],
+          description:
+            "Instant buyer qualification, showing bookings, and hot-lead digests for US real estate teams. Bilingual EN/ES/Spanglish.",
+          url: URL,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "Can Carmen really handle Spanglish?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. Carmen auto-detects language on every message and matches the lead — English, Spanish, or code-switching mid-sentence. She replies natively in whichever register the buyer is using.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Which lead sources does Carmen plug into?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Zillow Premier Agent, Realtor.com, Facebook Lead Ads, Instagram DMs, website forms, WhatsApp Business, and inbound SMS — all in one inbox.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Will Carmen quote prices or commit to terms?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Never. Carmen surfaces listing facts and recent comps but never negotiates, commits to a price reduction, or discusses commission splits. All deal terms stay with you.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What about after-hours leads?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Instant. Carmen responds within a second regardless of when the lead arrives. Quiet hours (10pm–7am local) are configurable so she queues messages instead of texting at 2am.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How long does setup take?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "24 hours once we have your team info — service area, agent roster, lead-source credentials, calendar access, and Google Review link.",
+              },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: RealEstatePage,
 });
