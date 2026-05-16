@@ -1,0 +1,51 @@
+name: Accessibility (axe + Lighthouse)
+
+# Runs WCAG 2.1 A/AA checks against the marketing pages (/ and /real-estate).
+# - axe-core via Playwright: structural rules (headings, ARIA, landmarks, dupes)
+# - Lighthouse CI: contrast, scored a11y/SEO/best-practices
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: a11y-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  axe:
+    name: axe-core (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - run: bun install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+      - name: Run axe a11y suite
+        run: bunx playwright test --project=a11y --reporter=list
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-a11y-report
+          path: playwright-report
+          retention-days: 14
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - run: bun install --frozen-lockfile
+      - name: Run Lighthouse CI
+        run: bunx --bun @lhci/cli@0.14.x autorun --config=./.lighthouserc.json
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
