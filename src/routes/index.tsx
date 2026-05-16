@@ -200,29 +200,41 @@ function Compare() {
           )}
         </motion.p>
 
-        <motion.div {...fadeUp} className="mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]">
+        <motion.div
+          {...fadeUp}
+          className="ct-shell mt-12 rounded-[20px] overflow-hidden border border-[var(--rule)]"
+        >
           {/* Header */}
-          <div className="grid" style={{ gridTemplateColumns: "1.2fr 1fr 1.3fr", background: "#111D24" }}>
-            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)", padding: "16px 22px" }}>
+          <div className="ct-grid" style={{ background: "#111D24" }}>
+            <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "var(--softer)" }}>
               {t("Feature", "Característica")}
             </div>
-            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase hidden sm:block" style={{ color: "rgba(244,237,227,.3)", padding: "16px 22px" }}>
+            <div className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
               Lindy
             </div>
-            <div className="font-mono text-[11px] font-semibold tracking-[.1em] uppercase text-[var(--coral)]" style={{ padding: "16px 22px" }}>
+            <div className="ct-hcell font-mono font-semibold tracking-[.1em] uppercase text-[var(--coral)]">
               Agente
             </div>
           </div>
           {rows.map(([label, lindy, agente], i) => (
-            <div key={i} className="grid border-t border-[var(--rule)]" style={{ gridTemplateColumns: "1.2fr 1fr 1.3fr", background: i % 2 ? "rgba(244,237,227,.02)" : "transparent" }}>
-              <div className="text-[14px] font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)", padding: "14px 22px" }}>{label}</div>
-              <div className="text-[14px] items-start hidden sm:flex" style={{ color: "rgba(244,237,227,.35)", padding: "14px 22px", gap: "7px" }}>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.04 * i }}
+              whileHover={{ backgroundColor: "rgba(232,65,24,.04)" }}
+              className="ct-grid ct-row border-t border-[var(--rule)]"
+              style={{ background: i % 2 ? "rgba(244,237,227,.02)" : "transparent" }}
+            >
+              <div className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
+              <div className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.35)" }}>
                 <CellIcon kind={lindy.icon} /> <span>{lindy.text}</span>
               </div>
-              <div className="text-[14px] flex items-start text-[var(--cream)]" style={{ padding: "14px 22px", gap: "7px" }}>
+              <div className="ct-cell flex items-start text-[var(--cream)]">
                 <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>

@@ -190,3 +190,16 @@ body::before {
     color: var(--color-foreground);
   }
 }
+
+/* Compare table — responsive */
+.ct-grid{display:grid;grid-template-columns:1.2fr 1fr 1.3fr}
+.ct-hcell{padding:16px 22px;font-size:11px}
+.ct-cell{padding:14px 22px;font-size:14px;display:flex;gap:7px}
+@media (max-width:900px){
+  .ct-hcell{font-size:10px;padding:14px 16px}
+  .ct-cell{font-size:13px;padding:12px 16px}
+}
+@media (max-width:640px){
+  .ct-grid{grid-template-columns:1.2fr 1.3fr}
+  .ct-lindy{display:none !important}
+}
