@@ -202,7 +202,7 @@ function Compare() {
     [t("Latino/Hispanic market", "Mercado latino/hispano"), { icon: "x", text: t("Not designed for it", "No está diseñado para esto") }, { icon: "ok", text: t("Native bilingual — the whole point", "Bilingüe nativo — ese es el punto") }],
     [t("Integrations", "Integraciones"), { icon: "warn", text: t("Email, calendar, basic webhooks", "Correo, calendario, webhooks básicos") }, { icon: "ok", text: t("WhatsApp · SMS · CRM · webhooks · portals", "WhatsApp · SMS · CRM · webhooks · portales") }],
     [t("Compliance & privacy", "Cumplimiento y privacidad"), { icon: "x", text: t("No HIPAA, no BAA, generic privacy", "Sin HIPAA, sin BAA, privacidad genérica") }, { icon: "ok", text: t("HIPAA-ready (Grace), BAA available, data stays in-region", "Listo para HIPAA (Grace), BAA disponible, datos en tu región") }],
-    [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("<60 seconds, 24/7 — guaranteed in writing", "<60 segundos, 24/7 — garantizado por escrito") }],
+    [t("Response-time SLA", "SLA de respuesta"), { icon: "warn", text: t("Best-effort — minutes to hours, no guarantee", "Mejor esfuerzo — minutos a horas, sin garantía") }, { icon: "ok", text: t("Under 60s response, 24/7 — guaranteed in writing", "Respuesta en menos de 60s, 24/7 — garantizado por escrito") }],
   ];
 
   // Stable slugs (EN-derived) for deep-linking — one per row, same order.
@@ -446,11 +446,11 @@ function Compare() {
               <div role="rowheader" className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               {competitors.map((c) => (
                 <div key={c.name} role="cell" className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.45)" }}>
-                  <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span>{c.rows[i]?.text ?? "—"}</span>
+                  <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span className="min-w-0 break-words">{c.rows[i]?.text ?? "—"}</span>
                 </div>
               ))}
               <div role="cell" className="ct-cell flex items-start text-[var(--cream)]">
-                <CellIcon kind={agente.icon} /> <span>{agente.text}</span>
+                <CellIcon kind={agente.icon} /> <span className="min-w-0 break-words">{agente.text}</span>
               </div>
             </motion.div>
           ))}
