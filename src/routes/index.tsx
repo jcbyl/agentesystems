@@ -231,7 +231,18 @@ function Compare() {
   const jumpTo = (slug: string) => {
     const el = document.getElementById(`row-${slug}`);
     if (!el) return;
-    el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    // Measure the sticky nav so the highlighted row never slips behind it.
+    const nav = document.querySelector("nav");
+    const navH = nav ? Math.round(nav.getBoundingClientRect().height) : 0;
+    const gap = 24; // breathing room under the header
+    const rect = el.getBoundingClientRect();
+    const rowTopAbs = window.scrollY + rect.top;
+    // Prefer centering, but clamp so the row top stays >= navH + gap from viewport top.
+    const visibleH = Math.max(0, window.innerHeight - navH - gap);
+    const centered = rowTopAbs - navH - gap - Math.max(0, (visibleH - rect.height) / 2);
+    const minTop = rowTopAbs - navH - gap;
+    const target = Math.max(0, Math.min(minTop, centered));
+    window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
     try { history.replaceState(null, "", `#row-${slug}`); } catch {}
     setFlashSlug(slug);
     window.setTimeout(() => setFlashSlug((s) => (s === slug ? null : s)), 1600);
