@@ -16,6 +16,13 @@ import { I18nProvider } from "@/lib/i18n";
 import { ICON_URLS } from "@/lib/icon-urls";
 const { favicon16: favicon16Url, favicon32: favicon32Url, appleTouch: appleTouchIconUrl } =
   ICON_URLS;
+// Default 1200×630 OpenGraph card used as a sitewide fallback whenever a
+// route does not override og:image. Without this, root would fall back to
+// the 512×512 apple-touch icon and social platforms would render a tiny
+// summary card instead of a large branded preview.
+import ogDefaultUrl from "@/assets/og-default.jpg";
+const ORIGIN = "https://agentesystems.lovable.app";
+const OG_DEFAULT = `${ORIGIN}${ogDefaultUrl}`;
 
 function NotFoundComponent() {
   return (
@@ -88,14 +95,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Agente.Systems" },
       { property: "og:locale", content: "en_US" },
       { property: "og:locale:alternate", content: "es_US" },
-      { property: "og:image", content: appleTouchIconUrl },
-      { property: "og:image:width", content: "512" },
-      { property: "og:image:height", content: "512" },
-      { property: "og:image:type", content: "image/png" },
-      { property: "og:image:alt", content: "Agente robot logo" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:image", content: appleTouchIconUrl },
-      { name: "twitter:image:alt", content: "Agente robot logo" },
+      // Default large card — leaf routes override these by property/name.
+      { property: "og:image", content: OG_DEFAULT },
+      { property: "og:image:secure_url", content: OG_DEFAULT },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:alt", content: "Agente.Systems — Bilingual AI agents · EN/ES · WhatsApp-native" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_DEFAULT },
+      { name: "twitter:image:alt", content: "Agente.Systems — Bilingual AI agents · EN/ES · WhatsApp-native" },
       { name: "theme-color", content: "#E84118" },
       { name: "application-name", content: "Agente" },
       { name: "apple-mobile-web-app-title", content: "Agente" },
