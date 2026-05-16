@@ -88,14 +88,7 @@ function findLine(src, needle) {
   return src.slice(0, idx).split("\n").length;
 }
 
-// Extract the tag name (e.g. "og:image:width") from a REQUIRED_META key
-// ("property:og:image:width") or a free-form message, for line lookup.
-function tagFromKey(key) {
-  if (!key) return null;
-  if (key === "title") return "title";
-  const [, ...rest] = key.split(":");
-  return rest.join(":");
-}
+
 
 // Exact dimensions every share image must declare. 1200x630 is the
 // canonical OG/Twitter summary_large_image size — Facebook, LinkedIn,
