@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { RobotLogo } from "./RobotLogo";
 import { VERTICALS, suffixForPath } from "@/lib/verticals";
+import { demoUrl } from "@/lib/demo-link";
 
 /**
  * Site-wide sticky nav.
@@ -85,7 +86,7 @@ export function SiteNav() {
             ))}
           </div>
           <a
-            href="https://wa.me/17878100749"
+            href={demoUrl(lang)}
             className="inline-flex items-center gap-2 px-3.5 md:px-5 py-2 md:py-2.5 rounded-[10px] text-[13px] md:text-[14px] font-bold text-white transition-transform hover:-translate-y-px whitespace-nowrap"
             style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
           >

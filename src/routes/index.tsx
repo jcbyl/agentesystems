@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useI18n } from "@/lib/i18n";
+import { demoUrl } from "@/lib/demo-link";
 import ogImageUrl from "@/assets/og-home.jpg";
 
 const ORIGIN = "https://agentesystems.lovable.app";
@@ -174,7 +175,7 @@ function Hero() {
 
         <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }} className="flex gap-3 justify-center flex-wrap mb-4">
           <a
-            href="https://wa.me/17878100749"
+            href={demoUrl(lang)}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-[17px] font-bold text-white transition-transform hover:-translate-y-px"
             style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
           >
@@ -924,7 +925,7 @@ function WhyAgente() {
 
 /* ---------- HOW IT WORKS / CUSTOM BUILD ---------- */
 function HowItWorks() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const steps = [
     { n: "01", h: t("Tell us your industry", "Cuéntanos tu industria"), p: t("One WhatsApp conversation. We ask the right questions.", "Una conversación en WhatsApp. Nosotros hacemos las preguntas correctas.") },
     { n: "02", h: t("We build your agent", "Construimos tu agente"), p: t("Industry knowledge, qualification flows, full lifecycle scripts. Built for your specific business.", "Conocimiento de industria, flujos de calificación, scripts del ciclo completo. Construido para tu negocio específico.") },
@@ -962,7 +963,7 @@ function HowItWorks() {
                 )}
               </p>
               <a
-                href="https://wa.me/17878100749"
+                href={demoUrl(lang)}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-[16px] font-bold text-white transition-transform hover:-translate-y-px"
                 style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
               >
@@ -1035,7 +1036,7 @@ function Contact() {
       key: "whatsapp",
       label: t("WhatsApp", "WhatsApp"),
       value: t("Start free trial", "Prueba gratis"),
-      href: "https://wa.me/17878100749",
+      href: demoUrl(lang),
       hint: t("Fastest — usually <2 min", "Lo más rápido — normalmente <2 min"),
       isPrimary: true,
       icon: <WhatsAppIcon />,
@@ -1100,7 +1101,7 @@ function Contact() {
 
 /* ---------- FINAL CTA ---------- */
 function FinalCTA() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <section className="relative overflow-hidden text-center" style={{ padding: "100px 28px" }}>
       <div
@@ -1125,7 +1126,7 @@ function FinalCTA() {
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           <a
-            href="https://wa.me/17878100749"
+            href={demoUrl(lang)}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-[17px] font-bold text-white transition-transform hover:-translate-y-px"
             style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
           >
@@ -1152,7 +1153,7 @@ function FinalCTA() {
 
 /* ---------- STICKY MOBILE ---------- */
 function StickyMobile() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <div
       className="md:hidden fixed bottom-0 left-0 right-0 z-[9999] flex gap-3 items-center justify-center px-5 py-3 border-t"
@@ -1162,7 +1163,7 @@ function StickyMobile() {
         {t("7 DAYS FREE", "7 DÍAS GRATIS")}
       </span>
       <a
-        href="https://wa.me/17878100749"
+        href={demoUrl(lang)}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-[14px] font-bold text-white"
         style={{ background: "var(--coral)" }}
       >

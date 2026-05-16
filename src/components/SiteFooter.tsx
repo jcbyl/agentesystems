@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { VERTICALS } from "@/lib/verticals";
+import { demoUrl } from "@/lib/demo-link";
 
 export function SiteFooter() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <footer className="border-t border-[var(--rule)] pt-12 pb-8" data-cta-location="site-footer">
       <div className="max-w-[1100px] mx-auto px-7 flex flex-wrap justify-between gap-10">
@@ -31,7 +32,7 @@ export function SiteFooter() {
           <a href="#latino">{t("Level the field", "Nivela el campo")}</a>
         </FCol>
         <FCol title={t("Start free", "Empieza gratis")}>
-          <a href="https://wa.me/17878100749">WhatsApp · +1 787-810-0749</a>
+          <a href={demoUrl(lang)}>WhatsApp · +1 787-810-0749</a>
           <a href="https://agentepr.com">agentepr.com</a>
         </FCol>
       </div>
