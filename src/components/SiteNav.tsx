@@ -18,7 +18,7 @@ export function SiteNav() {
           <a href="/" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Solar</a>
           <a href="/" className="hover:text-[var(--cream)] transition-colors">Agente<span className="text-[var(--coral)] mx-[-0.5px]">.</span>Medical</a>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 md:gap-2.5">
           <div className="flex gap-px rounded-lg p-0.5" style={{ background: "var(--rule)" }}>
             {(["en", "es"] as const).map((l) => (
               <button
@@ -37,10 +37,11 @@ export function SiteNav() {
           </div>
           <a
             href="https://wa.me/17878100749"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-[14px] font-bold text-white transition-transform hover:-translate-y-px"
+            className="inline-flex items-center gap-2 px-3.5 md:px-5 py-2 md:py-2.5 rounded-[10px] text-[13px] md:text-[14px] font-bold text-white transition-transform hover:-translate-y-px whitespace-nowrap"
             style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
           >
-            {t("Start free trial →", "Prueba gratis →")}
+            <span className="hidden sm:inline">{t("Start free trial →", "Prueba gratis →")}</span>
+            <span className="sm:hidden">{t("Try free →", "Prueba →")}</span>
           </a>
         </div>
       </div>
