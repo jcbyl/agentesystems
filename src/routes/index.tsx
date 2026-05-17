@@ -62,7 +62,7 @@ function Home() {
           50% { opacity: 0.3; }
         }
       `}</style>
-      <div className="min-h-screen">
+      <main className="min-h-screen">
         <SiteNav />
         <Hero />
         <Stats />
@@ -78,7 +78,7 @@ function Home() {
         <FinalCTA />
         <SiteFooter />
         <StickyMobile />
-      </div>
+      </main>
     </MotionConfig>
   );
 }
