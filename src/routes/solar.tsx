@@ -15,7 +15,7 @@ export const Route = createFileRoute("/solar")({
   head: () => ({
     meta: [
       { title: "Agente.Solar — Sol · AI Agent for Solar Installers" },
-      { name: "description", content: "Sol qualifies every solar lead in under a second — bilingual EN/ES. Books site surveys, navigates net metering and ITC nuance, and keeps deals warm through permit, install, and PTO." },
+      { name: "description", content: "Sol qualifies solar leads in under a second. Bilingual EN/ES. Books site surveys, keeps deals warm through PTO." },
       { name: "keywords", content: "bilingual solar AI, solar lead qualification, LUMA Puerto Rico solar, net metering 2030, ITC bilingual, agente solar bilingüe, site survey booking" },
       { property: "og:title", content: "Agente.Solar — Sol · AI Agent for Solar Installers" },
       { property: "og:description", content: "Sol qualifies every solar lead in under a second — bilingual EN/ES. Books site surveys and keeps deals warm through permit, install, and PTO." },

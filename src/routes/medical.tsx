@@ -14,8 +14,8 @@ const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 export const Route = createFileRoute("/medical")({
   head: () => ({
     meta: [
-      { title: "Agente.Medical — Grace · HIPAA-Ready AI Agent for Medical Practices" },
-      { name: "description", content: "Grace books appointments, sends reminders, and routes clinical questions to the patient portal. HIPAA-aware on the base plan. Bilingual EN/ES for US medical practices." },
+      { title: "Agente.Medical — AI Agent for Medical Practices" },
+      { name: "description", content: "Grace books appointments and routes clinical questions. HIPAA-aware. Bilingual EN/ES for US medical practices." },
       { property: "og:title", content: "Agente.Medical — Grace · AI Scheduling for Medical Practices" },
       { property: "og:description", content: "Grace books, reminds, and routes — bilingual EN/ES, HIPAA-aware, live in 48 hours." },
       { property: "og:url", content: PAGE_URL },

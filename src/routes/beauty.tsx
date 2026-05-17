@@ -15,8 +15,8 @@ const PINK = "#EC4899";
 export const Route = createFileRoute("/beauty")({
   head: () => ({
     meta: [
-      { title: "Agente.Beauty — Bella · AI Booking Agent for Salons & Studios" },
-      { name: "description", content: "Bella answers every Instagram DM and WhatsApp in under a second — bilingual EN/ES. Books the service, captures the deposit, and sends reminders that cut no-shows in half." },
+      { title: "Agente.Beauty — AI Agent for Salons" },
+      { name: "description", content: "Bella answers every DM in under a second. Bilingual EN/ES. Books the service, captures deposits, cuts no-shows." },
       { property: "og:title", content: "Agente.Beauty — Bella · AI Booking for Salons" },
       { property: "og:description", content: "Bella books every DM while you work — bilingual EN/ES, deposit capture, no-show reminders, live in 24 hours." },
       { property: "og:url", content: PAGE_URL },
