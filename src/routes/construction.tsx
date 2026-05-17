@@ -524,7 +524,7 @@ function Pricing() {
               Agente.Construction · Marco
             </div>
             <div className="font-extrabold text-[var(--navy)] leading-[.9] mb-1" style={{ fontSize: 72, letterSpacing: "-.045em" }}>
-              $397<span className="text-[.4em] text-[var(--soft)] font-bold">/mo</span>
+              $400<span className="text-[.4em] text-[var(--soft)] font-bold">/mo</span>
             </div>
             <div className="text-[13px] text-[var(--soft)] mb-6">
               $497 setup — <span className="text-[var(--coral)] font-semibold">{t("waived for first 5 clients", "exonerado para los primeros 5 clientes")}</span>

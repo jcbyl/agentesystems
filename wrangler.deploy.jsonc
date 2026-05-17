@@ -1,0 +1,12 @@
+{
+  "name": "agente-systems",
+  "compatibility_date": "2025-09-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "dist/server/index.js",
+  "assets": {
+    "directory": "dist/client"
+  },
+  "routes": [
+    { "pattern": "agente.systems", "custom_domain": true }
+  ]
+}

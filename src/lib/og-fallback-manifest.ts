@@ -3,11 +3,11 @@
 // a ?v= cache-buster on og:image URLs so social scrapers refresh
 // when the image changes.
 export const OG_FALLBACK_HASHES = {
-  "home": "cde39df281",
-  "demo": "d544e66ed8",
-  "medical": "7885d0fe13",
-  "beauty": "4edaa1666c",
-  "solar": "e71ee78c81",
-  "construction": "484b91507a",
-  "real-estate": "3ab402db92"
+  "home": "f2d2d21cdc",
+  "demo": "3b509de8d9",
+  "medical": "d59bf5be09",
+  "beauty": "1a1ba61171",
+  "solar": "177aaca70f",
+  "construction": "8f59675dac",
+  "real-estate": "d3dd9f81c9"
 } as const;

@@ -12,7 +12,7 @@ const ORIGIN = "https://agentesystems.lovable.app";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 const TITLE = "Agente — Bilingual EN/ES AI Agents for SMBs";
 const DESC =
-  "Industry-expert bilingual EN/ES AI agents for Latino-owned SMBs. WhatsApp-native. Flat pricing. Live in 24 hours. The alternative to Lindy.";
+  "Industry-expert bilingual EN/ES AI agents for Latino-owned SMBs. WhatsApp-native. Flat pricing. Live in 24 hours. Try live on WhatsApp.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,6 +52,16 @@ const fadeUp = {
 function Home() {
   return (
     <MotionConfig reducedMotion="user">
+      <style>{`
+        @keyframes typing-bounce {
+          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+          30% { transform: translateY(-4px); opacity: 1; }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
       <div className="min-h-screen">
         <SiteNav />
         <Hero />
@@ -60,7 +70,10 @@ function Home() {
         <Latino />
         <Verticals />
         <WhyAgente />
+        <FounderStory />
         <HowItWorks />
+        <Pricing />
+        <FAQ />
         <Contact />
         <FinalCTA />
         <SiteFooter />
@@ -110,8 +123,8 @@ function Hero() {
             style={{ background: "rgba(244,237,227,.07)", border: "1px solid var(--rule)", color: "rgba(244,237,227,.6)" }}
           >
             {t(
-              <>The bilingual alternative to <span className="text-[var(--coral)]">Lindy</span> — built for your industry</>,
-              <>La alternativa bilingüe a <span className="text-[var(--coral)]">Lindy</span> — construida para tu industria</>
+              <>Bilingual AI agents — <span className="text-[var(--coral)]">built for your industry</span></>,
+              <>Agentes de IA bilingües — <span className="text-[var(--coral)]">construidos para tu industria</span></>
             )}
           </div>
         </motion.div>
@@ -123,8 +136,8 @@ function Hero() {
           style={{ fontSize: "clamp(44px,7vw,96px)", lineHeight: 0.93, letterSpacing: "-.035em", maxWidth: "17ch" }}
         >
           {t(
-            <>The AI agent that <em className="italic text-[var(--coral)]">speaks your industry.</em></>,
-            <>El agente de IA que <em className="italic text-[var(--coral)]">habla tu industria.</em></>
+            <>Your next lead is already texting <em className="italic text-[var(--coral)]">three competitors.</em></>,
+            <>Tu próximo lead ya le está escribiendo <em className="italic text-[var(--coral)]">a tres competidores.</em></>
           )}
         </motion.h1>
 
@@ -135,8 +148,8 @@ function Hero() {
           style={{ color: "rgba(244,237,227,.7)", maxWidth: "56ch" }}
         >
           {t(
-            "Agente deploys AI agents that know your industry cold — codes, regulations, incentives, market rates. WhatsApp-native. EN/ES bilingual from day one. Flat monthly pricing. No credits, no builds, no bullshit. Live in 24 hours.",
-            "Agente despliega agentes de IA que conocen tu industria a fondo — códigos, regulaciones, incentivos, tarifas de mercado. Nativo en WhatsApp. Bilingüe EN/ES desde el primer día. Precio mensual fijo. Sin créditos, sin configuraciones, en vivo en 24 horas."
+            "The first contractor to respond gets the job. Agente answers every lead in under a second — 24/7, bilingual, on WhatsApp. You close more deals.",
+            "El primer contratista en responder gana el trabajo. Agente contesta cada lead en menos de un segundo — 24/7, bilingüe, por WhatsApp. Tú cierras más negocios."
           )}
         </motion.p>
 
@@ -166,8 +179,8 @@ function Hero() {
 
         <div className="flex gap-5 justify-center flex-wrap text-[13px]" style={{ color: "var(--softer)" }}>
           {[
-            t("7-day free trial", "7 días gratis"),
-            t("No credit card required", "Sin tarjeta de crédito"),
+            t("Try live on WhatsApp →", "Prueba en WhatsApp →"),
+            t("Setup waived for founding clients", "Setup gratis para primeros clientes"),
             t("Live in 24 hours", "En vivo en 24 horas"),
             t("Cancel anytime", "Cancela cuando quieras"),
           ].map((s, i) => (
@@ -176,6 +189,106 @@ function Hero() {
             </span>
           ))}
         </div>
+
+        {/* WhatsApp Phone Mockup */}
+        <motion.div
+          {...fadeUp}
+          transition={{ ...fadeUp.transition, delay: 0.25 }}
+          className="mx-auto mt-16 relative"
+          style={{ maxWidth: 320 }}
+        >
+          {/* Glow under phone */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+            style={{
+              bottom: -30,
+              width: 200,
+              height: 80,
+              background: "radial-gradient(ellipse, rgba(37,211,102,.25), transparent 70%)",
+              filter: "blur(20px)",
+            }}
+          />
+          {/* Phone frame */}
+          <div
+            className="relative rounded-[40px] mx-auto"
+            style={{
+              width: "100%",
+              maxWidth: 300,
+              background: "#1a1a1a",
+              padding: "12px 12px 20px",
+              boxShadow: "0 25px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08)",
+            }}
+          >
+            {/* Dynamic island */}
+            <div
+              className="mx-auto mb-2 rounded-full"
+              style={{ width: 90, height: 22, background: "#000" }}
+            />
+            {/* Screen */}
+            <div
+              className="rounded-[28px] overflow-hidden"
+              style={{ background: "#0b141a" }}
+            >
+              {/* WA header */}
+              <div
+                className="flex items-center gap-2.5 px-3 py-2"
+                style={{ background: "#1f2c34" }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full grid place-items-center text-[12px] font-bold text-white shrink-0"
+                  style={{ background: "linear-gradient(135deg, #E84118, #c0392b)" }}
+                >
+                  C
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-white text-[13px] font-semibold leading-tight">Carmen</div>
+                  <div className="text-[10px]" style={{ color: "rgba(134,150,160,.9)" }}>online</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(134,150,160,.7)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
+              </div>
+              {/* Chat area */}
+              <div className="px-3 py-2 space-y-2" style={{ background: "#0b141a", backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}>
+                {/* Buyer msg 1 */}
+                <ChatBubble side="left" time="10:32 AM">
+                  Hi — interested in the Condado listing. Can I see it this weekend?
+                </ChatBubble>
+                {/* Carmen msg 1 */}
+                <ChatBubble side="right" time="10:32 AM" checks>
+                  Absolutely — let me check availability. Saturday morning work?
+                </ChatBubble>
+                {/* Buyer msg 2 */}
+                <ChatBubble side="left" time="10:33 AM">
+                  Yes Saturday works
+                </ChatBubble>
+                {/* Carmen msg 2 */}
+                <ChatBubble side="right" time="10:33 AM" checks>
+                  Perfect — locked in ✓ Quick question — full time or part time?
+                </ChatBubble>
+                {/* Buyer msg 3 */}
+                <ChatBubble side="left" time="10:34 AM">
+                  Full time — relocating from NYC
+                </ChatBubble>
+                {/* Carmen msg 3 */}
+                <ChatBubble side="right" time="10:34 AM" checks>
+                  Exciting! Quiet and private, or beach and restaurants?
+                </ChatBubble>
+                {/* Typing indicator */}
+                <div className="flex justify-start">
+                  <div
+                    className="rounded-lg px-3 py-2"
+                    style={{ background: "#1f2c34", maxWidth: "80%" }}
+                  >
+                    <div className="flex gap-1 items-center h-4">
+                      <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(134,150,160,.6)", animation: "typing-bounce 1.4s ease-in-out infinite" }} />
+                      <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(134,150,160,.6)", animation: "typing-bounce 1.4s ease-in-out .2s infinite" }} />
+                      <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(134,150,160,.6)", animation: "typing-bounce 1.4s ease-in-out .4s infinite" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -185,10 +298,10 @@ function Hero() {
 function Stats() {
   const { t } = useI18n();
   const items = [
-    { n: <>4</>, l: t("industries — RE, construction, solar, medical", "industrias — bienes raíces, construcción, solar, médica") },
-    { n: <>2<em className="italic text-[var(--coral)]">×</em></>, l: t("languages — EN/ES, every agent, auto-detect", "idiomas — EN/ES, cada agente, detección automática") },
-    { n: <>24<em className="italic text-[var(--coral)]">/</em>7</>, l: t("every lead answered, every channel", "cada lead respondido, cada canal") },
-    { n: <em className="italic text-[var(--coral)]">∞</em>, l: t("leads per month — flat fee, no credits, no cap", "leads por mes — precio fijo, sin créditos, sin límite") },
+    { n: <>78<em className="italic text-[var(--coral)]">%</em></>, l: t("of buyers go with whoever responds first", "de compradores eligen al primero que responde") },
+    { n: <><em className="italic text-[var(--coral)]">&lt;</em>1<em className="italic text-[var(--coral)]">s</em></>, l: t("response time, every channel", "tiempo de respuesta, cada canal") },
+    { n: <>24<em className="italic text-[var(--coral)]">/</em>7</>, l: t("nights, weekends, holidays included", "noches, fines, feriados incluidos") },
+    { n: <em className="italic text-[var(--coral)]">∞</em>, l: t("leads per month — flat fee, no cap", "leads por mes — precio fijo, sin límite") },
   ];
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 border-y border-[var(--rule)]">
@@ -219,18 +332,18 @@ function Compare() {
   type Cell = { icon: "ok" | "x" | "warn"; text: string };
   type Competitor = { name: string; rows: Cell[] };
 
-  // View toggle: "lindy" = 3-col (Feature · Lindy · Agente)
-  //              "all"   = expanded multi-competitor view
-  const [view, setView] = useState<"lindy" | "all">("lindy");
+  // View toggle: "generic" = 3-col (Feature · Generic AI Agent · Agente)
+  //              "all"      = expanded multi-competitor view
+  const [view, setView] = useState<"generic" | "all">("generic");
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem("agente-compare-view");
-      if (saved === "lindy" || saved === "all") setView(saved);
+      if (saved === "generic" || saved === "all") setView(saved);
     } catch {}
   }, []);
 
-  const switchView = (v: "lindy" | "all") => {
+  const switchView = (v: "generic" | "all") => {
     setView(v);
     try { localStorage.setItem("agente-compare-view", v); } catch {}
   };
@@ -317,8 +430,8 @@ function Compare() {
   }, []);
 
   // Competitor data for expanded view. Each rows[] aligns 1:1 with the rows above.
-  const lindyCompetitor: Competitor = {
-    name: "Lindy",
+  const genericCompetitor: Competitor = {
+    name: t("Generic AI Agent", "Agente de IA genérico"),
     rows: rows.map(([, l]) => l),
   };
   const intercomFin: Competitor = {
@@ -353,8 +466,8 @@ function Compare() {
   };
 
   const competitors: Competitor[] = view === "all"
-    ? [lindyCompetitor, intercomFin, chatgptAgents]
-    : [lindyCompetitor];
+    ? [genericCompetitor, intercomFin, chatgptAgents]
+    : [genericCompetitor];
 
   // Build a CSS grid template based on competitor count.
   const gridStyle: React.CSSProperties = {
@@ -365,25 +478,25 @@ function Compare() {
     <section id="compare" className="py-20 border-b border-[var(--rule)]">
       <div className="max-w-[1080px] mx-auto px-7">
         <motion.div {...fadeUp} className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
-          {view === "all" ? t("Agente vs everyone", "Agente vs todos") : "Agente vs Lindy"}
+          {view === "all" ? t("Agente vs everyone", "Agente vs todos") : t("Agente vs Generic AI Agent", "Agente vs Agente de IA genérico")}
         </motion.div>
         <motion.h2 {...fadeUp} className="font-extrabold text-[var(--cream)] mb-4" style={{ fontSize: "clamp(28px,4vw,52px)", lineHeight: 0.98, letterSpacing: "-.028em" }}>
           {t(
-            <>They built a great personal assistant. <em className="italic text-[var(--coral)]">We built the one that closes deals.</em></>,
-            <>Ellos construyeron un gran asistente personal. <em className="italic text-[var(--coral)]">Nosotros construimos el que cierra negocios.</em></>
+            <>Generic AI answers questions. <em className="italic text-[var(--coral)]">Agente closes deals.</em></>,
+            <>La IA genérica responde preguntas. <em className="italic text-[var(--coral)]">Agente cierra negocios.</em></>
           )}
         </motion.h2>
         <motion.p {...fadeUp} className="text-[18px] leading-[1.55] mt-2" style={{ color: "rgba(244,237,227,.7)", maxWidth: "58ch" }}>
           {t(
-            "Lindy is for individual professionals managing their inbox and calendar. Agente is for service businesses that run on leads, appointments, and follow-through — bilingual, WhatsApp-native, industry-expert, flat pricing.",
-            "Lindy es para profesionales individuales que gestionan su bandeja de entrada y calendario. Agente es para negocios de servicio que viven de leads, citas y seguimiento — bilingüe, nativo en WhatsApp, experto en tu industria, precio fijo."
+            "Generic AI agents are built for individual professionals managing tasks. Agente is for service businesses that run on leads, appointments, and follow-through — bilingual, WhatsApp-native, industry-expert, flat pricing.",
+            "Los agentes de IA genéricos son para profesionales individuales que gestionan tareas. Agente es para negocios de servicio que viven de leads, citas y seguimiento — bilingüe, nativo en WhatsApp, experto en tu industria, precio fijo."
           )}
         </motion.p>
 
         {/* View toggle */}
         <motion.div {...fadeUp} className="mt-8 inline-flex p-1 rounded-full border border-[var(--rule)]" style={{ background: "rgba(244,237,227,.04)" }} role="tablist" aria-label={t("Comparison view", "Vista de comparación")}>
           {([
-            { id: "lindy", label: t("vs Lindy", "vs Lindy") },
+            { id: "generic", label: t("vs Generic AI", "vs IA genérica") },
             { id: "all",   label: t("vs all competitors", "vs todos") },
           ] as const).map((opt) => {
             const active = view === opt.id;
@@ -487,7 +600,7 @@ function Compare() {
               {t("Feature", "Característica")}
             </div>
             {competitors.map((c) => (
-              <div key={c.name} role="columnheader" className="ct-hcell ct-lindy font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
+              <div key={c.name} role="columnheader" className="ct-hcell ct-generic font-mono font-semibold tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.3)" }}>
                 {c.name}
               </div>
             ))}
@@ -537,7 +650,7 @@ function Compare() {
             >
               <div role="rowheader" className="ct-cell font-semibold flex items-center" style={{ color: "rgba(244,237,227,.75)" }}>{label}</div>
               {competitors.map((c) => (
-                <div key={c.name} role="cell" className="ct-cell ct-lindy items-start" style={{ color: "rgba(244,237,227,.45)" }}>
+                <div key={c.name} role="cell" className="ct-cell ct-generic items-start" style={{ color: "rgba(244,237,227,.45)" }}>
                   <CellIcon kind={c.rows[i]?.icon ?? "x"} /> <span className="min-w-0 break-words">{c.rows[i]?.text ?? "—"}</span>
                 </div>
               ))}
@@ -686,8 +799,8 @@ function Verticals() {
         "Calificación solar bilingüe EN/ES para Puerto Rico. Conoce la medición neta (Ley 10-2024), la interconexión de LUMA y el detalle del crédito fiscal que la mayoría de empresas del continente malinterpretan. 163K+ instalaciones."
       ),
       meta: [[t("Market:", "Mercado:"), "Puerto Rico"]],
-      status: { label: t("Ready", "Listo"), kind: "deploy" as const },
-      href: "#", ctaText: t("Agente.Solar →", "Agente.Solar →"),
+      status: { label: t("Coming Soon", "Próximamente"), kind: "dev" as const },
+      href: undefined, ctaText: undefined,
       color: "sol" as const,
     },
     {
@@ -698,8 +811,8 @@ function Verticals() {
         "Agenda citas, envía recordatorios, redirige preguntas clínicas al portal del paciente. Cumple con HIPAA en el plan base. Recupera $7K–$10K/mes en ingresos por citas perdidas."
       ),
       meta: [[t("Market:", "Mercado:"), t("US medical practices", "Consultorios médicos EE.UU.")]],
-      status: { label: t("In development", "En desarrollo"), kind: "dev" as const },
-      href: "#", ctaText: t("Agente.Medical →", "Agente.Medical →"),
+      status: { label: t("Coming Soon", "Próximamente"), kind: "dev" as const },
+      href: undefined, ctaText: undefined,
       color: "med" as const,
     },
   ];
@@ -796,14 +909,16 @@ function StatusBadge({ kind, label }: { kind: "live" | "deploy" | "dev"; label: 
 }
 
 function VerticalCard({ v, delay }: { v: any; delay: number }) {
+  const Wrapper = v.href ? motion.a : motion.div as any;
+  const wrapperProps: any = {
+    ...fadeUp,
+    transition: { ...fadeUp.transition, delay },
+    className: "relative block rounded-[24px] p-9 border border-[var(--rule)] overflow-hidden transition-all hover:-translate-y-0.5 hover:border-[rgba(232,65,24,.35)]",
+    style: { background: "var(--card)" },
+  };
+  if (v.href) wrapperProps.href = v.href;
   return (
-    <motion.a
-      {...fadeUp}
-      transition={{ ...fadeUp.transition, delay }}
-      href={v.href}
-      className="relative block rounded-[24px] p-9 border border-[var(--rule)] overflow-hidden transition-all hover:-translate-y-0.5 hover:border-[rgba(232,65,24,.35)]"
-      style={{ background: "var(--card)" }}
-    >
+    <Wrapper {...wrapperProps}>
       <span className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--coral)] opacity-60" />
       <div className="flex justify-between items-start mb-5">
         <div className="flex items-center gap-3">
@@ -824,8 +939,8 @@ function VerticalCard({ v, delay }: { v: any; delay: number }) {
           </span>
         ))}
       </div>
-      <span className="inline-flex items-center gap-1 mt-4 text-[14px] font-bold text-[var(--coral)]">{v.ctaText}</span>
-    </motion.a>
+      {v.ctaText && <span className="inline-flex items-center gap-1 mt-4 text-[14px] font-bold text-[var(--coral)]">{v.ctaText}</span>}
+    </Wrapper>
   );
 }
 
@@ -834,24 +949,24 @@ function WhyAgente() {
   const { t } = useI18n();
   const items = [
     { icon: "🧠", h: t("Industry knowledge no one else has", "Conocimiento que nadie más tiene"), p: t(
-      "Sol knows the ITC doesn't apply to most PR residents. Marco knows pre-1978 homes need EPA-certified contractors. Grace never sends clinical info over SMS. Lindy gets all of this wrong — and that costs your clients customers.",
-      "Sol sabe que el crédito ITC no aplica para la mayoría de los residentes de PR. Marco sabe que las casas previas a 1978 necesitan contratistas certificados por la EPA. Grace nunca envía información clínica por SMS. Lindy se equivoca en todo esto."
+      "Sol knows the ITC doesn't apply to most PR residents. Marco knows pre-1978 homes need EPA-certified contractors. Grace never sends clinical info over SMS. Generic AI agents get all of this wrong — and that costs your clients customers.",
+      "Sol sabe que el crédito ITC no aplica para la mayoría de los residentes de PR. Marco sabe que las casas previas a 1978 necesitan contratistas certificados por la EPA. Grace nunca envía información clínica por SMS. La IA genérica se equivoca en todo esto."
     )},
     { icon: "🌎", h: t("Bilingual is the whole product", "El bilingüismo es el producto"), p: t(
       "62M+ US Hispanics. All of Latin America. WhatsApp is the dominant channel for Spanish speakers worldwide — not iMessage. Every Agente agent is native bilingual from day one. Auto-detects. Switches instantly. Never mixes.",
       "62M+ hispanos en EE.UU. Toda Latinoamérica. WhatsApp es el canal dominante para hispanohablantes — no iMessage. Cada agente de Agente es nativo bilingüe desde el primer día. Detecta automáticamente. Cambia al instante."
     )},
     { icon: "🔄", h: t("Full lifecycle, not just first touch", "Ciclo completo, no solo el primer contacto"), p: t(
-      "Lindy manages your inbox. Agente runs your pipeline — qualify, book, remind, proposal follow-up, job updates, review capture, referral, reactivation. The leads you have are worth more than the ones you're chasing.",
-      "Lindy gestiona tu bandeja de entrada. Agente maneja tu pipeline — califica, agenda, recuerda, da seguimiento, actualiza, captura reseñas, referidos, reactivación. Los leads que ya tienes valen más que los que estás persiguiendo."
+      "Generic AI manages your inbox. Agente runs your pipeline — qualify, book, remind, proposal follow-up, job updates, review capture, referral, reactivation. The leads you have are worth more than the ones you're chasing.",
+      "La IA genérica gestiona tu bandeja de entrada. Agente maneja tu pipeline — califica, agenda, recuerda, da seguimiento, actualiza, captura reseñas, referidos, reactivación. Los leads que ya tienes valen más que los que estás persiguiendo."
     )},
     { icon: "💰", h: t("Flat pricing. No credit math.", "Precio fijo. Sin cuentas de créditos."), p: t(
-      "Lindy's $49/mo Pro plan burns through 275 credits per lead cycle — 18 leads and you're out. Agente is a flat monthly fee. 5 leads or 500, same price. Stop rationing AI credits like a scarce resource.",
-      "El plan Pro de Lindy a $49/mes consume 275 créditos por ciclo de lead — 18 leads y se acabó. Agente es precio fijo mensual. 5 leads o 500, mismo precio. Deja de racionar créditos de IA como si fueran escasos."
+      "Generic AI's $49/mo plan burns through 275 credits per lead cycle — 18 leads and you're out. Agente is a flat monthly fee. 5 leads or 500, same price. Stop rationing AI credits like a scarce resource.",
+      "El plan de IA genérica a $49/mes consume 275 créditos por ciclo de lead — 18 leads y se acabó. Agente es precio fijo mensual. 5 leads o 500, mismo precio. Deja de racionar créditos de IA como si fueran escasos."
     )},
     { icon: "⚡", h: t("Done for you in 24 hours", "Listo para ti en 24 horas"), p: t(
-      "Lindy requires you to build your own agents from templates. Agente deploys them fully configured with your company data and knowledge base. Live on WhatsApp and SMS in 24–48 hours. No builder. No learning curve.",
-      "Lindy requiere que construyas tus propios agentes desde plantillas. Agente los despliega completamente configurados con los datos de tu empresa. En vivo en WhatsApp y SMS en 24–48 horas. Sin constructor. Sin curva de aprendizaje."
+      "Generic AI requires you to build your own agents from templates. Agente deploys them fully configured with your company data and knowledge base. Live on WhatsApp and SMS in 24–48 hours. No builder. No learning curve.",
+      "La IA genérica requiere que construyas tus propios agentes desde plantillas. Agente los despliega completamente configurados con los datos de tu empresa. En vivo en WhatsApp y SMS en 24–48 horas. Sin constructor. Sin curva de aprendizaje."
     )},
     { icon: "📍", h: t("Built in Puerto Rico for the Americas", "Construido en Puerto Rico para las Américas"), p: t(
       "Bilingual-first, WhatsApp-native architecture isn't a bolt-on — it's the foundation. Built by someone who spent three years navigating service businesses that didn't speak their customers' language. LATAM expansion is Phase 3.",
@@ -866,8 +981,8 @@ function WhyAgente() {
         </motion.div>
         <motion.h2 {...fadeUp} className="font-extrabold text-[var(--cream)] mb-10" style={{ fontSize: "clamp(28px,4vw,52px)", lineHeight: 0.98, letterSpacing: "-.028em" }}>
           {t(
-            <>Six things <em className="italic text-[var(--coral)]">Lindy can't do.</em></>,
-            <>Seis cosas que <em className="italic text-[var(--coral)]">Lindy no puede hacer.</em></>
+            <>Six things <em className="italic text-[var(--coral)]">generic AI can't do.</em></>,
+            <>Seis cosas que <em className="italic text-[var(--coral)]">la IA genérica no puede hacer.</em></>
           )}
         </motion.h2>
         <div className="grid md:grid-cols-3 gap-4">
@@ -884,6 +999,62 @@ function WhyAgente() {
               <p className="text-[13px] leading-[1.6]" style={{ color: "var(--soft)" }}>{it.p}</p>
             </motion.div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- FOUNDER STORY ---------- */
+function FounderStory() {
+  const { t } = useI18n();
+  return (
+    <section className="py-20" style={{ background: "var(--cream)" }}>
+      <div className="max-w-[1080px] mx-auto px-7">
+        <div className="grid md:grid-cols-2 gap-14 items-center">
+          <motion.div {...fadeUp}>
+            <div
+              className="rounded-[24px] p-12 flex flex-col items-center justify-center text-center border"
+              style={{ background: "var(--navy)", borderColor: "rgba(232,65,24,.2)", minHeight: 360 }}
+            >
+              <div
+                className="w-32 h-32 rounded-full mb-5 flex items-center justify-center"
+                style={{ background: "rgba(232,65,24,.12)", border: "2px solid rgba(232,65,24,.25)" }}
+              >
+                <span className="text-[36px] font-extrabold text-[var(--coral)]">JCB</span>
+              </div>
+              <div className="font-mono text-[11px] tracking-[.1em] uppercase" style={{ color: "rgba(244,237,227,.5)" }}>
+                Photo · Jan Carlos Byl
+              </div>
+            </div>
+          </motion.div>
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
+            <div className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
+              {t("Why Agente", "Por qué Agente")}
+            </div>
+            <h2 className="font-extrabold mb-5" style={{ color: "var(--navy)", fontSize: "clamp(28px,4vw,44px)", lineHeight: 1.02, letterSpacing: "-.028em" }}>
+              {t(
+                "I spent three years shopping in Puerto Rico. No agent helped me.",
+                "Pasé tres años buscando en Puerto Rico. Ningún agente me ayudó."
+              )}
+            </h2>
+            <div className="space-y-4 text-[16px] leading-[1.7]" style={{ color: "rgba(13,27,34,.7)" }}>
+              <p>{t(
+                "I'm Jan Carlos. I've run operations across three continents. None of it prepared me for buying a home in Puerto Rico. Two years, 30+ condos, across the island. Every agent wanted to sell. None asked what life we were building.",
+                "Soy Jan Carlos. He dirigido operaciones en tres continentes. Nada de eso me preparó para comprar una casa en Puerto Rico. Dos años, más de 30 condominios, por toda la isla. Cada agente quería vender. Ninguno preguntó qué vida estábamos construyendo."
+              )}</p>
+              <p>{t(
+                "Agente exists because that experience shouldn't be normal.",
+                "Agente existe porque esa experiencia no debería ser normal."
+              )}</p>
+            </div>
+            <div className="mt-6">
+              <div className="font-bold italic text-[17px]" style={{ color: "var(--navy)" }}>Jan Carlos Byl</div>
+              <div className="font-mono text-[11px] tracking-[.08em] uppercase mt-1" style={{ color: "rgba(13,27,34,.45)" }}>
+                {t("Founder · Agente · JCB Industries", "Fundador · Agente · JCB Industries")}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -958,12 +1129,160 @@ function HowItWorks() {
                 style={{ background: "rgba(232,65,24,.08)", border: "1px solid rgba(232,65,24,.15)", color: "rgba(244,237,227,.6)" }}
               >
                 {t(
-                  "CUSTOM BUILD: $997 SETUP · FROM $397/MO · INCLUDES INDUSTRY RESEARCH + FULL KNOWLEDGE BASE",
-                  "BUILD PERSONALIZADO: $997 CONFIGURACIÓN · DESDE $397/MES · INCLUYE INVESTIGACIÓN DE INDUSTRIA + BASE DE CONOCIMIENTO COMPLETA"
+                  "CUSTOM BUILD: $997 SETUP · FROM $400/MO · INCLUDES INDUSTRY RESEARCH + FULL KNOWLEDGE BASE",
+                  "BUILD PERSONALIZADO: $997 CONFIGURACIÓN · DESDE $400/MES · INCLUYE INVESTIGACIÓN DE INDUSTRIA + BASE DE CONOCIMIENTO COMPLETA"
                 )}
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- PRICING ---------- */
+function Pricing() {
+  const { t } = useI18n();
+  return (
+    <section className="py-20" style={{ background: "rgba(244,237,227,.04)" }}>
+      <div className="max-w-[720px] mx-auto px-7 text-center">
+        <motion.div {...fadeUp} className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
+          {t("Pricing", "Precios")}
+        </motion.div>
+        <motion.h2 {...fadeUp} className="font-extrabold text-[var(--cream)] mb-12" style={{ fontSize: "clamp(28px,4vw,44px)", lineHeight: 1.02, letterSpacing: "-.028em" }}>
+          {t("Flat monthly. No credit math.", "Precio mensual fijo. Sin matemática de créditos.")}
+        </motion.h2>
+        <motion.div
+          {...fadeUp}
+          className="rounded-[24px] overflow-hidden border border-[var(--rule)] text-left"
+          style={{ background: "var(--card)" }}
+        >
+          <div className="text-center py-3.5 px-6 font-mono text-[12px] font-bold tracking-[.12em] uppercase" style={{ background: "var(--coral)", color: "#FFF" }}>
+            {t("FOUNDING PRICING — LIMITED", "PRECIO FUNDADOR — LIMITADO")}
+          </div>
+          <div className="p-10">
+            <div className="text-center mb-8">
+              <div className="font-extrabold text-[var(--cream)]" style={{ fontSize: "clamp(48px,6vw,72px)", letterSpacing: "-.04em", lineHeight: 1 }}>
+                $400<span className="text-[20px] font-mono font-semibold tracking-[.08em]" style={{ color: "var(--softer)" }}>/mo</span>
+              </div>
+              <div className="mt-2 font-mono text-[12px] tracking-[.08em]" style={{ color: "var(--coral)" }}>
+                {t("$497 setup — FREE for founding clients", "$497 setup — GRATIS para primeros clientes")}
+              </div>
+            </div>
+            <ul className="space-y-3 mb-8">
+              {[
+                t("Instant response on every channel, 24/7", "Respuesta instantánea en cada canal, 24/7"),
+                t("EN + ES bilingual, auto-detect", "Bilingüe EN + ES, detección automática"),
+                t("Industry-specific knowledge built in", "Conocimiento específico de industria incluido"),
+                t("Full lifecycle — qualify through referral", "Ciclo completo — calificar hasta referido"),
+                t("WhatsApp + SMS + web forms + DMs", "WhatsApp + SMS + formularios web + DMs"),
+                t("Live in 24–48 hours", "En vivo en 24–48 horas"),
+                t("Cancel anytime", "Cancela cuando quieras"),
+              ].map((f, i) => (
+                <li key={i} className="flex items-start gap-3 text-[15px] leading-[1.5]" style={{ color: "rgba(244,237,227,.8)" }}>
+                  <span className="text-[#4ADE80] text-[14px] shrink-0 mt-0.5">✓</span> {f}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="https://wa.me/17878100749"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-xl text-[17px] font-bold text-white transition-transform hover:-translate-y-px"
+              style={{ background: "var(--coral)", boxShadow: "0 4px 20px rgba(232,65,24,.3)" }}
+            >
+              <WhatsAppIcon /> {t("Get started →", "Comenzar →")}
+            </a>
+            <div className="mt-5 text-center font-mono text-[11px] tracking-[.06em]" style={{ color: "var(--softer)" }}>
+              {t("Solar ($497/mo) · Medical ($597/mo) · Custom quote for multi-location", "Solar ($497/mes) · Médica ($597/mes) · Cotización personalizada para múltiples ubicaciones")}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- FAQ ---------- */
+function FAQ() {
+  const { t } = useI18n();
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const faqs = [
+    {
+      q: t("What happens when a lead texts at 2am?", "¿Qué pasa cuando un lead escribe a las 2am?"),
+      a: t(
+        "Agente responds instantly. Your leads don't wait for business hours — and neither do your competitors who already use us.",
+        "Agente responde al instante. Tus leads no esperan horas de oficina — y tampoco tus competidores que ya nos usan."
+      ),
+    },
+    {
+      q: t("What if it says something wrong?", "¿Y si dice algo mal?"),
+      a: t(
+        "Every agent has hard stops built in. It never quotes prices, never gives legal or medical advice, and hands off to a human when unsure. We configure these guardrails during setup.",
+        "Cada agente tiene límites de seguridad integrados. Nunca cotiza precios, nunca da consejos legales o médicos, y transfiere a un humano cuando no está seguro. Configuramos estas protecciones durante la instalación."
+      ),
+    },
+    {
+      q: t("How much does it cost?", "¿Cuánto cuesta?"),
+      a: t(
+        "Real estate and construction: $400/month. Solar: $497/month. Medical: $597/month. Setup is $497 — waived for founding clients. Flat fee, unlimited leads, no credits.",
+        "Bienes raíces y construcción: $400/mes. Solar: $497/mes. Médica: $597/mes. Setup de $497 — gratis para primeros clientes. Precio fijo, leads ilimitados, sin créditos."
+      ),
+    },
+    {
+      q: t("How fast can I go live?", "¿Qué tan rápido puedo estar en vivo?"),
+      a: t(
+        "24–48 hours from our kickoff conversation. We handle setup, configuration, and testing. You just answer a few questions about your business.",
+        "24–48 horas desde nuestra conversación inicial. Nosotros manejamos la instalación, configuración y pruebas. Tú solo respondes unas preguntas sobre tu negocio."
+      ),
+    },
+    {
+      q: t("Can I cancel anytime?", "¿Puedo cancelar cuando quiera?"),
+      a: t(
+        "Yes. Month to month, no contracts. If Agente isn't working for you, cancel and we shut it down. No hard feelings.",
+        "Sí. Mes a mes, sin contratos. Si Agente no funciona para ti, cancela y lo desactivamos. Sin resentimientos."
+      ),
+    },
+  ];
+  return (
+    <section className="py-20" style={{ background: "var(--navy)" }}>
+      <div className="max-w-[720px] mx-auto px-7">
+        <motion.div {...fadeUp} className="font-mono text-[11px] font-semibold tracking-[.16em] uppercase text-[var(--coral)] mb-3.5">
+          FAQ
+        </motion.div>
+        <motion.h2 {...fadeUp} className="font-extrabold text-[var(--cream)] mb-10" style={{ fontSize: "clamp(28px,4vw,44px)", lineHeight: 1.02, letterSpacing: "-.028em" }}>
+          {t("Common questions", "Preguntas frecuentes")}
+        </motion.h2>
+        <div className="space-y-3">
+          {faqs.map((faq, i) => {
+            const isOpen = openIdx === i;
+            return (
+              <motion.div
+                key={i}
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: i * 0.04 }}
+                className="rounded-2xl border border-[var(--rule)] overflow-hidden"
+                style={{ background: "var(--card)" }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between px-7 py-5 text-left"
+                >
+                  <span className="font-bold text-[16px] text-[var(--cream)]" style={{ letterSpacing: "-.01em" }}>{faq.q}</span>
+                  <span className="text-[var(--coral)] text-[20px] font-bold shrink-0 ml-4" aria-hidden="true">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="px-7 pb-5 text-[15px] leading-[1.65]" style={{ color: "rgba(244,237,227,.7)" }}>
+                    {faq.a}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1087,8 +1406,8 @@ function FinalCTA() {
         </h2>
         <p className="text-[18px] leading-[1.55] mx-auto mb-9" style={{ color: "rgba(244,237,227,.7)", maxWidth: "52ch" }}>
           {t(
-            "7-day free trial. No credit card. Live in 24 hours. Real estate, construction, solar, or medical — your agent is ready.",
-            "7 días gratis. Sin tarjeta de crédito. En vivo en 24 horas. Bienes raíces, construcción, solar o médica — tu agente está listo."
+            "Try live on WhatsApp. Setup waived for founding clients. Live in 24 hours. Real estate, construction, solar, or medical — your agent is ready.",
+            "Prueba en WhatsApp. Setup gratis para primeros clientes. En vivo en 24 horas. Bienes raíces, construcción, solar o médica — tu agente está listo."
           )}
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
@@ -1136,6 +1455,32 @@ function StickyMobile() {
       >
         {t("Start free trial →", "Prueba gratis →")}
       </a>
+    </div>
+  );
+}
+
+function ChatBubble({ side, time, checks, children }: { side: "left" | "right"; time: string; checks?: boolean; children: React.ReactNode }) {
+  const isRight = side === "right";
+  return (
+    <div className={`flex ${isRight ? "justify-end" : "justify-start"}`}>
+      <div
+        className="rounded-lg px-2.5 py-1.5 relative"
+        style={{
+          background: isRight ? "#005c4b" : "#1f2c34",
+          maxWidth: "85%",
+        }}
+      >
+        <div className="text-white text-[12px] leading-[1.4]" style={{ wordBreak: "break-word" }}>{children}</div>
+        <div className="flex items-center justify-end gap-1 mt-0.5 -mb-0.5">
+          <span className="text-[9px]" style={{ color: "rgba(255,255,255,.45)" }}>{time}</span>
+          {checks && (
+            <svg width="14" height="8" viewBox="0 0 16 11" fill="none" aria-hidden="true">
+              <path d="M11.07.65a.5.5 0 0 0-.7.08L5.37 7.05 3.35 5.03a.5.5 0 1 0-.7.7l2.4 2.4a.5.5 0 0 0 .74-.04l5.36-6.73a.5.5 0 0 0-.08-.7z" fill="#53bdeb" />
+              <path d="M14.57.65a.5.5 0 0 0-.7.08L8.87 7.05l-.53-.53a.5.5 0 1 0-.7.71l.9.89a.5.5 0 0 0 .74-.04l5.37-6.73a.5.5 0 0 0-.08-.7z" fill="#53bdeb" />
+            </svg>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
