@@ -28,7 +28,7 @@ const { favicon16: favicon16Url, favicon32: favicon32Url, appleTouch: appleTouch
 // Facebook/LinkedIn/Slack/X re-fetch automatically — no manual debugger
 // re-scrape required.
 import ogDefaultUrl from "@/assets/og-default.jpg";
-const ORIGIN = "https://agentesystems.lovable.app";
+const ORIGIN = "https://agente.systems";
 const OG_DEFAULT = `${ORIGIN}${ogDefaultUrl}`;
 
 function NotFoundComponent() {

@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { demoUrl } from "@/lib/demo-link";
 import ogImageUrl from "@/assets/og-solar.jpg";
 
-const ORIGIN = "https://agentesystems.lovable.app";
+const ORIGIN = "https://agente.systems";
 const PAGE_URL = `${ORIGIN}/solar`;
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/solar")({
 });
 
 const fadeUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: false,
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-80px" },
   transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },

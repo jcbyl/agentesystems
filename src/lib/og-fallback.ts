@@ -36,7 +36,7 @@ export type OgFallbackSlug =
 // Single source of truth for the canonical origin used in absolute
 // og:image URLs. Matches the value used in __root.tsx / per-route
 // canonical links so social crawlers always see one host.
-const ORIGIN = "https://agentesystems.lovable.app";
+const ORIGIN = "https://agente.systems";
 
 export function ogFallback(slug: OgFallbackSlug): string {
   const hash = OG_FALLBACK_HASHES[slug];

@@ -8,7 +8,7 @@ import { demoUrl } from "@/lib/demo-link";
 import { hreflangLinks } from "@/lib/hreflang";
 import ogImageUrl from "@/assets/og-home.jpg";
 
-const ORIGIN = "https://agentesystems.lovable.app";
+const ORIGIN = "https://agente.systems";
 const OG_IMAGE = `${ORIGIN}${ogImageUrl}`;
 const TITLE = "Agente — Bilingual EN/ES AI Agents for SMBs";
 const DESC =
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
 });
 
 const fadeUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: false,
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-80px" },
   transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },

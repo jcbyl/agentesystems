@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { useState, useRef, useEffect } from "react";
 import { ogFallbackPair } from "@/lib/og-fallback";
 
-const ORIGIN = "https://agentesystems.lovable.app";
+const ORIGIN = "https://agente.systems";
 const PAGE_URL = `${ORIGIN}/demo`;
 const OG = ogFallbackPair("demo");
 
